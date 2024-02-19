@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Stech</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="notifications">Notifications</string>
+    <string name="phone_exists">This phone number is registered to another account</string>
+    <string name="email_exists">This email is registered to another account</string>
+    <string name="register">Đăng ký</string>
+    <string name="register_account">Tạo tài khoản</string>
+    <string name="register_msg">Tạo tài khoản và bắt đầu mua sắm nào !</string>
+    <string name="email">Email</string>
+    <string name="full_name">Full-name</string>
+    <string name="phone_number">Phone-number</string>
+    <string name="password">Password</string>
+    <string name="re_password">RePassword</string>
+    <string name="login">Đăng nhập</string>
+    <string name="had_account">Đã có tài khoản ?</string>
+</resources>
