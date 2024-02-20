@@ -2,7 +2,7 @@ package com.datn.client.response;
 
 import com.datn.client.models.Customer;
 
-public class VerifyResponse extends BaseResponse {
+public class CustomerResponse extends BaseResponse {
     private Customer customer;
     private String token;
 

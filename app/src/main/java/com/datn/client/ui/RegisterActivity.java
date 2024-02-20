@@ -16,14 +16,17 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.datn.client.R;
 import com.datn.client.databinding.ActivityRegisterBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.response.BaseResponse;
+import com.datn.client.response.CustomerResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
+import com.datn.client.utils.Constants;
+import com.datn.client.utils.PreferenceManager;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.gson.Gson;
 
 import java.util.Objects;
 
@@ -35,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private ActivityRegisterBinding binding;
     private ApiService apiService;
+    private PreferenceManager preferenceManager;
     private ImageButton imgBack;
     private Button btnRegister;
     private SpinKitView spinKitView;
@@ -93,6 +97,12 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister.setVisibility(isLoading ? View.GONE : View.VISIBLE);
     }
 
+    private void saveLogin(Customer customer) {
+        Gson gson = new Gson();
+        String json = gson.toJson(customer);
+        preferenceManager.putString("user", json);
+    }
+
     private void register() {
         try {
             String email = Objects.requireNonNull(edEmail.getText()).toString().trim();
@@ -105,58 +115,53 @@ public class RegisterActivity extends AppCompatActivity {
                 return;
             }
             Customer customer = new Customer(email, password, fullName, phoneNumber);
-            Call<BaseResponse> registerCustomer = apiService.registerCustomer(customer);
-            registerCustomer.enqueue(new Callback<BaseResponse>() {
+            Call<CustomerResponse> registerCustomer = apiService.registerCustomer(customer);
+            registerCustomer.enqueue(new Callback<CustomerResponse>() {
                 @Override
-                public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
-                    if (response.body() != null) {
-                        if (response.body().getStatusCode() == 200) {
-                            Log.w(TAG, "onResponse200: " + response.body().getCode());
-                            String message = "";
-                            switch (response.body().getCode()) {
-                                case "auth/verify":
-                                    message = response.body().getMessage();
-                                    break;
-                                case "":
-                                    break;
-                                default:
-                                    message = response.body().getCode();
-                                    break;
+                public void onResponse(@NonNull Call<CustomerResponse> call, @NonNull Response<CustomerResponse> response) {
+                    runOnUiThread(() -> {
+                        if (response.body() != null) {
+                            if (response.body().getStatusCode() == 200) {
+                                Log.w(TAG, "onResponse200: " + response.body().getCode());
+                                String message = response.body().getMessage();
+                                switch (response.body().getCode()) {
+                                    case "auth/verify":
+                                        showToast(message);
+                                        saveLogin(response.body().getCustomer());
+                                        startActivity(new Intent(RegisterActivity.this, VerifyOTPActivity.class));
+                                        break;
+                                    case "":
+                                        break;
+                                    default:
+                                        message = response.body().getCode();
+                                        break;
+                                }
+                                MyDialog.gI().startDlgOK(RegisterActivity.this, message);
+                                setLoading(false);
+                            } else if (response.body().getStatusCode() == 400) {
+                                Log.w(TAG, "onResponse400: " + response.body().getCode());
+                                String message;
+                                switch (response.body().getCode()) {
+                                    case "auth/missing-email":
+                                    case "auth/missing-fullname":
+                                    case "auth/phone-exists":
+                                    case "auth/email-exists":
+                                    default:
+                                        message = response.body().getMessage();
+                                        break;
+                                }
+                                MyDialog.gI().startDlgOK(RegisterActivity.this, message);
+                                setLoading(false);
                             }
-                            MyDialog.gI().startDlgOK(RegisterActivity.this, message);
-                            setLoading(false);
-                        } else if (response.body().getStatusCode() == 400) {
-                            Log.w(TAG, "onResponse400: " + response.body().getCode());
-                            String message;
-                            switch (response.body().getCode()) {
-                                case "auth/missing-email":
-                                    message = "Missing email";
-                                    break;
-                                case "auth/missing-fullname":
-                                    message = "Missing full_name";
-                                    break;
-                                case "auth/phone-exists":
-                                    message = getString(R.string.phone_exists);
-                                    break;
-                                case "auth/email-exists":
-                                    message = getString(R.string.email_exists);
-                                    break;
-
-                                default:
-                                    message = response.body().getMessage();
-                                    break;
-                            }
-                            MyDialog.gI().startDlgOK(RegisterActivity.this, message);
+                        } else {
+                            MyDialog.gI().startDlgOK(RegisterActivity.this, "body null");
                             setLoading(false);
                         }
-                    } else {
-                        MyDialog.gI().startDlgOK(RegisterActivity.this, "body null");
-                        setLoading(false);
-                    }
+                    });
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<CustomerResponse> call, @NonNull Throwable t) {
                     MyDialog.gI().startDlgOK(RegisterActivity.this, t.getMessage());
                     setLoading(false);
                 }
@@ -215,6 +220,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void initService() {
         apiService = RetrofitConnection.getApiService();
+        preferenceManager = new PreferenceManager(this, Constants.KEY_PREFERENCE_ACC);
     }
 
     private void initEventClick() {

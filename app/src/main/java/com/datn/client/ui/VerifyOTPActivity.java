@@ -2,7 +2,6 @@ package com.datn.client.ui;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,12 +19,13 @@ import com.datn.client.MainActivity;
 import com.datn.client.databinding.ActivityVerifyOtpactivityBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.response.BaseResponse;
-import com.datn.client.response.VerifyResponse;
+import com.datn.client.response.CustomerResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.github.ybq.android.spinkit.SpinKitView;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
 import java.util.Objects;
@@ -43,6 +43,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
 
     private EditText edOTP1, edOTP2, edOTP3, edOTP4, edOTP5, edOTP6;
     private Button btnVerify;
+    private Customer mCustomer;
 
     public boolean isLoading = false;
 
@@ -75,6 +76,14 @@ public class VerifyOTPActivity extends AppCompatActivity {
         initService();
 
         initEventClick();
+
+        mCustomer = getLogin();
+
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            String token = task.getResult();
+            Log.i(TAG, "onCreate: " + token);
+            preferenceManager.putString("fcm", token);
+        });
 
     }
 
@@ -111,18 +120,68 @@ public class VerifyOTPActivity extends AppCompatActivity {
         return gson.fromJson(json, Customer.class);
     }
 
+    private void addTokenFMC(String token, @NonNull Customer cus) {
+        System.out.println("token: " + token);
+        String fcm = preferenceManager.getString("fcm");
+        Customer customer = new Customer(cus.get_id(), cus.getPassword(), false);
+        customer.setFcm(fcm);
+        Call<BaseResponse> addFCM = apiService.addFCM(token, customer);
+        addFCM.enqueue(new Callback<BaseResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
+                runOnUiThread(() -> {
+                    if (response.body() != null) {
+                        Log.w(TAG, "onResponse200: " + response.body().getCode());
+                        String message = response.body().getMessage();
+                        switch (response.body().getCode()) {
+                            case "auth/add-fcm-success":
+                                showToast("Đăng nhập thành công");
+                                setLoading(false);
+                                startActivity(new Intent(VerifyOTPActivity.this, MainActivity.class));
+                                finishAffinity();
+                                break;
+                            case "":
+                            default:
+                                MyDialog.gI().startDlgOK(VerifyOTPActivity.this, message);
+                                setLoading(false);
+                                break;
+                        }
+                    } else {
+                        MyDialog.gI().startDlgOK(VerifyOTPActivity.this, "body null");
+                        setLoading(false);
+                    }
+                });
+
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
+                runOnUiThread(() -> {
+                    MyDialog.gI().startDlgOK(VerifyOTPActivity.this, t.getMessage());
+                    setLoading(false);
+                });
+            }
+        });
+    }
+
     private void verify() {
         try {
             String OTP = edOTP1.getText().toString().trim() + edOTP2.getText().toString().trim()
                     + edOTP3.getText().toString().trim() + edOTP4.getText().toString().trim()
                     + edOTP5.getText().toString().trim() + edOTP6.getText().toString().trim();
 
-            String tempID = "65d46c4deac37188dd85e5c2";
-            Customer customer = new Customer(tempID, "", OTP);
-            Call<VerifyResponse> verify = apiService.verify(customer);
-            verify.enqueue(new Callback<VerifyResponse>() {
+            if (mCustomer == null) {
+                showToast("Có lỗi xảy ra vui lòng đăng nhập lại");
+                finishAffinity();
+                return;
+            }
+            Customer customer = new Customer(mCustomer.get_id(), mCustomer.getPassword(), false);
+            customer.setOtp(OTP);
+
+            Call<CustomerResponse> verify = apiService.verify(customer);
+            verify.enqueue(new Callback<CustomerResponse>() {
                 @Override
-                public void onResponse(@NonNull Call<VerifyResponse> call, @NonNull Response<VerifyResponse> response) {
+                public void onResponse(@NonNull Call<CustomerResponse> call, @NonNull Response<CustomerResponse> response) {
                     runOnUiThread(() -> {
                         if (response.body() != null) {
                             if (response.body().getStatusCode() == 200) {
@@ -131,15 +190,15 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                 switch (response.body().getCode()) {
                                     case "auth/login-success":
                                         saveLogin(response.body().getCustomer());
-                                        startActivity(new Intent(VerifyOTPActivity.this, MainActivity.class));
-                                        finishAffinity();
+                                        String token = response.body().getToken();
+                                        addTokenFMC(token, response.body().getCustomer());
                                         break;
                                     case "auth/wrong-otp":
                                     default:
                                         message = response.body().getMessage();
                                         MyDialog.gI().startDlgOK(VerifyOTPActivity.this, response.body().getMessage());
+                                        setLoading(false);
                                 }
-                                setLoading(false);
                             } else if (response.body().getStatusCode() == 400) {
                                 Log.w(TAG, "onResponse400: " + response.body().getCode());
                             }
@@ -151,7 +210,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<VerifyResponse> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<CustomerResponse> call, @NonNull Throwable t) {
                     runOnUiThread(() -> {
                         MyDialog.gI().startDlgOK(VerifyOTPActivity.this, t.getMessage());
                         setLoading(false);

@@ -4,8 +4,6 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="notifications">Notifications</string>
-    <string name="phone_exists">This phone number is registered to another account</string>
-    <string name="email_exists">This email is registered to another account</string>
     <string name="register">Đăng ký</string>
     <string name="register_account">Tạo tài khoản</string>
     <string name="register_msg">Tạo tài khoản và bắt đầu mua sắm nào !</string>

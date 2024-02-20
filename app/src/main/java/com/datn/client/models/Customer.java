@@ -10,16 +10,16 @@ public class Customer {
     private String status;
     private String create_time;
     private String otp;
+    private String fcm;
 
     public Customer(String email, String password) {
         this.email = email;
         this.password = password;
     }
 
-    public Customer(String _id, String password, String otp) {
+    public Customer(String _id, String password, boolean _is) {
         this._id = _id;
         this.password = password;
-        this.otp = otp;
     }
 
     public Customer(String email, String password, String full_name, String phone_number) {
@@ -99,5 +99,13 @@ public class Customer {
 
     public void setOtp(String otp) {
         this.otp = otp;
+    }
+
+    public String getFcm() {
+        return fcm;
+    }
+
+    public void setFcm(String fcm) {
+        this.fcm = fcm;
     }
 }
