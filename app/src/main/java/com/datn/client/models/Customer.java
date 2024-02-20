@@ -11,6 +11,17 @@ public class Customer {
     private String create_time;
     private String otp;
 
+    public Customer(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
+
+    public Customer(String _id, String password, String otp) {
+        this._id = _id;
+        this.password = password;
+        this.otp = otp;
+    }
+
     public Customer(String email, String password, String full_name, String phone_number) {
         this.email = email;
         this.password = password;

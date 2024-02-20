@@ -1,8 +1,8 @@
 package com.datn.client.ui;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
@@ -41,6 +41,8 @@ public class RegisterActivity extends AppCompatActivity {
     private TextInputEditText edEmail, edName, edPhone, edPass, edRePass;
     private TextView tvLogin;
 
+    public boolean isLoading = false;
+
     private final OnBackPressedCallback callback = new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
@@ -48,12 +50,9 @@ public class RegisterActivity extends AppCompatActivity {
                     .setTitle("Title")
                     .setMessage("Do you really want to whatever?")
                     .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                        public void onClick(DialogInterface dialog, int whichButton) {
-                            System.out.println("OnBackPressed");
-                            finish();
-                        }
+                    .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> {
+                        System.out.println("OnBackPressed");
+                        finish();
                     })
                     .setNegativeButton(android.R.string.no, null).show();
 
@@ -70,14 +69,26 @@ public class RegisterActivity extends AppCompatActivity {
         initUI();
         getOnBackPressedDispatcher().addCallback(this, callback);
 
-        apiService = RetrofitConnection.getApiService();
+        initService();
 
-        imgBack.setOnClickListener(v -> finish());
-        btnRegister.setOnClickListener(v -> doRegister());
         fakeData();
+        initEventClick();
     }
 
     private void setLoading(boolean isLoading) {
+        this.isLoading = isLoading;
+        edEmail.setFocusable(!isLoading);
+        edName.setFocusable(!isLoading);
+        edPhone.setFocusable(!isLoading);
+        edPass.setFocusable(!isLoading);
+        edRePass.setFocusable(!isLoading);
+        if (!isLoading) {
+            edEmail.setFocusableInTouchMode(true);
+            edName.setFocusableInTouchMode(true);
+            edPhone.setFocusableInTouchMode(true);
+            edPass.setFocusableInTouchMode(true);
+            edRePass.setFocusableInTouchMode(true);
+        }
         spinKitView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         btnRegister.setVisibility(isLoading ? View.GONE : View.VISIBLE);
     }
@@ -89,7 +100,10 @@ public class RegisterActivity extends AppCompatActivity {
             String phoneNumber = Objects.requireNonNull(edPhone.getText()).toString().trim();
             String password = Objects.requireNonNull(edPass.getText()).toString().trim();
             String rePassword = Objects.requireNonNull(edRePass.getText()).toString().trim();
-
+            if (!password.matches(rePassword)) {
+                showToast("2 password must matches");
+                return;
+            }
             Customer customer = new Customer(email, password, fullName, phoneNumber);
             Call<BaseResponse> registerCustomer = apiService.registerCustomer(customer);
             registerCustomer.enqueue(new Callback<BaseResponse>() {
@@ -113,7 +127,7 @@ public class RegisterActivity extends AppCompatActivity {
                             setLoading(false);
                         } else if (response.body().getStatusCode() == 400) {
                             Log.w(TAG, "onResponse400: " + response.body().getCode());
-                            String message = "";
+                            String message;
                             switch (response.body().getCode()) {
                                 case "auth/missing-email":
                                     message = "Missing email";
@@ -127,8 +141,9 @@ public class RegisterActivity extends AppCompatActivity {
                                 case "auth/email-exists":
                                     message = getString(R.string.email_exists);
                                     break;
+
                                 default:
-                                    message = "undefined";
+                                    message = response.body().getMessage();
                                     break;
                             }
                             MyDialog.gI().startDlgOK(RegisterActivity.this, message);
@@ -152,6 +167,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void fakeData() {
         edEmail.setText("vungnguyenn1001@gmail.com");
         edName.setText("Vững Nguyễn");
@@ -167,11 +183,14 @@ public class RegisterActivity extends AppCompatActivity {
         String password = Objects.requireNonNull(edPass.getText()).toString().trim();
         String rePassword = Objects.requireNonNull(edRePass.getText()).toString().trim();
         if (email.isEmpty() || fullName.isEmpty() || phoneNumber.isEmpty() || password.isEmpty() || rePassword.isEmpty()) {
+            showToast("Vui lòng không để trống!");
             return false;
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            edEmail.setError("Email không hợp lệ!", Drawable.createFromPath(""));
+//            edEmail.setError("Email không hợp lệ!");
+            showToast("Email không hợp lệ!");
             return false;
         } else if (!Patterns.PHONE.matcher(phoneNumber).matches()) {
+            showToast("Số điện thoại không hợp lệ");
             return false;
         } else if (!password.matches(rePassword)) {
             showToast("2 password must matches");
@@ -189,10 +208,32 @@ public class RegisterActivity extends AppCompatActivity {
         boolean isValid = checkInputForm();
         if (!isValid) {
             setLoading(false);
-            showToast("Điền hợp lệ!");
         } else {
             register();
         }
+    }
+
+    private void initService() {
+        apiService = RetrofitConnection.getApiService();
+    }
+
+    private void initEventClick() {
+        imgBack.setOnClickListener(v -> {
+            if (!isLoading) {
+                finish();
+            }
+        });
+        btnRegister.setOnClickListener(v -> {
+            if (!isLoading) {
+                doRegister();
+            }
+        });
+        tvLogin.setOnClickListener(v -> {
+            if (!isLoading) {
+                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                finishAffinity();
+            }
+        });
     }
 
     private void initUI() {
@@ -209,4 +250,6 @@ public class RegisterActivity extends AppCompatActivity {
         edRePass = binding.edRepass;
         tvLogin = binding.tvLogin;
     }
+
+
 }

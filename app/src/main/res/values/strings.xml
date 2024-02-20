@@ -16,4 +16,9 @@
     <string name="re_password">RePassword</string>
     <string name="login">Đăng nhập</string>
     <string name="had_account">Đã có tài khoản ?</string>
+    <string name="no_account">Chưa có tài khoản?</string>
+    <string name="remember_me">Remember me</string>
+    <string name="forget_pass">Quên mật khẩu</string>
+    <string name="otp_msg">Vui lòng nhập mã xác nhận để hoàn thành đăng nhập</string>
+    <string name="verify">Xác thực</string>
 </resources>

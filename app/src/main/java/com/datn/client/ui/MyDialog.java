@@ -2,6 +2,7 @@ package com.datn.client.ui;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.os.CountDownTimer;
 
 import com.datn.client.R;
 
@@ -14,6 +15,20 @@ public class MyDialog {
             instance = new MyDialog();
         }
         return instance;
+    }
+
+    private void startCountDown(long count, long step) {
+        new CountDownTimer(count, step) {
+
+            public void onTick(long millisUntilFinished) {
+                System.out.println(millisUntilFinished / 1000);
+            }
+
+            public void onFinish() {
+                System.out.println("done!");
+            }
+
+        }.start();
     }
 
     public void startDlgOK(Context context, String message) {

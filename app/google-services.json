@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "319265865910",
+    "project_id": "datn-13d57",
+    "storage_bucket": "datn-13d57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:319265865910:android:15b40733155a2e422da617",
+        "android_client_info": {
+          "package_name": "com.datn.client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4aFMWUqVD26f9dF16yrFxyP3_RIVsMYE"
+        },
+        {
+          "current_key": "AIzaSyCe5yd4aAoCxMhJrWYQf8VImJ_jOPLjgiI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:319265865910:android:aa440f8345913e6d2da617",
+        "android_client_info": {
+          "package_name": "com.datn.shopsale"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4aFMWUqVD26f9dF16yrFxyP3_RIVsMYE"
+        },
+        {
+          "current_key": "AIzaSyCe5yd4aAoCxMhJrWYQf8VImJ_jOPLjgiI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
