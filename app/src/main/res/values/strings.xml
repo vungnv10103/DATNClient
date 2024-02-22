@@ -19,4 +19,5 @@
     <string name="forget_pass">Quên mật khẩu</string>
     <string name="otp_msg">Vui lòng nhập mã xác nhận để hoàn thành đăng nhập</string>
     <string name="verify">Xác thực</string>
+    <string name="category">Danh mục</string>
 </resources>

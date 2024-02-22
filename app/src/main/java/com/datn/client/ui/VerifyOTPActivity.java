@@ -191,6 +191,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                     case "auth/login-success":
                                         saveLogin(response.body().getCustomer());
                                         String token = response.body().getToken();
+                                        preferenceManager.putString("token", token);
                                         addTokenFMC(token, response.body().getCustomer());
                                         break;
                                     case "auth/wrong-otp":

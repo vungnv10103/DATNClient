@@ -19,7 +19,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.datn.client.MainActivity;
 import com.datn.client.databinding.ActivityLoginBinding;
+import com.datn.client.models.Banner;
 import com.datn.client.models.Customer;
+import com.datn.client.response.BannerResponse;
 import com.datn.client.response.BaseResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.services.ApiService;
@@ -30,6 +32,7 @@ import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
+import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -89,8 +92,7 @@ public class LoginActivity extends AppCompatActivity {
             edEmail.setText(mCustomer.getEmail());
             edPass.setText(mCustomer.getPassword());
             checkLogin();
-        }
-        else {
+        } else {
             spinKitLoading.setVisibility(View.GONE);
             layoutLogin.setVisibility(View.VISIBLE);
         }
@@ -265,7 +267,9 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         btnLogin.setOnClickListener(v -> doLogin());
-        tvForgetPass.setOnClickListener(v -> showToast(String.valueOf(cbRemember.isChecked())));
+        tvForgetPass.setOnClickListener(v -> {
+
+        });
     }
 
     private void initUI() {
@@ -279,6 +283,5 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = binding.btnLogin;
         cbRemember = binding.cbRemember;
     }
-
 
 }
