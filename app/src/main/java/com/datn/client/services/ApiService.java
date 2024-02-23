@@ -5,6 +5,7 @@ import com.datn.client.response.BannerResponse;
 import com.datn.client.response.BaseResponse;
 import com.datn.client.response.CategoryResponse;
 import com.datn.client.response.CustomerResponse;
+import com.datn.client.response.ProductResponse;
 
 import java.util.Objects;
 
@@ -39,5 +40,13 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("/v1/api/category/get")
     Call<CategoryResponse> getCategory(@Header("Authorization") String token, @Field("customerID") String customerID);
+
+    @FormUrlEncoded
+    @POST("/v1/api/product/get")
+    Call<ProductResponse> getSellingProduct(@Header("Authorization") String token, @Field("customerID") String customerID);
+
+    @FormUrlEncoded
+    @POST("/v1/api/cart/get")
+    Call<ProductResponse> getCart(@Header("Authorization") String token, @Field("customerID") String customerID);
 
 }

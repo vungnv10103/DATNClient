@@ -79,10 +79,9 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(root);
         Objects.requireNonNull(getSupportActionBar()).hide();
         getOnBackPressedDispatcher().addCallback(this, callback);
+
         initUI();
-
         initService();
-
         initEventClick();
 
         boolean isRemember = preferenceManager.getBoolean("isRemember");

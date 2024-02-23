@@ -20,4 +20,9 @@
     <string name="otp_msg">Vui lòng nhập mã xác nhận để hoàn thành đăng nhập</string>
     <string name="verify">Xác thực</string>
     <string name="category">Danh mục</string>
+    <string name="selling_products">Sản phẩm bán chạy</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_cart">Cart</string>
+    <string name="press_back_again_to_exit">Nhấn back lần nữa để thoát!</string>
 </resources>
