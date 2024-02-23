@@ -3,6 +3,7 @@ package com.datn.client.services;
 import com.datn.client.models.Customer;
 import com.datn.client.response.BannerResponse;
 import com.datn.client.response.BaseResponse;
+import com.datn.client.response.CategoryResponse;
 import com.datn.client.response.CustomerResponse;
 
 import java.util.Objects;
@@ -34,5 +35,9 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("/v1/api/banner/get")
     Call<BannerResponse> getBanner(@Header("Authorization") String token, @Field("customerID") String customerID);
+
+    @FormUrlEncoded
+    @POST("/v1/api/category/get")
+    Call<CategoryResponse> getCategory(@Header("Authorization") String token, @Field("customerID") String customerID);
 
 }

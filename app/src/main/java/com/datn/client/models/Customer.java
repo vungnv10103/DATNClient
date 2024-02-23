@@ -1,16 +1,16 @@
 package com.datn.client.models;
 
-public class Customer {
-    private String _id;
+public class Customer extends BaseModel{
     private String avatar;
     private String email;
     private String password;
     private String full_name;
     private String phone_number;
     private String status;
-    private String create_time;
     private String otp;
     private String fcm;
+
+
 
     public Customer(String email, String password) {
         this.email = email;
@@ -18,7 +18,7 @@ public class Customer {
     }
 
     public Customer(String _id, String password, boolean _is) {
-        this._id = _id;
+        super(_id);
         this.password = password;
     }
 
@@ -29,13 +29,6 @@ public class Customer {
         this.phone_number = phone_number;
     }
 
-    public String get_id() {
-        return _id;
-    }
-
-    public void set_id(String _id) {
-        this._id = _id;
-    }
 
     public String getAvatar() {
         return avatar;
@@ -83,14 +76,6 @@ public class Customer {
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getCreate_time() {
-        return create_time;
-    }
-
-    public void setCreate_time(String create_time) {
-        this.create_time = create_time;
     }
 
     public String getOtp() {

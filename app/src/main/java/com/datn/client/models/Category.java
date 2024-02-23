@@ -1,17 +1,13 @@
 package com.datn.client.models;
 
-public class Category {
-    private String _id;
+public class Category extends BaseModel {
     private String name;
     private String image;
-    private String created_time;
 
-    public String get_id() {
-        return _id;
-    }
-
-    public void set_id(String _id) {
-        this._id = _id;
+    public Category(String _id, String name, String created_at, String image) {
+        super(_id, created_at);
+        this.name = name;
+        this.image = image;
     }
 
     public String getName() {
@@ -30,11 +26,4 @@ public class Category {
         this.image = image;
     }
 
-    public String getCreated_time() {
-        return created_time;
-    }
-
-    public void setCreated_time(String created_time) {
-        this.created_time = created_time;
-    }
 }

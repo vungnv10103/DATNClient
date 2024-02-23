@@ -14,33 +14,41 @@
         android:orientation="vertical">
 
         <RelativeLayout
-            android:id="@+id/rltSlideShow"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/vpg_slideshow"
                 android:layout_width="match_parent"
-                android:layout_height="200dp" />
+                android:layout_height="200dp"
+                android:paddingHorizontal="30dp" />
 
             <me.relex.circleindicator.CircleIndicator3
                 android:id="@+id/indicator"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
-                app:ci_drawable="@drawable/bg_indicator"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                app:ci_drawable="@drawable/bg_indicator" />
         </RelativeLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/category"
-            android:textSize="16sp"
-            android:layout_marginHorizontal="10dp"
-            android:layout_marginVertical="5dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
             android:fontFamily="@font/inter_bold"
-            android:textColor="@color/black" />
+            android:text="@string/category"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcv_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="25dp"
+            android:layout_marginVertical="10dp" />
     </LinearLayout>
 
 </ScrollView>

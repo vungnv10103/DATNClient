@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.datn.client.models.Banner;
 import com.datn.client.models.Category;
 import com.datn.client.response.BannerResponse;
+import com.datn.client.response.CategoryResponse;
 import com.datn.client.services.ApiService;
 
 import java.util.List;
@@ -50,6 +51,39 @@ public class HomePresenter {
 
                 @Override
                 public void onFailure(@NonNull Call<BannerResponse> call, @NonNull Throwable t) {
+                    iHomeView.onThrowMessage(t.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            Log.w(TAG, "getListBanner: " + e.getMessage());
+            iHomeView.onThrowMessage(e.getMessage());
+        }
+
+    }
+
+    public void getListCategory(String token, String customerID) {
+        try {
+            Call<CategoryResponse> getCategory = apiService.getCategory(token, customerID);
+            getCategory.enqueue(new Callback<CategoryResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
+                    if (response.body() != null) {
+                        if (response.body().getStatusCode() == 200) {
+                            Log.w(TAG, "onResponse200: " + response.body().getCode());
+                            List<Category> data = response.body().getCategories();
+                            iHomeView.onListCategory(data);
+                        } else if (response.body().getStatusCode() == 400) {
+                            Log.w(TAG, "onResponse400: " + response.body().getCode());
+                            iHomeView.onThrowMessage(response.body().getMessage());
+                        }
+                    } else {
+                        Log.w(TAG, "onResponse: " + response.toString());
+                        iHomeView.onThrowMessage("body null");
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
                     iHomeView.onThrowMessage(t.getMessage());
                 }
             });
