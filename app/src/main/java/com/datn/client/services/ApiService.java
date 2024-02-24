@@ -46,6 +46,12 @@ public interface ApiService {
     Call<ProductResponse> getSellingProduct(@Header("Authorization") String token, @Field("customerID") String customerID);
 
     @FormUrlEncoded
+    @POST("/v1/api/product/detail")
+    Call<ProductResponse> getDetailProduct(@Header("Authorization") String token,
+                                           @Field("customerID") String customerID,
+                                           @Field("productID") String productID);
+
+    @FormUrlEncoded
     @POST("/v1/api/cart/get")
     Call<ProductResponse> getCart(@Header("Authorization") String token, @Field("customerID") String customerID);
 

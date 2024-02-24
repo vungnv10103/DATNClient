@@ -25,4 +25,12 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_cart">Cart</string>
     <string name="press_back_again_to_exit">Nhấn back lần nữa để thoát!</string>
+    <string name="add_to_cart">Thêm vào giỏ hàng</string>
+    <string name="out_stock">Hết hàng</string>
+    <string name="buy_now">Mua ngay</string>
+    <string name="see_all">Xem tất cả</string>
+    <string name="default_rate">0.0/0</string>
+    <string name="default_review">0 Review</string>
+    <string name="quantity">Số lượng</string>
+    <string name="default_quantity">1</string>
 </resources>

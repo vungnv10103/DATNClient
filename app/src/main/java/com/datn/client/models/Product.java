@@ -12,6 +12,7 @@ public class Product extends BaseModel{
     private String status;
     private String color_code;
     private String img_cover;
+    private String video;
     private String price;
 
     public String getCategory_id() {
@@ -100,6 +101,14 @@ public class Product extends BaseModel{
 
     public void setImg_cover(String img_cover) {
         this.img_cover = img_cover;
+    }
+
+    public String getVideo() {
+        return video;
+    }
+
+    public void setVideo(String video) {
+        this.video = video;
     }
 
     public String getPrice() {

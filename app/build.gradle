@@ -33,7 +33,12 @@ android {
 }
 
 dependencies {
+    implementation "androidx.media3:media3-session:1.2.1"
+    implementation "androidx.media3:media3-exoplayer:1.2.1"
+    implementation "androidx.media3:media3-exoplayer-dash:1.2.1"
+    implementation "androidx.media3:media3-ui:1.2.1"
 
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.28'
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     implementation 'me.relex:circleindicator:2.1.6'
     implementation 'com.github.ybq:Android-SpinKit:1.4.0'

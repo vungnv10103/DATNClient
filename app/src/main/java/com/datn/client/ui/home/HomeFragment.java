@@ -18,7 +18,7 @@ import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.datn.client.activity.DetailProductActivity;
+import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.adapter.BannerAdapter;
 import com.datn.client.adapter.CategoryAdapter;
 import com.datn.client.adapter.ProductAdapter;
@@ -124,7 +124,9 @@ public class HomeFragment extends Fragment implements IHomeView {
         }
         requireActivity().runOnUiThread(() -> {
             ProductAdapter productAdapter = new ProductAdapter(getActivity(), mProductList, product -> {
-                startActivity(new Intent(requireActivity(), DetailProductActivity.class));
+                Intent intent = new Intent(requireActivity(), DetailProductActivity.class);
+                intent.putExtra("productID", product.get_id());
+                startActivity(intent);
             });
             rcvSellingProduct.setLayoutManager(new GridLayoutManager(getActivity(), 2));
             rcvSellingProduct.setAdapter(productAdapter);
