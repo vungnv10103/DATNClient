@@ -1,5 +1,6 @@
 package com.datn.client.services;
 
+import com.datn.client.models.Cart;
 import com.datn.client.models.Customer;
 import com.datn.client.response.BannerResponse;
 import com.datn.client.response.BaseResponse;
@@ -54,5 +55,8 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("/v1/api/cart/get")
     Call<ProductResponse> getCart(@Header("Authorization") String token, @Field("customerID") String customerID);
+
+    @POST("/v1/api/cart/add")
+    Call<BaseResponse> addToCart(@Header("Authorization") String token, @Body Cart cart);
 
 }

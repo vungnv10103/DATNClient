@@ -4,7 +4,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.datn.client.models.Cart;
 import com.datn.client.models.Product;
+import com.datn.client.response.BaseResponse;
 import com.datn.client.response.ProductResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.ui.home.HomePresenter;
@@ -57,6 +59,41 @@ public class ProductPresenter {
             });
         } catch (Exception e) {
             Log.w(TAG, "getDetailProduct: " + e.getMessage());
+            iProductView.onThrowMessage(e.getMessage());
+        }
+    }
+
+    public void addToCart(String productID, int quantity, String customerID, String notes) {
+        try {
+            Cart cart = new Cart(customerID, productID, quantity, 1, notes);
+            Call<BaseResponse> addToCart = apiService.addToCart(token, cart);
+            addToCart.enqueue(new Callback<BaseResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
+                    if (response.body() != null) {
+                        if (response.body().getStatusCode() == 200) {
+                            Log.w(TAG, "onResponse200: addToCart: " + response.body().getCode());
+                            iProductView.onThrowMessage(response.body().getCode());
+                        } else if (response.body().getStatusCode() == 400) {
+                            Log.w(TAG, "onResponse400: addToCart: " + response.body().getCode());
+                            iProductView.onThrowMessage(response.body().getCode());
+                        } else {
+                            Log.w(TAG, "onResponse: " + response.body().getCode());
+                            iProductView.onThrowMessage(response.body().getCode());
+                        }
+                    } else {
+                        Log.w(TAG, "onResponse: " + response);
+                        iProductView.onThrowMessage("body null");
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
+                    iProductView.onThrowMessage(t.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            Log.w(TAG, "addToCart: " + e.getMessage());
             iProductView.onThrowMessage(e.getMessage());
         }
     }

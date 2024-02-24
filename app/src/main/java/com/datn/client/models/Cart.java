@@ -7,6 +7,14 @@ public class Cart extends BaseModel {
     private int status;
     private String note;
 
+    public Cart(String customer_id, String product_id, int quantity, int status, String note) {
+        this.customer_id = customer_id;
+        this.product_id = product_id;
+        this.quantity = quantity;
+        this.status = status; // default = 1
+        this.note = note;
+    }
+
     public String getCustomer_id() {
         return customer_id;
     }

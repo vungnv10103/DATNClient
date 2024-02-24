@@ -5,7 +5,6 @@ public class BaseModel {
     private String created_at;
 
     public BaseModel() {
-
     }
 
     public BaseModel(String _id) {

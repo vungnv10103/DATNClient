@@ -28,7 +28,6 @@ import com.datn.client.models.Product;
 import com.datn.client.service.PlaybackService;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
-import com.datn.client.ui.ModalBottomSheet;
 import com.datn.client.ui.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
@@ -48,8 +47,9 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     private ActivityDetailProductBinding binding;
 
     private ProductPresenter productPresenter;
+    private ApiService apiService;
     private PreferenceManager preferenceManager;
-
+    public static AddToCartModalBS modalAddToCart;
 
     private LinearLayout layoutDetailProduct;
     private SpinKitView spinKitDetail, spinKitVideo;
@@ -173,7 +173,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     }
 
     private void initService() {
-        ApiService apiService = RetrofitConnection.getApiService();
+        apiService = RetrofitConnection.getApiService();
         productPresenter = new ProductPresenter(this, apiService, mToken, mCustomer.get_id());
     }
 
@@ -184,8 +184,8 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
         btnBuyNow.setOnClickListener(v -> {
         });
         btnAddToCart.setOnClickListener(v -> {
-            ModalBottomSheet modalBottomSheet = new ModalBottomSheet();
-            modalBottomSheet.show(getSupportFragmentManager(), ModalBottomSheet.TAG);
+            modalAddToCart = new AddToCartModalBS(apiService, mToken, mCustomer.get_id());
+            modalAddToCart.show(getSupportFragmentManager(), AddToCartModalBS.TAG);
         });
     }
 
