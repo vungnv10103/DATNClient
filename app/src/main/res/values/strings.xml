@@ -33,4 +33,7 @@
     <string name="default_review">0 Review</string>
     <string name="quantity">Số lượng</string>
     <string name="default_quantity">1</string>
+    <string name="delete">Xoá</string>
+    <string name="go_shop">Tới shop</string>
+    <string name="search_hint">Enter text to search</string>
 </resources>

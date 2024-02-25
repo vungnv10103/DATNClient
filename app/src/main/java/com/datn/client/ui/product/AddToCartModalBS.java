@@ -77,7 +77,7 @@ public class AddToCartModalBS extends BottomSheetDialogFragment implements IProd
         btnAddToCart.setOnClickListener(v -> {
             int quantity = Integer.parseInt(tvQuantity.getText().toString().trim());
             String notes = ""; // custom note
-            productPresenter.addToCart(mProduct.get_id(), quantity, customerID, notes);
+            productPresenter.addToCart(mProduct.get_id(), quantity, notes);
         });
         btnMinus.setOnClickListener(v -> setBtnMinus());
         btnPlus.setOnClickListener(v -> setBtnPlus());

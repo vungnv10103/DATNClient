@@ -20,10 +20,16 @@ import retrofit2.Response;
 
 public class HomePresenter {
     private static final String TAG = HomePresenter.class.getSimpleName();
+    private boolean isSuccess = false;
+
     private final IHomeView iHomeView;
     private final ApiService apiService;
     private final String token;
     private final String customerID;
+
+    private Call<BannerResponse> getBanner;
+    private Call<CategoryResponse> getCategory;
+    private Call<ProductResponse> getSellingProduct;
 
     public HomePresenter(IHomeView iHomeView, ApiService apiService, String token, String customerID) {
         this.iHomeView = iHomeView;
@@ -34,28 +40,36 @@ public class HomePresenter {
 
     public void getListBanner() {
         try {
-            Call<BannerResponse> getBanner = apiService.getBanner(token, customerID);
+            getBanner = apiService.getBanner(token, customerID);
             getBanner.enqueue(new Callback<BannerResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<BannerResponse> call, @NonNull Response<BannerResponse> response) {
                     if (response.body() != null) {
-                        if (response.body().getStatusCode() == 200) {
-                            Log.w(TAG, "onResponse200: " + response.body().getCode());
+                        int statusCode = response.body().getStatusCode();
+                        String code = response.body().getCode();
+                        if (statusCode == 200) {
+                            isSuccess = true;
+                            Log.w(TAG, "onResponse200: " + code);
                             List<Banner> data = response.body().getBanners();
                             iHomeView.onListBanner(data);
-                        } else if (response.body().getStatusCode() == 400) {
-                            Log.w(TAG, "onResponse400: " + response.body().getCode());
-                            iHomeView.onThrowMessage(response.body().getMessage());
+                        } else if (statusCode == 400) {
+                            if (code.equals("auth/wrong-token")) {
+                                iHomeView.onFinish();
+                            } else {
+                                Log.w(TAG, "onResponse400: " + code);
+                                iHomeView.onThrowMessage(response.body().getMessage());
+                            }
+
                         }
                     } else {
-                        Log.w(TAG, "onResponse: " + response);
-                        iHomeView.onThrowMessage("body null");
+                        Log.w(TAG, "onResponse: " + response.message());
+                        iHomeView.onThrowMessage(response.toString());
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<BannerResponse> call, @NonNull Throwable t) {
-                    iHomeView.onThrowMessage(t.getMessage());
+                    iHomeView.onThrowMessage(t.getMessage() + "getListBanner");
                 }
             });
         } catch (Exception e) {
@@ -66,18 +80,25 @@ public class HomePresenter {
 
     public void getListCategory() {
         try {
-            Call<CategoryResponse> getCategory = apiService.getCategory(token, customerID);
+            getCategory = apiService.getCategory(token, customerID);
             getCategory.enqueue(new Callback<CategoryResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
                     if (response.body() != null) {
-                        if (response.body().getStatusCode() == 200) {
-                            Log.w(TAG, "onResponse200: " + response.body().getCode());
+                        int statusCode = response.body().getStatusCode();
+                        String code = response.body().getCode();
+                        if (statusCode == 200) {
+                            isSuccess = true;
+                            Log.w(TAG, "onResponse200: " + code);
                             List<Category> data = response.body().getCategories();
                             iHomeView.onListCategory(data);
-                        } else if (response.body().getStatusCode() == 400) {
-                            Log.w(TAG, "onResponse400: " + response.body().getCode());
-                            iHomeView.onThrowMessage(response.body().getMessage());
+                        } else if (statusCode == 400) {
+                            if (code.equals("auth/wrong-token")) {
+                                iHomeView.onFinish();
+                            } else {
+                                Log.w(TAG, "onResponse400: " + code);
+                                iHomeView.onThrowMessage(response.body().getMessage());
+                            }
                         }
                     } else {
                         Log.w(TAG, "onResponse: getListCategory: " + response);
@@ -87,7 +108,7 @@ public class HomePresenter {
 
                 @Override
                 public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
-                    iHomeView.onThrowMessage(t.getMessage());
+                    iHomeView.onThrowMessage(t.getMessage() + "getListCategory");
                 }
             });
         } catch (Exception e) {
@@ -98,18 +119,25 @@ public class HomePresenter {
 
     public void getListSellingProduct() {
         try {
-            Call<ProductResponse> getSellingProduct = apiService.getSellingProduct(token, customerID);
+            getSellingProduct = apiService.getSellingProduct(token, customerID);
             getSellingProduct.enqueue(new Callback<ProductResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<ProductResponse> call, @NonNull Response<ProductResponse> response) {
                     if (response.body() != null) {
-                        if (response.body().getStatusCode() == 200) {
-                            Log.w(TAG, "onResponse200: " + response.body().getCode());
+                        int statusCode = response.body().getStatusCode();
+                        String code = response.body().getCode();
+                        if (statusCode == 200) {
+                            isSuccess = true;
+                            Log.w(TAG, "onResponse200: " + code);
                             List<Product> data = response.body().getProducts();
                             iHomeView.onListSellingProduct(data);
-                        } else if (response.body().getStatusCode() == 400) {
-                            Log.w(TAG, "onResponse400: " + response.body().getCode());
-                            iHomeView.onThrowMessage(response.body().getMessage());
+                        } else if (statusCode == 400) {
+                            if (code.equals("auth/wrong-token")) {
+                                iHomeView.onFinish();
+                            } else {
+                                Log.w(TAG, "onResponse400: " + code);
+                                iHomeView.onThrowMessage(response.body().getMessage());
+                            }
                         }
                     } else {
                         Log.w(TAG, "onResponse: getListSellingProduct: " + response);
@@ -119,7 +147,7 @@ public class HomePresenter {
 
                 @Override
                 public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
-                    iHomeView.onThrowMessage(t.getMessage());
+                    iHomeView.onThrowMessage(t.getMessage() + "getListSellingProduct");
                 }
             });
         } catch (Exception e) {
@@ -127,4 +155,5 @@ public class HomePresenter {
             iHomeView.onThrowMessage(e.getMessage());
         }
     }
+
 }

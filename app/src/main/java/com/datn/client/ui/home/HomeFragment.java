@@ -18,7 +18,6 @@ import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.adapter.BannerAdapter;
 import com.datn.client.adapter.CategoryAdapter;
 import com.datn.client.adapter.ProductAdapter;
@@ -29,7 +28,9 @@ import com.datn.client.models.Customer;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
+import com.datn.client.ui.LoginActivity;
 import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.github.ybq.android.spinkit.SpinKitView;
@@ -63,6 +64,7 @@ public class HomeFragment extends Fragment implements IHomeView {
     private List<Category> mCategoryList;
     private List<Product> mProductList;
 
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
@@ -81,6 +83,8 @@ public class HomeFragment extends Fragment implements IHomeView {
         homePresenter.getListBanner();
         homePresenter.getListCategory();
         homePresenter.getListSellingProduct();
+
+
     }
 
     private void displayBanner() {
@@ -88,9 +92,12 @@ public class HomeFragment extends Fragment implements IHomeView {
             showToast("No banner");
             return;
         }
-        BannerAdapter adapterSlideShow = new BannerAdapter(getContext(), mBannerList, banner -> showToast(banner.get_id()));
-        vpgBanner.setAdapter(adapterSlideShow);
-        animationSlideShow();
+        requireActivity().runOnUiThread(() -> {
+            BannerAdapter adapterSlideShow = new BannerAdapter(getContext(), mBannerList, banner -> showToast(banner.get_id()));
+            vpgBanner.setAdapter(adapterSlideShow);
+            animationSlideShow();
+        });
+
     }
 
     private void displayCategory() {
@@ -170,9 +177,20 @@ public class HomeFragment extends Fragment implements IHomeView {
         onSellingProductLoaded();
     }
 
+    public void switchToLogin() {
+        preferenceManager.clear();
+        startActivity(new Intent(requireActivity(), LoginActivity.class));
+        requireActivity().finishAffinity();
+    }
+
     @Override
-    public void onThrowMessage(String message) {
+    public void onThrowMessage(@NonNull String message) {
         MyDialog.gI().startDlgOK(requireActivity(), message);
+    }
+
+    @Override
+    public void onFinish() {
+        switchToLogin();
     }
 
     private void checkLogin() {
@@ -259,5 +277,11 @@ public class HomeFragment extends Fragment implements IHomeView {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        switchToLogin();
     }
 }

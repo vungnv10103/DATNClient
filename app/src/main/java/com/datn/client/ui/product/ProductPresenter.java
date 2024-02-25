@@ -63,7 +63,7 @@ public class ProductPresenter {
         }
     }
 
-    public void addToCart(String productID, int quantity, String customerID, String notes) {
+    public void addToCart(String productID, int quantity, String notes) {
         try {
             Cart cart = new Cart(customerID, productID, quantity, 1, notes);
             Call<BaseResponse> addToCart = apiService.addToCart(token, cart);

@@ -1,6 +1,5 @@
 package com.datn.client.ui.product;
 
-import android.content.ComponentName;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,14 +17,11 @@ import androidx.media3.common.PlaybackException;
 import androidx.media3.common.Player;
 import androidx.media3.datasource.HttpDataSource;
 import androidx.media3.exoplayer.ExoPlayer;
-import androidx.media3.session.MediaController;
-import androidx.media3.session.SessionToken;
 import androidx.media3.ui.PlayerView;
 
 import com.datn.client.databinding.ActivityDetailProductBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.Product;
-import com.datn.client.service.PlaybackService;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.MyDialog;
@@ -33,12 +29,9 @@ import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.datn.client.utils.PreferenceManager;
 import com.github.ybq.android.spinkit.SpinKitView;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.gson.Gson;
 
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 import pl.droidsonroids.gif.GifImageView;
 
@@ -112,7 +105,6 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
         player.setMediaItem(mediaItem);
         player.prepare();
         handlePlayer();
-        //initSession();
         displayVideo();
     }
 
@@ -227,23 +219,6 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
                 }
             }
         });
-    }
-
-    private void initSession() {
-        SessionToken sessionToken =
-                new SessionToken(this, new ComponentName(this, PlaybackService.class));
-        ListenableFuture<MediaController> controllerFuture =
-                new MediaController.Builder(this, sessionToken).buildAsync();
-        controllerFuture.addListener(() -> {
-            // Call controllerFuture.get() to retrieve the MediaController.
-            // MediaController implements the Player interface, so it can be
-            // attached to the PlayerView UI component.
-            try {
-                playerView.setPlayer(controllerFuture.get());
-            } catch (ExecutionException | InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }, MoreExecutors.directExecutor());
     }
 
     @Override

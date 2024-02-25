@@ -14,4 +14,6 @@ public interface IHomeView {
     void onListSellingProduct(List<Product> productList);
 
     void onThrowMessage(String message);
+
+    void onFinish();
 }

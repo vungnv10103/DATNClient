@@ -6,9 +6,8 @@ import com.datn.client.response.BannerResponse;
 import com.datn.client.response.BaseResponse;
 import com.datn.client.response.CategoryResponse;
 import com.datn.client.response.CustomerResponse;
+import com.datn.client.response.ProductCartResponse;
 import com.datn.client.response.ProductResponse;
-
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -53,10 +52,18 @@ public interface ApiService {
                                            @Field("productID") String productID);
 
     @FormUrlEncoded
-    @POST("/v1/api/cart/get")
-    Call<ProductResponse> getCart(@Header("Authorization") String token, @Field("customerID") String customerID);
+    @POST("/v1/api/cart/get/customer")
+    Call<ProductCartResponse> getCart(@Header("Authorization") String token, @Field("customerID") String customerID);
 
     @POST("/v1/api/cart/add")
     Call<BaseResponse> addToCart(@Header("Authorization") String token, @Body Cart cart);
+
+    @FormUrlEncoded
+    @POST("/v1/api/cart/update/quantity")
+    Call<ProductCartResponse> updateQuantity(@Header("Authorization") String token,
+                                      @Field("customerID") String customerID,
+                                      @Field("type") String type,
+                                      @Field("quantity") int quantity,
+                                      @Field("cartID") String cartID);
 
 }

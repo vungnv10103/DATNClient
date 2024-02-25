@@ -5,7 +5,5 @@ public class Constants {
     public static final String URL_API2 = "https://stech-993p.onrender.com";
 
     public static final String KEY_PREFERENCE_ACC = "logged_acc";
-    public static final String KEY_EMAIL = "email";
-    public static final String KEY_PASS = "pass";
     public static final String KEY_REMEMBER = "remember";
 }
