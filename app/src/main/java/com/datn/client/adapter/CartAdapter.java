@@ -6,6 +6,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,6 +42,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         this.iCartView = iCartView;
     }
 
+    public void updateCart(int position, String quantity) {
+        ProductCart productCart = productCarts.get(position);
+        productCart.setQuantity_cart(quantity);
+        notifyItemChanged(position);
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -58,20 +65,20 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         int priceOne = Integer.parseInt(productCart.getPrice());
         holder.tvPrice.setText(Currency.formatCurrency(String.valueOf(priceOne * quantityCart)));
         holder.tvQuantity.setText(String.valueOf(quantityCart));
+        holder.tvOptions.setText(productCart.getCreated_at());
 
 
         if (quantityCart <= 1) {
             holder.btnMinus.setIconTintResource(R.color.gray_400);
-        } else {
-            holder.btnMinus.setIconTintResource(R.color.big_stone);
-            holder.btnMinus.setOnClickListener(v -> iCartView.onUpdateQuantity(productCart.get_id(), position, "minus", 1));
-        }
-        if (quantityCart >= Math.min(quantityProduct, 20)) {
-            holder.btnPlus.setIconTintResource(R.color.gray_400);
-        } else {
             holder.btnPlus.setIconTintResource(R.color.big_stone);
-            holder.btnPlus.setOnClickListener(v -> iCartView.onUpdateQuantity(productCart.get_id(), position, "plus", 1));
+
+        } else if (quantityCart >= Math.min(quantityProduct, 20)) {
+            holder.btnMinus.setIconTintResource(R.color.big_stone);
+            holder.btnPlus.setIconTintResource(R.color.gray_400);
+
         }
+        holder.btnPlus.setOnClickListener(v -> iCartView.onUpdateQuantity(productCart.get_id(), position, "plus", 1));
+        holder.btnMinus.setOnClickListener(v -> iCartView.onUpdateQuantity(productCart.get_id(), position, "minus", 1));
 
         holder.setAnimationText();
         holder.setSwipeLayout();
@@ -92,8 +99,9 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         private final LinearLayout dragLayout;
         private final ConstraintLayout layoutCart;
         private final ImageView imgProduct;
-        private final TextView tvName, tvQuantity, tvPrice, tv_go_shop, tv_delete, tv_buy_now;
+        private final TextView tvName, tvQuantity, tvPrice, tvOptions, tv_go_shop, tv_delete, tv_buy_now;
         private final MaterialButton btnMinus, btnPlus;
+        private final CheckBox cbSelected;
 
 
         public ViewHolder(@NonNull View itemView) {
@@ -106,11 +114,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             tvName = itemView.findViewById(R.id.tv_name);
             tvQuantity = itemView.findViewById(R.id.tv_quantity);
             tvPrice = itemView.findViewById(R.id.tv_price);
+            tvOptions = itemView.findViewById(R.id.tv_options);
             tv_go_shop = itemView.findViewById(R.id.tv_go_shop);
             tv_delete = itemView.findViewById(R.id.tv_delete);
             tv_buy_now = itemView.findViewById(R.id.tv_buy_now);
             btnMinus = itemView.findViewById(R.id.btn_minus);
             btnPlus = itemView.findViewById(R.id.btn_plus);
+            cbSelected = itemView.findViewById(R.id.cb_selected);
         }
 
         private void setAnimationText() {
@@ -169,7 +179,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                 @Override
                 public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
                     //when user's hand released.
-                    System.out.println("onHandRelease");
+                    System.out.println(cbSelected.isChecked());
                 }
             });
         }

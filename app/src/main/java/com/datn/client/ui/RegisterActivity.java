@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.datn.client.databinding.ActivityRegisterBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.response.BaseResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;

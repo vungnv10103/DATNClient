@@ -4,7 +4,7 @@ import com.datn.client.models.Category;
 
 import java.util.List;
 
-public class CategoryResponse extends BaseResponse {
+public class CategoryResponse extends _BaseResponse {
     private List<Category> categories;
 
     public List<Category> getCategories() {

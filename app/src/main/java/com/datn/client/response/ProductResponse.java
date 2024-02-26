@@ -4,7 +4,7 @@ import com.datn.client.models.Product;
 
 import java.util.List;
 
-public class ProductResponse extends BaseResponse {
+public class ProductResponse extends _BaseResponse {
     private List<Product> products;
 
     public List<Product> getProducts() {

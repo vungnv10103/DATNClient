@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class ApiManager {
-    private final ExecutorService executor = Executors.newFixedThreadPool(3);
+    private final ExecutorService executor = Executors.newFixedThreadPool(3); // TODO number
 
     private void goToLoginScreen() {
 

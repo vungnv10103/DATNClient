@@ -1,6 +1,6 @@
 package com.datn.client.models;
 
-public class ProductCart extends BaseModel {
+public class ProductCart extends _BaseModel {
 
     private String name;
     private String image;

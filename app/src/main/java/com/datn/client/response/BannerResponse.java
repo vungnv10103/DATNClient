@@ -4,7 +4,7 @@ import com.datn.client.models.Banner;
 
 import java.util.List;
 
-public class BannerResponse extends BaseResponse {
+public class BannerResponse extends _BaseResponse {
     private List<Banner> banners;
 
     public List<Banner> getBanners() {

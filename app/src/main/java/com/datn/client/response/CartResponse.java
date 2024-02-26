@@ -5,7 +5,7 @@ import com.datn.client.models.Product;
 
 import java.util.List;
 
-public class CartResponse extends BaseResponse {
+public class CartResponse extends _BaseResponse {
     private List<Cart> carts;
     private List<Product> products;
 

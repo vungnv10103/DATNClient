@@ -1,6 +1,6 @@
 package com.datn.client.models;
 
-public class Customer extends BaseModel{
+public class Customer extends _BaseModel {
     private String avatar;
     private String email;
     private String password;

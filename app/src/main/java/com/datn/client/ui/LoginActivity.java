@@ -3,7 +3,6 @@ package com.datn.client.ui;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -19,10 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.datn.client.MainActivity;
 import com.datn.client.databinding.ActivityLoginBinding;
-import com.datn.client.models.Banner;
 import com.datn.client.models.Customer;
-import com.datn.client.response.BannerResponse;
-import com.datn.client.response.BaseResponse;
+import com.datn.client.response._BaseResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
@@ -32,7 +29,6 @@ import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
-import java.util.List;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -99,10 +95,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void checkLogin() {
         setLoading(true);
-        Call<BaseResponse> checkLogin = apiService.checkLogin(mCustomer);
-        checkLogin.enqueue(new Callback<BaseResponse>() {
+        Call<_BaseResponse> checkLogin = apiService.checkLogin(mCustomer);
+        checkLogin.enqueue(new Callback<_BaseResponse>() {
             @Override
-            public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
+            public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
                 runOnUiThread(() -> {
                     if (response.body() != null) {
                         if (response.body().getStatusCode() == 200) {
@@ -134,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
                 runOnUiThread(() -> {
                     MyDialog.gI().startDlgOK(LoginActivity.this, t.getMessage());
                     setLoading(false);

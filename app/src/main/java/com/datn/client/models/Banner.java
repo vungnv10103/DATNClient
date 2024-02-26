@@ -1,8 +1,6 @@
 package com.datn.client.models;
 
-import androidx.annotation.NonNull;
-
-public class Banner extends BaseModel {
+public class Banner extends _BaseModel {
 
     private String creator_id;
     private String url;

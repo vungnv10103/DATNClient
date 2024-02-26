@@ -23,6 +23,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
 
+import java.util.List;
+
 public class AddToCartModalBS extends BottomSheetDialogFragment implements IProductView {
     private BottomsheetAddToCartBinding binding;
     public static final String TAG = "AddToCartBottomSheet";
@@ -135,7 +137,7 @@ public class AddToCartModalBS extends BottomSheetDialogFragment implements IProd
     }
 
     @Override
-    public void onLoadProduct(Product product) {
+    public void onLoadProduct(List<Product> productList) {
 
     }
 

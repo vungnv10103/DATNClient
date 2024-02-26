@@ -31,6 +31,7 @@ import com.datn.client.utils.PreferenceManager;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.gson.Gson;
 
+import java.util.List;
 import java.util.Objects;
 
 import pl.droidsonroids.gif.GifImageView;
@@ -123,8 +124,8 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
 
 
     @Override
-    public void onLoadProduct(Product product) {
-        mProduct = product;
+    public void onLoadProduct(@NonNull List<Product> productList) {
+        mProduct = productList.get(0);
         onProductLoaded();
     }
 

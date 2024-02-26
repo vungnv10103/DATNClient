@@ -3,7 +3,7 @@ package com.datn.client.services;
 import com.datn.client.models.Cart;
 import com.datn.client.models.Customer;
 import com.datn.client.response.BannerResponse;
-import com.datn.client.response.BaseResponse;
+import com.datn.client.response._BaseResponse;
 import com.datn.client.response.CategoryResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.response.ProductCartResponse;
@@ -24,13 +24,13 @@ public interface ApiService {
     Call<CustomerResponse> loginCustomer(@Body Customer customer);
 
     @POST("/v1/api/customer/login/check")
-    Call<BaseResponse> checkLogin(@Body Customer customer);
+    Call<_BaseResponse> checkLogin(@Body Customer customer);
 
     @POST("/v1/api/customer/login/verify")
     Call<CustomerResponse> verify(@Body Customer customer);
 
     @POST("/v1/api/customer/add/fcm")
-    Call<BaseResponse> addFCM(@Header("Authorization") String token, @Body Customer customer);
+    Call<_BaseResponse> addFCM(@Header("Authorization") String token, @Body Customer customer);
 
 
     @FormUrlEncoded
@@ -46,6 +46,12 @@ public interface ApiService {
     Call<ProductResponse> getSellingProduct(@Header("Authorization") String token, @Field("customerID") String customerID);
 
     @FormUrlEncoded
+    @POST("/v1/api/product/get/category")
+    Call<ProductResponse> getProductByCateID(@Header("Authorization") String token,
+                                             @Field("customerID") String customerID,
+                                             @Field("categoryID") String categoryID);
+
+    @FormUrlEncoded
     @POST("/v1/api/product/detail")
     Call<ProductResponse> getDetailProduct(@Header("Authorization") String token,
                                            @Field("customerID") String customerID,
@@ -56,14 +62,14 @@ public interface ApiService {
     Call<ProductCartResponse> getCart(@Header("Authorization") String token, @Field("customerID") String customerID);
 
     @POST("/v1/api/cart/add")
-    Call<BaseResponse> addToCart(@Header("Authorization") String token, @Body Cart cart);
+    Call<_BaseResponse> addToCart(@Header("Authorization") String token, @Body Cart cart);
 
     @FormUrlEncoded
     @POST("/v1/api/cart/update/quantity")
     Call<ProductCartResponse> updateQuantity(@Header("Authorization") String token,
-                                      @Field("customerID") String customerID,
-                                      @Field("type") String type,
-                                      @Field("quantity") int quantity,
-                                      @Field("cartID") String cartID);
+                                             @Field("customerID") String customerID,
+                                             @Field("type") String type,
+                                             @Field("quantity") int quantity,
+                                             @Field("cartID") String cartID);
 
 }

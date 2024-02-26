@@ -1,17 +1,17 @@
 package com.datn.client.models;
 
-public class BaseModel {
+public class _BaseModel {
     private String _id;
     private String created_at;
 
-    public BaseModel() {
+    public _BaseModel() {
     }
 
-    public BaseModel(String _id) {
+    public _BaseModel(String _id) {
         this._id = _id;
     }
 
-    public BaseModel(String _id, String created_at) {
+    public _BaseModel(String _id, String created_at) {
         this._id = _id;
         this.created_at = created_at;
     }

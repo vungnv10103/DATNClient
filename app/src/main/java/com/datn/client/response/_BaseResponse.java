@@ -1,6 +1,6 @@
 package com.datn.client.response;
 
-public class BaseResponse {
+public class _BaseResponse {
     private String message;
     private int statusCode;
     private String code;

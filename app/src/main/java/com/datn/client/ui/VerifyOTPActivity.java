@@ -18,7 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.datn.client.MainActivity;
 import com.datn.client.databinding.ActivityVerifyOtpactivityBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.response.BaseResponse;
+import com.datn.client.response._BaseResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
@@ -125,10 +125,10 @@ public class VerifyOTPActivity extends AppCompatActivity {
         String fcm = preferenceManager.getString("fcm");
         Customer customer = new Customer(cus.get_id(), cus.getPassword(), false);
         customer.setFcm(fcm);
-        Call<BaseResponse> addFCM = apiService.addFCM(token, customer);
-        addFCM.enqueue(new Callback<BaseResponse>() {
+        Call<_BaseResponse> addFCM = apiService.addFCM(token, customer);
+        addFCM.enqueue(new Callback<_BaseResponse>() {
             @Override
-            public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
+            public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
                 runOnUiThread(() -> {
                     if (response.body() != null) {
                         Log.w(TAG, "onResponse200: " + response.body().getCode());
@@ -155,7 +155,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
                 runOnUiThread(() -> {
                     MyDialog.gI().startDlgOK(VerifyOTPActivity.this, t.getMessage());
                     setLoading(false);

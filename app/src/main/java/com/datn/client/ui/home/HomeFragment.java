@@ -31,6 +31,7 @@ import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.LoginActivity;
 import com.datn.client.ui.MyDialog;
 import com.datn.client.ui.product.DetailProductActivity;
+import com.datn.client.ui.product.ListProductActivity;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.github.ybq.android.spinkit.SpinKitView;
@@ -118,7 +119,11 @@ public class HomeFragment extends Fragment implements IHomeView {
                     }
                 }
             }
-            CategoryAdapter categoryAdapter = new CategoryAdapter(getActivity(), mCategoryList, category -> showToast(category.getCreated_at()));
+            CategoryAdapter categoryAdapter = new CategoryAdapter(getActivity(), mCategoryList, category -> {
+                Intent intent = new Intent(requireActivity(), ListProductActivity.class);
+                intent.putExtra("categoryID", category.get_id());
+                startActivity(intent);
+            });
             rcvCategory.setLayoutManager(new GridLayoutManager(getActivity(), 4));
             rcvCategory.setAdapter(categoryAdapter);
         });

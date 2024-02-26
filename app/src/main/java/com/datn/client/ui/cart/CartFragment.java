@@ -2,7 +2,6 @@ package com.datn.client.ui.cart;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -101,9 +99,14 @@ public class CartFragment extends Fragment implements ICartView {
     }
 
     @Override
-    public void onThrowMessage(String message) {
+    public void onThrowMessage(@NonNull String message) {
         setLoading(false);
-        MyDialog.gI().startDlgOK(requireActivity(), message);
+        if (message.startsWith("cart/update-quantity-success")) {
+            String quantity = message.split(":")[1];
+            cartAdapter.updateCart(posCartSelected, quantity);
+        } else {
+            MyDialog.gI().startDlgOK(requireActivity(), message);
+        }
     }
 
     @Override

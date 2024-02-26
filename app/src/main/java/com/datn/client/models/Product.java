@@ -1,6 +1,6 @@
 package com.datn.client.models;
 
-public class Product extends BaseModel{
+public class Product extends _BaseModel {
     private String category_id;
     private String name;
     private String ram;

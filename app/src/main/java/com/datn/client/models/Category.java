@@ -1,6 +1,6 @@
 package com.datn.client.models;
 
-public class Category extends BaseModel {
+public class Category extends _BaseModel {
     private String name;
     private String image;
 

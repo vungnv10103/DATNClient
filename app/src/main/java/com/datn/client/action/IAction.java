@@ -1,7 +1,7 @@
 package com.datn.client.action;
 
-import com.datn.client.models.BaseModel;
+import com.datn.client.models._BaseModel;
 
 public interface IAction {
-    void onClick(BaseModel baseModel);
+    void onClick(_BaseModel baseModel);
 }

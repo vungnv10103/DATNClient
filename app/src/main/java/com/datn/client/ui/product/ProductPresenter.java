@@ -6,11 +6,12 @@ import androidx.annotation.NonNull;
 
 import com.datn.client.models.Cart;
 import com.datn.client.models.Product;
-import com.datn.client.response.BaseResponse;
+import com.datn.client.response._BaseResponse;
 import com.datn.client.response.ProductResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.ui.home.HomePresenter;
-import com.datn.client.ui.home.IHomeView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,7 +41,9 @@ public class ProductPresenter {
                         if (response.body().getStatusCode() == 200) {
                             Log.w(TAG, "onResponse200: getDetailProduct: " + response.body().getCode());
                             Product product = response.body().getProducts().get(0);
-                            iProductView.onLoadProduct(product);
+                            List<Product> data = new ArrayList<>();
+                            data.add(product);
+                            iProductView.onLoadProduct(data);
                         } else if (response.body().getStatusCode() == 400) {
                             Log.w(TAG, "onResponse400: getDetailProduct: " + response.body().getCode());
                         } else {
@@ -66,10 +69,10 @@ public class ProductPresenter {
     public void addToCart(String productID, int quantity, String notes) {
         try {
             Cart cart = new Cart(customerID, productID, quantity, 1, notes);
-            Call<BaseResponse> addToCart = apiService.addToCart(token, cart);
-            addToCart.enqueue(new Callback<BaseResponse>() {
+            Call<_BaseResponse> addToCart = apiService.addToCart(token, cart);
+            addToCart.enqueue(new Callback<_BaseResponse>() {
                 @Override
-                public void onResponse(@NonNull Call<BaseResponse> call, @NonNull Response<BaseResponse> response) {
+                public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
                     if (response.body() != null) {
                         if (response.body().getStatusCode() == 200) {
                             Log.w(TAG, "onResponse200: addToCart: " + response.body().getCode());
@@ -88,12 +91,47 @@ public class ProductPresenter {
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<BaseResponse> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
                     iProductView.onThrowMessage(t.getMessage());
                 }
             });
         } catch (Exception e) {
             Log.w(TAG, "addToCart: " + e.getMessage());
+            iProductView.onThrowMessage(e.getMessage());
+        }
+    }
+
+    public void getProductByCateID(String categoryID) {
+        try {
+            Call<ProductResponse> getProductByCateID = apiService.getProductByCateID(token, customerID, categoryID);
+            getProductByCateID.enqueue(new Callback<ProductResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<ProductResponse> call, @NonNull Response<ProductResponse> response) {
+                    if (response.body() != null) {
+                        if (response.body().getStatusCode() == 200) {
+                            Log.w(TAG, "onResponse200: getProductByCateID: " + response.body().getCode());
+                            List<Product> dataProduct = response.body().getProducts();
+                            iProductView.onLoadProduct(dataProduct);
+                        } else if (response.body().getStatusCode() == 400) {
+                            Log.w(TAG, "onResponse400: getProductByCateID: " + response.body().getCode());
+                            iProductView.onThrowMessage(response.body().getCode());
+                        } else {
+                            Log.w(TAG, "onResponse: " + response.body().getCode());
+                            iProductView.onThrowMessage(response.body().getCode());
+                        }
+                    } else {
+                        Log.w(TAG, "onResponse: " + response);
+                        iProductView.onThrowMessage("body null");
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
+                    iProductView.onThrowMessage(t.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            Log.w(TAG, "getProductByCateID: " + e.getMessage());
             iProductView.onThrowMessage(e.getMessage());
         }
     }
