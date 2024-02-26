@@ -17,7 +17,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+
 public class ProductPresenter {
+
     private static final String TAG = ProductPresenter.class.getSimpleName();
     private final IProductView iProductView;
     private final ApiService apiService;
@@ -68,7 +70,7 @@ public class ProductPresenter {
 
     public void addToCart(String productID, int quantity, String notes) {
         try {
-            Cart cart = new Cart(customerID, productID, quantity, 1, notes);
+            Cart cart = new Cart(customerID, productID, quantity, STATUS_CART.DEFAULT.getValue(), notes);
             Call<_BaseResponse> addToCart = apiService.addToCart(token, cart);
             addToCart.enqueue(new Callback<_BaseResponse>() {
                 @Override
@@ -133,6 +135,21 @@ public class ProductPresenter {
         } catch (Exception e) {
             Log.w(TAG, "getProductByCateID: " + e.getMessage());
             iProductView.onThrowMessage(e.getMessage());
+        }
+    }
+
+    public enum STATUS_CART {
+        DEFAULT(0),
+        SELECTED(1),
+        BUYING(2);
+        private final int value;
+
+        STATUS_CART(final int newValue) {
+            value = newValue;
+        }
+
+        public int getValue() {
+            return value;
         }
     }
 }

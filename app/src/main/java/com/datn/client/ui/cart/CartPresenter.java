@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.datn.client.models.ProductCart;
 import com.datn.client.response.ProductCartResponse;
+import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
 
 import java.util.List;
@@ -99,6 +100,43 @@ public class CartPresenter {
 
         } catch (Exception e) {
             Log.w(TAG, "updateQuantity: " + e.getMessage());
+            iCartView.onThrowMessage(e.getMessage());
+        }
+    }
+
+    public void updateStatus(String cartID, int status) {
+        try {
+            Call<_BaseResponse> updateStatus = apiService.updateStatus(token, customerID, status, cartID);
+            updateStatus.enqueue(new Callback<_BaseResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
+                    if (response.body() != null) {
+                        String code = response.body().getCode();
+                        int statusCode = response.body().getStatusCode();
+                        if (statusCode == 200) {
+                            Log.w(TAG, "onResponse200: updateQuantity: " + code);
+                            iCartView.onThrowMessage(code);
+                        } else if (statusCode == 400) {
+                            Log.w(TAG, "onResponse400: updateQuantity: " + code);
+                            iCartView.onThrowMessage(code);
+                        } else {
+                            Log.w(TAG, "onResponse: " + code);
+                            iCartView.onThrowMessage(code);
+                        }
+                    } else {
+                        Log.w(TAG, "onResponse: " + response);
+                        iCartView.onThrowMessage("body null");
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
+                    Log.w(TAG, "updateStatus: " + t.getMessage());
+                    iCartView.onThrowMessage(t.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            Log.w(TAG, "updateStatus: " + e.getMessage());
             iCartView.onThrowMessage(e.getMessage());
         }
     }

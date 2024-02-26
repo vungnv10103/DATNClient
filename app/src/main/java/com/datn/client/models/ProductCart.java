@@ -1,5 +1,7 @@
 package com.datn.client.models;
 
+import androidx.annotation.NonNull;
+
 public class ProductCart extends _BaseModel {
 
     private String name;
@@ -75,5 +77,20 @@ public class ProductCart extends _BaseModel {
 
     public void setStatus_cart(int status_cart) {
         this.status_cart = status_cart;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "ProductCart{" +
+                "name='" + name + '\'' +
+                ", image='" + image + '\'' +
+                ", price='" + price + '\'' +
+                ", quantity_product='" + quantity_product + '\'' +
+                ", quantity_cart='" + quantity_cart + '\'' +
+                ", note='" + note + '\'' +
+                ", status_product='" + status_product + '\'' +
+                ", status_cart=" + status_cart +
+                '}';
     }
 }

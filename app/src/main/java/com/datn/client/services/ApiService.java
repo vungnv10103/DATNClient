@@ -71,5 +71,11 @@ public interface ApiService {
                                              @Field("type") String type,
                                              @Field("quantity") int quantity,
                                              @Field("cartID") String cartID);
+    @FormUrlEncoded
+    @POST("/v1/api/cart/update/status")
+    Call<_BaseResponse> updateStatus(@Header("Authorization") String token,
+                                             @Field("customerID") String customerID,
+                                             @Field("status") int status,
+                                             @Field("cartID") String cartID);
 
 }

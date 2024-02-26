@@ -12,4 +12,5 @@ public interface ICartView {
 
     void onThrowMessage(String message);
     void onUpdateQuantity(String cartID, int position, String type, int value);
+    void onUpdateStatus(String cartID, int position, int value);
 }

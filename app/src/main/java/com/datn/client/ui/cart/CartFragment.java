@@ -21,6 +21,7 @@ import com.datn.client.models.ProductCart;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.product.ProductPresenter;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.github.ybq.android.spinkit.SpinKitView;
@@ -44,7 +45,9 @@ public class CartFragment extends Fragment implements ICartView {
 
     private CartAdapter cartAdapter;
     private List<ProductCart> mProductCart;
-    public int posCartSelected = -1;
+    private int posCartSelected = -1;
+    private int countCartSelected = 0;
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -63,6 +66,11 @@ public class CartFragment extends Fragment implements ICartView {
         setLoading(true);
         initService();
         cartPresenter.getDataCart();
+        binding.btnGetInfo.setOnClickListener(v -> {
+            for (ProductCart productCart : mProductCart) {
+                System.out.println(productCart.toString());
+            }
+        });
     }
 
     private void displayCart() {
@@ -76,7 +84,15 @@ public class CartFragment extends Fragment implements ICartView {
                 }
             }
             if (cartAdapter == null) {
-                cartAdapter = new CartAdapter(requireActivity(), mProductCart, cart -> showToast(cart.get_id()), this);
+                cartAdapter = new CartAdapter(requireActivity(), mProductCart, cart -> {
+                    String cartID = cart.get_id();
+                    for (ProductCart productCart : mProductCart) {
+                        if (productCart.get_id().equals(cartID)) {
+                            System.out.println(productCart);
+                            showToast(productCart.toString());
+                        }
+                    }
+                }, this);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
                 // linearLayoutManager.setSmoothScrollbarEnabled(true);
                 rcvCartSearch.setLayoutManager(linearLayoutManager);
@@ -88,6 +104,12 @@ public class CartFragment extends Fragment implements ICartView {
             } else {
                 cartAdapter.updateList(mProductCart);
             }
+            for (ProductCart productCart : mProductCart) {
+                if (productCart.getStatus_cart() == ProductPresenter.STATUS_CART.SELECTED.getValue()) {
+                    countCartSelected++;
+                }
+            }
+            binding.tbDemo.setText(String.valueOf(countCartSelected));
             setLoading(false);
         });
     }
@@ -103,7 +125,16 @@ public class CartFragment extends Fragment implements ICartView {
         setLoading(false);
         if (message.startsWith("cart/update-quantity-success")) {
             String quantity = message.split(":")[1];
-            cartAdapter.updateCart(posCartSelected, quantity);
+            cartAdapter.updateQuantityCart(posCartSelected, quantity);
+        } else if (message.startsWith("cart/update-status")) {
+            int status = Integer.parseInt(message.split(":")[1]);
+            if (status == 1) {
+                countCartSelected++;
+            } else if (status == 0) {
+                countCartSelected--;
+            }
+            binding.tbDemo.setText(String.valueOf(countCartSelected));
+            cartAdapter.updateStatusCart(posCartSelected, status);
         } else {
             MyDialog.gI().startDlgOK(requireActivity(), message);
         }
@@ -114,6 +145,12 @@ public class CartFragment extends Fragment implements ICartView {
         setLoading(true);
         posCartSelected = position;
         cartPresenter.updateQuantity(cartID, type, value);
+    }
+
+    @Override
+    public void onUpdateStatus(String cartID, int position, int value) {
+        posCartSelected = position;
+        cartPresenter.updateStatus(cartID, value);
     }
 
 

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -42,10 +43,16 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         this.iCartView = iCartView;
     }
 
-    public void updateCart(int position, String quantity) {
+    public void updateQuantityCart(int position, String quantity) {
         ProductCart productCart = productCarts.get(position);
         productCart.setQuantity_cart(quantity);
         notifyItemChanged(position);
+    }
+
+    public void updateStatusCart(int position, int status) {
+        ProductCart productCart = productCarts.get(position);
+        productCart.setStatus_cart(status);
+//        notifyItemChanged(position);
     }
 
     @NonNull
@@ -66,6 +73,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.tvPrice.setText(Currency.formatCurrency(String.valueOf(priceOne * quantityCart)));
         holder.tvQuantity.setText(String.valueOf(quantityCart));
         holder.tvOptions.setText(productCart.getCreated_at());
+        holder.cbSelected.setChecked(productCart.getStatus_cart() == 1);
 
 
         if (quantityCart <= 1) {
@@ -83,6 +91,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.setAnimationText();
         holder.setSwipeLayout();
         holder.setLayoutParamsDrag(context);
+
+        holder.cbSelected.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            iCartView.onUpdateStatus(productCart.get_id(), position, isChecked ? 1 : 0);
+        });
         holder.layoutCart.setOnClickListener(v -> iActionCart.onClick(productCart));
 
 
@@ -179,7 +191,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                 @Override
                 public void onHandRelease(SwipeLayout layout, float xvel, float yvel) {
                     //when user's hand released.
-                    System.out.println(cbSelected.isChecked());
+                    System.out.println("onHandRelease");
                 }
             });
         }
