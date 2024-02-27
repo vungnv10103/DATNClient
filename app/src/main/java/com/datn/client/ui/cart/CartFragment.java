@@ -2,6 +2,7 @@ package com.datn.client.ui.cart;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,12 +26,12 @@ import com.datn.client.models.ProductCart;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.checkout.CheckoutActivity;
 import com.datn.client.ui.product.ProductPresenter;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.datn.client.utils.PreferenceManager;
 import com.github.ybq.android.spinkit.SpinKitView;
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -52,6 +53,7 @@ public class CartFragment extends Fragment implements ICartView {
 
     private CartAdapter cartAdapter;
     private List<ProductCart> mProductCart;
+    private boolean isLoading = false;
     private int posCartSelected = -1;
     private int countCartSelected = 0;
     private int priceCartSelected = 0;
@@ -79,6 +81,7 @@ public class CartFragment extends Fragment implements ICartView {
     @Override
     public void onStart() {
         super.onStart();
+        resetValue();
         cartPresenter.getDataCart();
         initEventClick();
     }
@@ -139,17 +142,6 @@ public class CartFragment extends Fragment implements ICartView {
         if (message.startsWith("cart/update-quantity-success")) {
             String quantity = message.split(":")[1];
             cartAdapter.updateQuantityCart(posCartSelected, quantity);
-        } else if (message.startsWith("cart/update-status")) {
-            int status = Integer.parseInt(message.split(":")[1]);
-            if (status == 1) {
-                countCartSelected++;
-            } else if (status == 0) {
-                countCartSelected--;
-            }
-            cbAllCart.setChecked(countCartSelected == mProductCart.size());
-//            tvTotal.setText(String.valueOf(countCartSelected));
-            tvTotal.setText(Currency.formatCurrency(String.valueOf(priceCartSelected)));
-            cartAdapter.updateStatusCart(posCartSelected, status);
         } else {
             MyDialog.gI().startDlgOK(requireActivity(), message);
         }
@@ -164,6 +156,7 @@ public class CartFragment extends Fragment implements ICartView {
 
     @Override
     public void onUpdateStatus(String cartID, int position, int value) {
+        resetValue();
         setLoading(true);
         posCartSelected = position;
         cartPresenter.updateStatus(cartID, value);
@@ -196,30 +189,31 @@ public class CartFragment extends Fragment implements ICartView {
     }
 
     private void setLoading(boolean isLoading) {
+        this.isLoading = isLoading;
         spinKitView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         layoutCart.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
     }
 
+    private void resetValue() {
+        priceCartSelected = 0;
+        countCartSelected = 0;
+    }
+
     private void initEventClick() {
         btnCheckout.setOnClickListener(v -> {
-            showToast("selected: " + countCartSelected);
-        });
-        cbAllCart.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int countNoSelected = mProductCart.size() - countCartSelected;
-            if (isChecked) {
-                if (countNoSelected == 0) {
-                    showToast("check all");
+            if (!isLoading) {
+                if (countCartSelected == 0) {
+                    showToast("Vui lòng chọn sản phẩm để thanh toán!");
                 } else {
-                    // TODO update status item
-                    for (ProductCart productCart : mProductCart) {
-                        if (productCart.getStatus_cart() != ProductPresenter.STATUS_CART.SELECTED.getValue()) {
-                            showToast(productCart.toString());
-                        }
-                    }
+                    startActivity(new Intent(requireActivity(), CheckoutActivity.class));
                 }
-            } else {
-                showToast("uncheck all");
             }
+        });
+        cbAllCart.setOnClickListener(v -> {
+            resetValue();
+            boolean isChecked = cbAllCart.isChecked();
+            setLoading(true);
+            cartPresenter.updateStatusAll(isChecked);
         });
     }
 

@@ -32,6 +32,7 @@
             android:paddingBottom="?attr/actionBarSize"
             android:visibility="invisible"
             android:scrollbars="vertical"
+            android:verticalScrollbarPosition="left"
             android:scrollbarSize="2dp"
             app:layout_behavior="@string/searchbar_scrolling_view_behavior"
             tools:ignore="PrivateResource">

@@ -80,12 +80,13 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
         initEventClick();
         preferenceManager = new PreferenceManager(this, Constants.KEY_PREFERENCE_ACC);
         checkLogin();
+        initService();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        initService();
+
         productPresenter.getDetailProduct(mProductID);
     }
 

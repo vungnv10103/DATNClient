@@ -71,11 +71,23 @@ public interface ApiService {
                                              @Field("type") String type,
                                              @Field("quantity") int quantity,
                                              @Field("cartID") String cartID);
+
     @FormUrlEncoded
     @POST("/v1/api/cart/update/status")
-    Call<_BaseResponse> updateStatus(@Header("Authorization") String token,
-                                             @Field("customerID") String customerID,
-                                             @Field("status") int status,
-                                             @Field("cartID") String cartID);
+    Call<ProductCartResponse> updateStatus(@Header("Authorization") String token,
+                                           @Field("customerID") String customerID,
+                                           @Field("status") int status,
+                                           @Field("cartID") String cartID);
+
+    @FormUrlEncoded
+    @POST("/v1/api/cart/update/status-all")
+    Call<ProductCartResponse> updateStatusAll(@Header("Authorization") String token,
+                                              @Field("customerID") String customerID,
+                                              @Field("isSelected") boolean isSelected);
+
+    @FormUrlEncoded
+    @POST("/v1/api/checkout/get/customer")
+    Call<ProductCartResponse> getProductCheckout(@Header("Authorization") String token,
+                                                 @Field("customerID") String customerID);
 
 }

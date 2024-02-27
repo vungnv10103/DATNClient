@@ -1,5 +1,6 @@
 package com.datn.client.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -55,6 +56,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         productCart.setStatus_cart(status);
 //        notifyItemChanged(position);
     }
+
 
     @NonNull
     @Override
@@ -256,10 +258,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             ProductCart oldCart = oldCartList.get(oldItemPosition);
             ProductCart newCart = newCartList.get(newItemPosition);
             return oldCart.getName().equals(newCart.getName())
+                    && Objects.equals(oldCart.getStatus_cart(), newCart.getStatus_cart())
+                    && Objects.equals(oldCart.getImage(), newCart.getImage())
                     && Objects.equals(oldCart.getPrice(), newCart.getPrice())
-                    && Objects.equals(oldCart.getQuantity_cart(), newCart.getQuantity_cart()
-            );
+                    && Objects.equals(oldCart.getQuantity_cart(), newCart.getQuantity_cart());
         }
     }
-
 }
