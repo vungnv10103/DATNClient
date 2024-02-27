@@ -36,4 +36,7 @@
     <string name="delete">Xoá</string>
     <string name="go_shop">Tới shop</string>
     <string name="search_hint">Enter text to search</string>
+    <string name="cb_all">Tất cả</string>
+    <string name="total_checkout">Tổng thanh toán:</string>
+    <string name="checkout">Đặt hàng</string>
 </resources>

@@ -2,19 +2,19 @@ package com.datn.client.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +24,7 @@ import com.datn.client.R;
 import com.datn.client.action.IAction;
 import com.datn.client.models.ProductCart;
 import com.datn.client.ui.cart.ICartView;
+import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.utils.Currency;
 import com.google.android.material.button.MaterialButton;
 
@@ -98,6 +99,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.layoutCart.setOnClickListener(v -> iActionCart.onClick(productCart));
 
 
+        // Drag layout
+        holder.btnGoShop.setOnClickListener(v -> doGoShop(context, productCart.getProduct_id()));
+        holder.layoutGoShop.setOnClickListener(v -> doGoShop(context, productCart.getProduct_id()));
+
     }
 
 
@@ -108,9 +113,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final SwipeLayout swipeLayout;
-        private final LinearLayout dragLayout;
-        private final ConstraintLayout layoutCart;
+        private final LinearLayout dragLayout, layoutGoShop;
+        private final RelativeLayout layoutCart;
         private final ImageView imgProduct;
+        private final MaterialButton btnGoShop;
         private final TextView tvName, tvQuantity, tvPrice, tvOptions, tv_go_shop, tv_delete, tv_buy_now;
         private final MaterialButton btnMinus, btnPlus;
         private final CheckBox cbSelected;
@@ -122,11 +128,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             swipeLayout = itemView.findViewById(R.id.swipe_cart);
             dragLayout = itemView.findViewById(R.id.bottom_wrapper);
             layoutCart = itemView.findViewById(R.id.layout_cart);
+            layoutGoShop = itemView.findViewById(R.id.layout_go_shop);
             imgProduct = itemView.findViewById(R.id.img_product);
             tvName = itemView.findViewById(R.id.tv_name);
             tvQuantity = itemView.findViewById(R.id.tv_quantity);
             tvPrice = itemView.findViewById(R.id.tv_price);
             tvOptions = itemView.findViewById(R.id.tv_options);
+            btnGoShop = itemView.findViewById(R.id.btn_go_shop);
             tv_go_shop = itemView.findViewById(R.id.tv_go_shop);
             tv_delete = itemView.findViewById(R.id.tv_delete);
             tv_buy_now = itemView.findViewById(R.id.tv_buy_now);
@@ -201,6 +209,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         View view = View.inflate(context, viewResourceId, null);
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         return view.getMeasuredHeight();
+    }
+
+    private static void doGoShop(Context context, String productID) {
+        Intent intent = new Intent(context, DetailProductActivity.class);
+        intent.putExtra("productID", productID);
+        context.startActivity(intent);
     }
 
     public void updateList(List<ProductCart> newList) {

@@ -3,6 +3,7 @@ package com.datn.client.models;
 import androidx.annotation.NonNull;
 
 public class ProductCart extends _BaseModel {
+    private String product_id;
 
     private String name;
     private String image;
@@ -13,6 +14,14 @@ public class ProductCart extends _BaseModel {
     private String note;
     private String status_product;
     private int status_cart;
+
+    public String getProduct_id() {
+        return product_id;
+    }
+
+    public void setProduct_id(String product_id) {
+        this.product_id = product_id;
+    }
 
     public String getName() {
         return name;

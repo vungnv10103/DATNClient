@@ -1,10 +1,14 @@
 package com.datn.client.ui.cart;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +27,7 @@ import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.MyDialog;
 import com.datn.client.ui.product.ProductPresenter;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.Currency;
 import com.datn.client.utils.PreferenceManager;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.material.appbar.AppBarLayout;
@@ -36,9 +41,11 @@ public class CartFragment extends Fragment implements ICartView {
     private PreferenceManager preferenceManager;
     private SpinKitView spinKitView;
     private NestedScrollView layoutCart;
-    private AppBarLayout appbarSearch;
+    private TextView tvTotal;
+    private CheckBox cbAllCart;
+    private Button btnCheckout;
 
-    private RecyclerView rcvCart, rcvCartSearch;
+    private RecyclerView rcvCart;
 
     private Customer mCustomer;
     private String mToken;
@@ -47,6 +54,7 @@ public class CartFragment extends Fragment implements ICartView {
     private List<ProductCart> mProductCart;
     private int posCartSelected = -1;
     private int countCartSelected = 0;
+    private int priceCartSelected = 0;
 
 
     @Override
@@ -65,14 +73,18 @@ public class CartFragment extends Fragment implements ICartView {
 
         setLoading(true);
         initService();
-        cartPresenter.getDataCart();
-        binding.btnGetInfo.setOnClickListener(v -> {
-            for (ProductCart productCart : mProductCart) {
-                System.out.println(productCart.toString());
-            }
-        });
+
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        cartPresenter.getDataCart();
+        initEventClick();
+    }
+
+
+    @SuppressLint("SetTextI18n")
     private void displayCart() {
         requireActivity().runOnUiThread(() -> {
             if (getContext() != null && getContext() instanceof Activity && !((Activity) getContext()).isFinishing()) {
@@ -94,9 +106,7 @@ public class CartFragment extends Fragment implements ICartView {
                     }
                 }, this);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-                // linearLayoutManager.setSmoothScrollbarEnabled(true);
-                rcvCartSearch.setLayoutManager(linearLayoutManager);
-                rcvCartSearch.setAdapter(cartAdapter);
+                linearLayoutManager.setSmoothScrollbarEnabled(true);
                 rcvCart.setLayoutManager(new LinearLayoutManager(requireActivity()));
                 rcvCart.setAdapter(cartAdapter);
                 // ItemTouchHelper.SimpleCallback simpleCallback = new RecycleViewItemTouchHelper(0, ItemTouchHelper.LEFT, this);
@@ -107,9 +117,12 @@ public class CartFragment extends Fragment implements ICartView {
             for (ProductCart productCart : mProductCart) {
                 if (productCart.getStatus_cart() == ProductPresenter.STATUS_CART.SELECTED.getValue()) {
                     countCartSelected++;
+                    priceCartSelected += Integer.parseInt(productCart.getPrice()) * Integer.parseInt(productCart.getQuantity_cart());
                 }
             }
-            binding.tbDemo.setText(String.valueOf(countCartSelected));
+            cbAllCart.setText("Tất cả(" + mProductCart.size() + ")");
+            cbAllCart.setChecked(countCartSelected == mProductCart.size());
+            tvTotal.setText(Currency.formatCurrency(String.valueOf(priceCartSelected)));
             setLoading(false);
         });
     }
@@ -133,7 +146,9 @@ public class CartFragment extends Fragment implements ICartView {
             } else if (status == 0) {
                 countCartSelected--;
             }
-            binding.tbDemo.setText(String.valueOf(countCartSelected));
+            cbAllCart.setChecked(countCartSelected == mProductCart.size());
+//            tvTotal.setText(String.valueOf(countCartSelected));
+            tvTotal.setText(Currency.formatCurrency(String.valueOf(priceCartSelected)));
             cartAdapter.updateStatusCart(posCartSelected, status);
         } else {
             MyDialog.gI().startDlgOK(requireActivity(), message);
@@ -149,6 +164,7 @@ public class CartFragment extends Fragment implements ICartView {
 
     @Override
     public void onUpdateStatus(String cartID, int position, int value) {
+        setLoading(true);
         posCartSelected = position;
         cartPresenter.updateStatus(cartID, value);
     }
@@ -182,21 +198,45 @@ public class CartFragment extends Fragment implements ICartView {
     private void setLoading(boolean isLoading) {
         spinKitView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         layoutCart.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
-        appbarSearch.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
+    }
+
+    private void initEventClick() {
+        btnCheckout.setOnClickListener(v -> {
+            showToast("selected: " + countCartSelected);
+        });
+        cbAllCart.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            int countNoSelected = mProductCart.size() - countCartSelected;
+            if (isChecked) {
+                if (countNoSelected == 0) {
+                    showToast("check all");
+                } else {
+                    // TODO update status item
+                    for (ProductCart productCart : mProductCart) {
+                        if (productCart.getStatus_cart() != ProductPresenter.STATUS_CART.SELECTED.getValue()) {
+                            showToast(productCart.toString());
+                        }
+                    }
+                }
+            } else {
+                showToast("uncheck all");
+            }
+        });
     }
 
     private void initUI() {
         spinKitView = binding.spinKitLoading;
         layoutCart = binding.layoutCart;
-        appbarSearch = binding.appbarSearch;
-        rcvCartSearch = binding.list;
         rcvCart = binding.rcvCart;
+        tvTotal = binding.tvTotal;
+        cbAllCart = binding.cbSelectedAll;
+        btnCheckout = binding.btnCheckout;
     }
 
 
     private void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
+
 
     @Override
     public void onDestroyView() {
