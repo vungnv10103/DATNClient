@@ -3,11 +3,14 @@ package com.datn.client.services;
 import com.datn.client.models.Cart;
 import com.datn.client.models.Customer;
 import com.datn.client.response.BannerResponse;
+import com.datn.client.response.PaymentMethodResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.response.CategoryResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.response.ProductCartResponse;
 import com.datn.client.response.ProductResponse;
+
+import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -86,8 +89,13 @@ public interface ApiService {
                                               @Field("isSelected") boolean isSelected);
 
     @FormUrlEncoded
-    @POST("/v1/api/checkout/get/customer")
+    @POST("/v1/api/checkout/get/product")
     Call<ProductCartResponse> getProductCheckout(@Header("Authorization") String token,
+                                                 @Field("customerID") String customerID);
+
+    @FormUrlEncoded
+    @POST("/v1/api/checkout/get/payment-method")
+    Call<PaymentMethodResponse> getPaymentMethod(@Header("Authorization") String token,
                                                  @Field("customerID") String customerID);
 
 }

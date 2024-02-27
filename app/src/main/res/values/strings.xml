@@ -39,4 +39,7 @@
     <string name="cb_all">Tất cả</string>
     <string name="total_checkout">Tổng thanh toán:</string>
     <string name="checkout">Đặt hàng</string>
+    <string name="delivery_address">Địa chỉ nhận hàng</string>
+    <string name="use_voucher">Bạn có muốn chọn voucher</string>
+    <string name="payment_method">Phương thức thanh toán</string>
 </resources>

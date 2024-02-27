@@ -46,9 +46,7 @@
                     android:layout_marginBottom="5dp"
                     android:fontFamily="@font/inter_bold"
                     android:text="@string/register_account"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/tv_msg"
@@ -63,7 +61,6 @@
                     android:scrollHorizontally="true"
                     android:singleLine="true"
                     android:text="@string/register_msg"
-                    android:textColor="@color/black"
                     android:textSize="16sp"
                     android:textStyle="italic" />
             </RelativeLayout>
@@ -99,7 +96,6 @@
                 app:boxCornerRadiusTopEnd="10dp"
                 app:boxCornerRadiusTopStart="10dp"
                 app:endIconMode="clear_text"
-                app:endIconTint="@color/black"
                 app:errorEnabled="true"
                 app:startIconContentDescription="Email"
                 app:startIconDrawable="@drawable/ic_mail_24">
@@ -245,7 +241,6 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_medium"
                 android:text="@string/had_account"
-                android:textColor="@color/black"
                 android:textSize="15sp" />
 
             <TextView
@@ -256,9 +251,7 @@
                 android:paddingHorizontal="5dp"
                 android:paddingVertical="8dp"
                 android:text="@string/login"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="16sp" />
         </LinearLayout>
 
         <View

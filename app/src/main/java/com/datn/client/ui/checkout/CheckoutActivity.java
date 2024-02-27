@@ -2,24 +2,31 @@ package com.datn.client.ui.checkout;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.datn.client.R;
+import com.datn.client.action.IAction;
+import com.datn.client.adapter.PaymentMethodAdapter;
+import com.datn.client.adapter.ProductCheckoutAdapter;
 import com.datn.client.databinding.ActivityCheckoutBinding;
-import com.datn.client.databinding.ActivityDetailProductBinding;
 import com.datn.client.models.Customer;
+import com.datn.client.models.PaymentMethod;
 import com.datn.client.models.ProductCart;
+import com.datn.client.models._BaseModel;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
-import com.datn.client.ui.product.ProductPresenter;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class CheckoutActivity extends AppCompatActivity implements ICheckoutView {
@@ -29,8 +36,14 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     private CheckoutPresenter checkoutPresenter;
     private PreferenceManager preferenceManager;
 
+    private RecyclerView rcvProduct, rcvPaymentMethod;
+
     private Customer mCustomer;
     private String mToken;
+
+    private HashMap<Integer, String> mPaymentMethod;
+    private List<PaymentMethod> paymentMethodList;
+    private List<ProductCart> mProductCart;
 
 
     private final OnBackPressedCallback callback = new OnBackPressedCallback(true) {
@@ -61,11 +74,47 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         super.onStart();
 
         checkoutPresenter.getProductCheckout();
+        checkoutPresenter.getPaymentMethod();
+    }
+
+    private void displayPaymentMethod() {
+        PaymentMethodAdapter paymentMethodAdapter = new PaymentMethodAdapter(this, mPaymentMethod, paymentMethodList, new IAction() {
+            @Override
+            public void onClick(_BaseModel baseModel) {
+                showToast(baseModel.toString());
+            }
+        });
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        linearLayoutManager.setSmoothScrollbarEnabled(true);
+        rcvPaymentMethod.setLayoutManager(linearLayoutManager);
+        rcvPaymentMethod.setAdapter(paymentMethodAdapter);
+    }
+
+    private void displayProductCart() {
+//        System.out.println(mProductCart.toString());
+        ProductCheckoutAdapter productCheckoutAdapter = new ProductCheckoutAdapter(this, mProductCart);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        linearLayoutManager.setSmoothScrollbarEnabled(true);
+        rcvProduct.setLayoutManager(linearLayoutManager);
+        rcvProduct.setAdapter(productCheckoutAdapter);
     }
 
     @Override
     public void onListProduct(List<ProductCart> productCartList) {
-        showToast(productCartList.size() + "");
+        this.mProductCart = productCartList;
+        displayProductCart();
+    }
+
+    @Override
+    public void onListPaymentMethod(HashMap<Integer, String> paymentMethod) {
+        this.mPaymentMethod = paymentMethod;
+        paymentMethodList = new ArrayList<>();
+        for (Map.Entry<Integer, String> entry : paymentMethod.entrySet()) {
+            Integer key = entry.getKey();
+            String value = entry.getValue();
+            paymentMethodList.add(new PaymentMethod(key, value));
+        }
+        displayPaymentMethod();
     }
 
     @Override
@@ -108,6 +157,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     }
 
     private void initUI() {
-
+        rcvProduct = binding.rcvProduct;
+        rcvPaymentMethod = binding.rcvOptionsPayments;
     }
 }

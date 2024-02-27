@@ -1,5 +1,7 @@
 package com.datn.client.models;
 
+import androidx.annotation.NonNull;
+
 public class _BaseModel {
     private String _id;
     private String created_at;
@@ -31,4 +33,5 @@ public class _BaseModel {
     public void setCreated_at(String created_at) {
         this.created_at = created_at;
     }
+
 }

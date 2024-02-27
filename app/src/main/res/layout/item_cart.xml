@@ -128,7 +128,6 @@
         android:id="@+id/layout_cart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/tutu"
         android:paddingVertical="10dp">
 
         <com.google.android.material.card.MaterialCardView
