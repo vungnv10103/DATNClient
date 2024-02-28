@@ -5,16 +5,14 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.datn.client.models.ProductCart;
+import com.datn.client.response.CreateOrderResponse;
 import com.datn.client.response.PaymentMethodResponse;
 import com.datn.client.response.ProductCartResponse;
+import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.ui.cart.CartPresenter;
-import com.datn.client.ui.cart.ICartView;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -106,6 +104,83 @@ public class CheckoutPresenter {
             });
         } catch (Exception e) {
             Log.w(TAG, "getPaymentMethod: " + e.getMessage());
+            iCheckoutView.onThrowMessage(e.getMessage());
+        }
+    }
+
+
+    public void getAmountZaloPay(int type) {
+        try {
+            Call<CreateOrderResponse> createOrder = apiService.getAmountZaloPay(token, customerID, type);
+            createOrder.enqueue(new Callback<CreateOrderResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<CreateOrderResponse> call, @NonNull Response<CreateOrderResponse> response) {
+                    if (response.body() != null) {
+                        int statusCode = response.body().getStatusCode();
+                        String code = response.body().getCode();
+                        if (statusCode == 200) {
+                            Log.w(TAG, "onResponse200: getAmountZaloPay: " + code);
+                            String amount = response.body().getAmount();
+                            iCheckoutView.onCreateOrder(amount);
+
+                        } else if (statusCode == 400) {
+                            Log.w(TAG, "onResponse400: getAmountZaloPay: " + code);
+                            iCheckoutView.onThrowMessage(code);
+                        } else {
+                            Log.w(TAG, "onResponse: " + code);
+                            iCheckoutView.onThrowMessage(code);
+                        }
+                    } else {
+                        Log.w(TAG, "onResponse: " + response);
+                        iCheckoutView.onThrowMessage("body null");
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<CreateOrderResponse> call, @NonNull Throwable t) {
+                    Log.w(TAG, "createOrder: " + t.getMessage());
+                    iCheckoutView.onThrowMessage(t.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            Log.w(TAG, "getAmountZaloPay: " + e.getMessage());
+            iCheckoutView.onThrowMessage(e.getMessage());
+        }
+    }
+
+    public void createOrderZaloPay() {
+        try {
+            Call<_BaseResponse> createOrderZaloPay = apiService.createOrderZaloPay(token, customerID);
+            createOrderZaloPay.enqueue(new Callback<_BaseResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
+                    if (response.body() != null) {
+                        int statusCode = response.body().getStatusCode();
+                        String code = response.body().getCode();
+                        if (statusCode == 200) {
+                            Log.w(TAG, "onResponse200: createOrderZaloPay: " + code);
+                            iCheckoutView.onThrowMessage(code);
+                        } else if (statusCode == 400) {
+                            Log.w(TAG, "onResponse400: createOrderZaloPay: " + code);
+                            iCheckoutView.onThrowMessage(code);
+                        } else {
+                            Log.w(TAG, "onResponse: " + code);
+                            iCheckoutView.onThrowMessage(code);
+                        }
+                    } else {
+                        Log.w(TAG, "onResponse: " + response);
+                        iCheckoutView.onThrowMessage("body null");
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
+                    Log.w(TAG, "createOrderZaloPay: " + t.getMessage());
+                    iCheckoutView.onThrowMessage(t.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            Log.w(TAG, "createOrderZaloPay: " + e.getMessage());
             iCheckoutView.onThrowMessage(e.getMessage());
         }
     }

@@ -10,7 +10,6 @@
         android:id="@+id/bottom_wrapper"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:background="@color/blue_300"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="5dp"
@@ -47,7 +46,6 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="@string/delete"
-                android:textColor="@color/big_stone"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -65,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_shop_24"
-                app:iconTint="@color/big_stone"
+                app:iconTint="@color/burnt_sienna"
                 tools:ignore="PrivateResource,SpeakableTextPresentCheck" />
 
             <TextView
@@ -81,7 +79,6 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="@string/go_shop"
-                android:textColor="@color/big_stone"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -115,7 +112,6 @@
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:text="@string/buy_now"
-                android:textColor="@color/big_stone"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -226,7 +222,6 @@
                         android:fontFamily="@font/inter_bold"
                         android:maxLength="2"
                         android:text="@string/default_quantity"
-                        android:textColor="@color/big_stone"
                         android:textSize="15sp" />
 
                     <com.google.android.material.button.MaterialButton

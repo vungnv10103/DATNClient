@@ -3,6 +3,7 @@ package com.datn.client.services;
 import com.datn.client.models.Cart;
 import com.datn.client.models.Customer;
 import com.datn.client.response.BannerResponse;
+import com.datn.client.response.CreateOrderResponse;
 import com.datn.client.response.PaymentMethodResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.response.CategoryResponse;
@@ -97,5 +98,16 @@ public interface ApiService {
     @POST("/v1/api/checkout/get/payment-method")
     Call<PaymentMethodResponse> getPaymentMethod(@Header("Authorization") String token,
                                                  @Field("customerID") String customerID);
+
+    @FormUrlEncoded
+    @POST("/v1/api/order/get/amount-zalopay")
+    Call<CreateOrderResponse> getAmountZaloPay(@Header("Authorization") String token,
+                                               @Field("customerID") String customerID,
+                                               @Field("type") int type);
+
+    @FormUrlEncoded
+    @POST("/v1/api/order/create/zalopay")
+    Call<_BaseResponse> createOrderZaloPay(@Header("Authorization") String token,
+                                           @Field("customerID") String customerID);
 
 }

@@ -23,12 +23,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="20dp">
 
-                <ProgressBar
+                <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/progressbar_banner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:visibility="visible" />
+                    android:visibility="visible"
+                    android:indeterminate="true" />
+
 
                 <RelativeLayout
                     android:id="@+id/layout_banner"
@@ -67,11 +69,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp">
 
-                <ProgressBar
+
+                <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/progressbar_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:indeterminate="true"
                     android:visibility="visible" />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -96,12 +100,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp">
 
-                <ProgressBar
+                <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/progressbar_product"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:visibility="visible" />
+                    android:visibility="visible"
+                    android:indeterminate="true" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rcv_product"

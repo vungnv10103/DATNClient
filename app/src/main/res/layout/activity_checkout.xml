@@ -11,19 +11,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progress_loading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:indeterminate="true"
+            android:layout_alignParentTop="true" />
+
         <RelativeLayout
             android:id="@+id/layout_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/progress_loading"
             android:paddingHorizontal="10dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:fontFamily="@font/inter_bold"
                 android:text="@string/delivery_address"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
         </RelativeLayout>
 
         <LinearLayout
@@ -40,18 +53,18 @@
                 android:layout_margin="10dp"
                 android:fontFamily="@font/inter_bold"
                 android:text="@string/list_product"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
 
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ProgressBar
+                <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/progressbar_product"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:visibility="visible" />
+                    android:indeterminate="true" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rcv_product"
@@ -72,10 +85,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:fontFamily="@font/inter_bold"
                 android:text="@string/use_voucher"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
         </RelativeLayout>
 
         <LinearLayout
@@ -92,7 +108,7 @@
                 android:layout_margin="10dp"
                 android:fontFamily="@font/inter_bold"
                 android:text="@string/payment_method"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcv_options_payments"
@@ -220,7 +236,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_bold"
                 android:text="@string/payment"
-                android:textSize="18sp" />
+                android:textSize="16sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -242,7 +258,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/inter_medium" />
+                    android:fontFamily="@font/inter_bold" />
             </LinearLayout>
 
             <LinearLayout
@@ -265,7 +281,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/inter_medium" />
+                    android:fontFamily="@font/inter_bold" />
             </LinearLayout>
 
             <LinearLayout
@@ -288,7 +304,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/inter_medium" />
+                    android:fontFamily="@font/inter_bold" />
             </LinearLayout>
 
             <LinearLayout
@@ -311,47 +327,59 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/inter_medium" />
+                    android:fontFamily="@font/inter_bold" />
             </LinearLayout>
         </LinearLayout>
 
-        <RelativeLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/layout_price"
             android:layout_marginVertical="10dp"
             android:paddingHorizontal="10dp">
 
-            <TextView
+            <com.google.android.material.progressindicator.CircularProgressIndicator
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@+id/tv_price_payment"
-                android:fontFamily="@font/inter_medium"
-                android:gravity="end"
-                android:text="@string/total" />
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:indeterminate="true" />
 
-            <TextView
-                android:id="@+id/tv_price_payment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@+id/btn_payment"
-                android:fontFamily="@font/inter_bold"
-                android:paddingHorizontal="8dp"
-                android:text="999.999.999 VND"
-                android:textColor="@color/red" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/btn_payment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:fontFamily="@font/inter_bold"
-                android:text="@string/payment" />
-        </RelativeLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/tv_price_payment"
+                    android:fontFamily="@font/inter_medium"
+                    android:gravity="end"
+                    android:text="@string/total" />
+
+                <TextView
+                    android:id="@+id/tv_price_payment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/btn_payment"
+                    android:fontFamily="@font/inter_bold"
+                    android:paddingHorizontal="8dp"
+                    android:textColor="@color/red" />
+
+                <Button
+                    android:id="@+id/btn_payment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="@string/payment" />
+            </RelativeLayout>
+        </FrameLayout>
+
 
     </RelativeLayout>
 

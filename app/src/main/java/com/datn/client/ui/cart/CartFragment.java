@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +31,7 @@ import com.datn.client.ui.product.ProductPresenter;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.datn.client.utils.PreferenceManager;
-import com.github.ybq.android.spinkit.SpinKitView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -41,7 +40,7 @@ public class CartFragment extends Fragment implements ICartView {
     private FragmentCartBinding binding;
     private CartPresenter cartPresenter;
     private PreferenceManager preferenceManager;
-    private ProgressBar progressBarCart;
+    private CircularProgressIndicator progressBarCart;
     private NestedScrollView layoutCart;
     private TextView tvTotal;
     private CheckBox cbAllCart;
@@ -63,9 +62,11 @@ public class CartFragment extends Fragment implements ICartView {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentCartBinding.inflate(inflater, container, false);
-        preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
-        initUI();
-        checkLogin();
+        requireActivity().runOnUiThread(() -> {
+            preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
+            initUI();
+            checkLogin();
+        });
         return binding.getRoot();
     }
 
@@ -73,17 +74,20 @@ public class CartFragment extends Fragment implements ICartView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setLoading(true);
-        initService();
-
+        requireActivity().runOnUiThread(() -> {
+            setLoading(true);
+            initService();
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        resetValue();
-        cartPresenter.getDataCart();
-        initEventClick();
+        requireActivity().runOnUiThread(() -> {
+            resetValue();
+            cartPresenter.getDataCart();
+            initEventClick();
+        });
     }
 
 
@@ -110,7 +114,7 @@ public class CartFragment extends Fragment implements ICartView {
                 }, this);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
                 linearLayoutManager.setSmoothScrollbarEnabled(true);
-                rcvCart.setLayoutManager(new LinearLayoutManager(requireActivity()));
+                rcvCart.setLayoutManager(linearLayoutManager);
                 rcvCart.setAdapter(cartAdapter);
                 // ItemTouchHelper.SimpleCallback simpleCallback = new RecycleViewItemTouchHelper(0, ItemTouchHelper.LEFT, this);
                 // new ItemTouchHelper(simpleCallback).attachToRecyclerView(rcvCart);
@@ -148,16 +152,20 @@ public class CartFragment extends Fragment implements ICartView {
 
     @Override
     public void onUpdateQuantity(String cartID, int position, String type, int value) {
-        resetValue();
-        setLoading(true);
-        cartPresenter.updateQuantity(cartID, type, value);
+        requireActivity().runOnUiThread(() -> {
+            resetValue();
+            setLoading(true);
+            cartPresenter.updateQuantity(cartID, type, value);
+        });
     }
 
     @Override
     public void onUpdateStatus(String cartID, int position, int value) {
-        resetValue();
-        setLoading(true);
-        cartPresenter.updateStatus(cartID, value);
+        requireActivity().runOnUiThread(() -> {
+            resetValue();
+            setLoading(true);
+            cartPresenter.updateStatus(cartID, value);
+        });
     }
 
 
@@ -187,9 +195,11 @@ public class CartFragment extends Fragment implements ICartView {
     }
 
     private void setLoading(boolean isLoading) {
-        this.isLoading = isLoading;
-        progressBarCart.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        layoutCart.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
+        requireActivity().runOnUiThread(() -> {
+            this.isLoading = isLoading;
+            progressBarCart.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            layoutCart.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
+        });
     }
 
     private void resetValue() {
@@ -199,19 +209,24 @@ public class CartFragment extends Fragment implements ICartView {
 
     private void initEventClick() {
         btnCheckout.setOnClickListener(v -> {
-            if (!isLoading) {
-                if (countCartSelected == 0) {
-                    showToast("Vui lòng chọn sản phẩm để thanh toán!");
-                } else {
-                    startActivity(new Intent(requireActivity(), CheckoutActivity.class));
+            requireActivity().runOnUiThread(() -> {
+                if (!isLoading) {
+                    if (countCartSelected == 0) {
+                        showToast("Vui lòng chọn sản phẩm để thanh toán!");
+                    } else {
+                        startActivity(new Intent(requireActivity(), CheckoutActivity.class));
+                    }
                 }
-            }
+            });
+
         });
         cbAllCart.setOnClickListener(v -> {
-            resetValue();
-            boolean isChecked = cbAllCart.isChecked();
-            setLoading(true);
-            cartPresenter.updateStatusAll(isChecked);
+            requireActivity().runOnUiThread(() -> {
+                resetValue();
+                boolean isChecked = cbAllCart.isChecked();
+                setLoading(true);
+                requireActivity().runOnUiThread(() -> cartPresenter.updateStatusAll(isChecked));
+            });
         });
     }
 

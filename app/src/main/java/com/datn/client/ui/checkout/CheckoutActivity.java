@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -25,8 +24,12 @@ import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.services.zalo.CreateOrder;
 import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.checkout.CheckoutPresenter.PAYMENT_METHOD;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.Currency;
 import com.datn.client.utils.PreferenceManager;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -50,7 +53,8 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     private CheckoutPresenter checkoutPresenter;
     private PreferenceManager preferenceManager;
 
-    private ProgressBar progressBarProduct;
+    private LinearProgressIndicator progressLoading;
+    private CircularProgressIndicator progressBarProduct;
     private RecyclerView rcvProduct, rcvPaymentMethod;
     private LinearLayout layoutDelivery, layoutEBanking, layoutZaloPay;
 
@@ -63,6 +67,9 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     private HashMap<Integer, String> mPaymentMethod;
     private List<PaymentMethod> paymentMethodList;
     private List<ProductCart> mProductCart;
+    private int mTotalPrice;
+
+    public boolean isLoading = false;
 
 
     private final OnBackPressedCallback callback = new OnBackPressedCallback(true) {
@@ -105,6 +112,20 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         rcvPaymentMethod.setAdapter(paymentMethodAdapter);
     }
 
+    private void displayPrice() {
+        int count = 0;
+        int price = 0;
+        for (ProductCart productCart : mProductCart) {
+            int quantityCart = Integer.parseInt(productCart.getQuantity_cart());
+            count += quantityCart;
+            price += Integer.parseInt(productCart.getPrice()) * quantityCart;
+        }
+        this.mTotalPrice = price;
+        binding.tvQuantity.setText(String.valueOf(count));
+        binding.tvTotalPrice.setText(Currency.formatCurrency(String.valueOf(price)));
+        binding.tvPricePayment.setText(Currency.formatCurrency(String.valueOf(mTotalPrice)));
+    }
+
     private void displayProductCart() {
         ProductCheckoutAdapter productCheckoutAdapter = new ProductCheckoutAdapter(this, mProductCart);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -119,6 +140,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     public void onListProduct(List<ProductCart> productCartList) {
         this.mProductCart = productCartList;
         displayProductCart();
+        displayPrice();
     }
 
     @Override
@@ -134,7 +156,13 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     }
 
     @Override
+    public void onCreateOrder(String amount) {
+        createOrderZaloPay(amount);
+    }
+
+    @Override
     public void onThrowMessage(String message) {
+        setLoading(false);
         MyDialog.gI().startDlgOK(this, message);
     }
 
@@ -193,8 +221,11 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         ZaloPaySDK.getInstance().payOrder(CheckoutActivity.this, token, "demozpdk://app", new PayOrderListener() {
             @Override
             public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
-                runOnUiThread(() -> MyDialog.gI().startDlgOK(CheckoutActivity.this, "Payment Success",
-                        String.format("TransactionId: %s - TransToken: %s", transactionId, transToken)));
+                runOnUiThread(() -> {
+                    Log.d(TAG, "Payment Success: " + String.format("TransactionId: %s - TransToken: %s", transactionId, transToken));
+                    checkoutPresenter.createOrderZaloPay();
+                });
+
             }
 
             @Override
@@ -211,18 +242,53 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         });
     }
 
+    private void setLoading(boolean isLoading) {
+        this.isLoading = isLoading;
+        progressLoading.setVisibility(isLoading ? View.VISIBLE : View.INVISIBLE);
+    }
+
     private void initEventClick() {
         eventPaymentMethod();
-
+        int type = isDelivery ? PAYMENT_METHOD.ON_DELIVERY.getValue() : isEBanking ? PAYMENT_METHOD.E_BANKING.getValue() : PAYMENT_METHOD.ZALO_PAY.getValue();
+        binding.btnPayment.setOnClickListener(v -> {
+            if (!isLoading) {
+                setLoading(true);
+                checkoutPresenter.getAmountZaloPay(type);
+            }
+        });
     }
 
     private void eventPaymentMethod() {
-        btnEBanking.setOnClickListener(v -> displayEBankingLayout());
-        btnDelivery2.setOnClickListener(v -> displayDeliveryLayout());
-        btnZaloPay2.setOnClickListener(v -> displayZaloPayLayout());
-        btnZaloPay.setOnClickListener(v -> displayZaloPayLayout());
-        btnDelivery3.setOnClickListener(v -> displayDeliveryLayout());
-        btnEBanking3.setOnClickListener(v -> displayEBankingLayout());
+        btnEBanking.setOnClickListener(v -> {
+            if (!isLoading) {
+                displayEBankingLayout();
+            }
+        });
+        btnDelivery2.setOnClickListener(v -> {
+            if (!isLoading) {
+                displayDeliveryLayout();
+            }
+        });
+        btnZaloPay2.setOnClickListener(v -> {
+            if (!isLoading) {
+                displayZaloPayLayout();
+            }
+        });
+        btnZaloPay.setOnClickListener(v -> {
+            if (!isLoading) {
+                displayZaloPayLayout();
+            }
+        });
+        btnDelivery3.setOnClickListener(v -> {
+            if (!isLoading) {
+                displayDeliveryLayout();
+            }
+        });
+        btnEBanking3.setOnClickListener(v -> {
+            if (!isLoading) {
+                displayEBankingLayout();
+            }
+        });
     }
 
     private void displayDeliveryLayout() {
@@ -251,6 +317,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
 
 
     private void initUI() {
+        progressLoading = binding.progressLoading;
         progressBarProduct = binding.progressbarProduct;
         rcvProduct = binding.rcvProduct;
         rcvPaymentMethod = binding.rcvOptionsPayments;

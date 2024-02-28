@@ -6,7 +6,6 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -35,6 +34,7 @@ import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.ui.product.ListProductActivity;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -49,7 +49,7 @@ public class HomeFragment extends Fragment implements IHomeView {
     private PreferenceManager preferenceManager;
 
 
-    private ProgressBar progressBarBanner, progressBarCate, progressBarSellingProduct;
+    private CircularProgressIndicator progressBarBanner, progressBarCate, progressBarSellingProduct;
     private RelativeLayout layoutBanner;
     private ViewPager2 vpgBanner;
     private CircleIndicator3 indicatorBanner;
@@ -140,7 +140,8 @@ public class HomeFragment extends Fragment implements IHomeView {
                 intent.putExtra("productID", product.get_id());
                 startActivity(intent);
             });
-            rcvSellingProduct.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+            GridLayoutManager llm = new GridLayoutManager(getActivity(), 2);
+            rcvSellingProduct.setLayoutManager(llm);
             rcvSellingProduct.setAdapter(productAdapter);
         });
     }

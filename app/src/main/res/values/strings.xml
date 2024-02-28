@@ -46,8 +46,8 @@
     <string name="zalopay">ZaloPay</string>
     <string name="on_delivery">Thanh toán khi nhận hàng</string>
     <string name="total_product">Tổng tiền hàng:</string>
-    <string name="fee_delivery">Phí vận chuyển</string>
-    <string name="discount">Giảm giá</string>
+    <string name="fee_delivery">Phí vận chuyển:</string>
+    <string name="discount">Giảm giá:</string>
     <string name="payment">Thanh toán</string>
     <string name="total">Tổng:</string>
     <string name="list_product">Danh sách sản phẩm</string>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,94 +7,87 @@
     tools:context=".ui.cart.CartFragment">
 
 
-    <FrameLayout
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/progressbar_cart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="visible" />
+
+    <!-- NestedScrollingChild goes here (NestedScrollView, RecyclerView, etc.). -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/layout_cart"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingBottom="?attr/actionBarSize"
+        android:scrollbarSize="2dp"
+        android:scrollbars="none"
+        android:visibility="invisible"
+        app:layout_behavior="@string/searchbar_scrolling_view_behavior"
+        tools:ignore="PrivateResource">
+        <!-- Screen content goes here. -->
 
-        <ProgressBar
-            android:id="@+id/progressbar_cart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="visible" />
-
-        <!-- NestedScrollingChild goes here (NestedScrollView, RecyclerView, etc.). -->
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/layout_cart"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcv_cart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="?attr/actionBarSize"
-            android:visibility="invisible"
-            android:scrollbars="vertical"
-            android:verticalScrollbarPosition="left"
-            android:scrollbarSize="2dp"
-            app:layout_behavior="@string/searchbar_scrolling_view_behavior"
-            tools:ignore="PrivateResource">
-            <!-- Screen content goes here. -->
+            android:layout_alignParentTop="true" />
+    </androidx.core.widget.NestedScrollView>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcv_cart"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentTop="true"
-                android:paddingTop="10dp" />
-        </androidx.core.widget.NestedScrollView>
+    <RelativeLayout
+        android:id="@+id/layout_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="10dp"
+        android:paddingHorizontal="5dp">
 
-        <RelativeLayout
-            android:id="@+id/layout_price"
-            android:layout_width="match_parent"
+        <CheckBox
+            android:id="@+id/cb_selected_all"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="10dp"
-            android:paddingHorizontal="5dp">
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="5dp"
+            android:fontFamily="@font/inter_bold"
+            android:text="@string/cb_all"
+            android:textSize="12sp" />
 
-            <CheckBox
-                android:id="@+id/cb_selected_all"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_toStartOf="@+id/btn_checkout"
+            android:layout_toEndOf="@+id/cb_selected_all"
+            android:gravity="end"
+            android:orientation="vertical"
+            android:paddingVertical="2dp">
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="5dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="@string/cb_all"
-                android:textSize="12sp" />
+                android:text="@string/total_checkout"
+                android:textSize="13sp" />
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tv_total"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_toStartOf="@+id/btn_checkout"
-                android:layout_toEndOf="@+id/cb_selected_all"
-                android:gravity="end"
-                android:orientation="vertical"
-                android:paddingVertical="2dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_bold"
-                    android:text="@string/total_checkout"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/tv_total"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/inter_bold"
-                    android:text=""
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/btn_checkout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="5dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="@string/checkout"
-                android:textAllCaps="false"
-                android:textSize="12sp" />
-        </RelativeLayout>
-    </FrameLayout>
+                android:text=""
+                android:textSize="14sp" />
+        </LinearLayout>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <Button
+            android:id="@+id/btn_checkout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="5dp"
+            android:fontFamily="@font/inter_bold"
+            android:text="@string/checkout"
+            android:textAllCaps="false"
+            android:textSize="12sp" />
+    </RelativeLayout>
+</FrameLayout>

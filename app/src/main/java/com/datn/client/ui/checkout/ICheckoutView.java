@@ -9,6 +9,7 @@ public interface ICheckoutView {
     void onListProduct(List<ProductCart> productCartList);
 
     void onListPaymentMethod(HashMap<Integer, String> paymentMethod);
+    void onCreateOrder(String amount);
 
     void onThrowMessage(String message);
 }
