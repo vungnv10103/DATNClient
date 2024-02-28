@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +41,7 @@ public class CartFragment extends Fragment implements ICartView {
     private FragmentCartBinding binding;
     private CartPresenter cartPresenter;
     private PreferenceManager preferenceManager;
-    private SpinKitView spinKitView;
+    private ProgressBar progressBarCart;
     private NestedScrollView layoutCart;
     private TextView tvTotal;
     private CheckBox cbAllCart;
@@ -54,7 +55,6 @@ public class CartFragment extends Fragment implements ICartView {
     private CartAdapter cartAdapter;
     private List<ProductCart> mProductCart;
     private boolean isLoading = false;
-    private int posCartSelected = -1;
     private int countCartSelected = 0;
     private int priceCartSelected = 0;
 
@@ -123,6 +123,10 @@ public class CartFragment extends Fragment implements ICartView {
                     priceCartSelected += Integer.parseInt(productCart.getPrice()) * Integer.parseInt(productCart.getQuantity_cart());
                 }
             }
+            if (mProductCart.size() == 0) {
+                setLoading(false);
+                return;
+            }
             cbAllCart.setText("Tất cả(" + mProductCart.size() + ")");
             cbAllCart.setChecked(countCartSelected == mProductCart.size());
             tvTotal.setText(Currency.formatCurrency(String.valueOf(priceCartSelected)));
@@ -139,18 +143,13 @@ public class CartFragment extends Fragment implements ICartView {
     @Override
     public void onThrowMessage(@NonNull String message) {
         setLoading(false);
-        if (message.startsWith("cart/update-quantity-success")) {
-            String quantity = message.split(":")[1];
-            cartAdapter.updateQuantityCart(posCartSelected, quantity);
-        } else {
-            MyDialog.gI().startDlgOK(requireActivity(), message);
-        }
+        MyDialog.gI().startDlgOK(requireActivity(), message);
     }
 
     @Override
     public void onUpdateQuantity(String cartID, int position, String type, int value) {
+        resetValue();
         setLoading(true);
-        posCartSelected = position;
         cartPresenter.updateQuantity(cartID, type, value);
     }
 
@@ -158,7 +157,6 @@ public class CartFragment extends Fragment implements ICartView {
     public void onUpdateStatus(String cartID, int position, int value) {
         resetValue();
         setLoading(true);
-        posCartSelected = position;
         cartPresenter.updateStatus(cartID, value);
     }
 
@@ -190,7 +188,7 @@ public class CartFragment extends Fragment implements ICartView {
 
     private void setLoading(boolean isLoading) {
         this.isLoading = isLoading;
-        spinKitView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        progressBarCart.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         layoutCart.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
     }
 
@@ -218,7 +216,7 @@ public class CartFragment extends Fragment implements ICartView {
     }
 
     private void initUI() {
-        spinKitView = binding.spinKitLoading;
+        progressBarCart = binding.progressbarCart;
         layoutCart = binding.layoutCart;
         rcvCart = binding.rcvCart;
         tvTotal = binding.tvTotal;

@@ -34,6 +34,11 @@ android {
 
 dependencies {
 
+    implementation fileTree(dir: "libs", include: ["*.aar"])
+    implementation files('libs/zpdk-release-v3.1.aar')
+    implementation 'com.squareup.okhttp3:okhttp:4.9.2'
+    implementation("commons-codec:commons-codec:1.14")
+
     implementation "androidx.media3:media3-session:1.2.1"
     implementation "androidx.media3:media3-exoplayer:1.2.1"
     implementation "androidx.media3:media3-exoplayer-dash:1.2.1"

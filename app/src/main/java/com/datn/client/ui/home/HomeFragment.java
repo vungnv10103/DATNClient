@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -34,7 +35,6 @@ import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.ui.product.ListProductActivity;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
-import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -49,7 +49,7 @@ public class HomeFragment extends Fragment implements IHomeView {
     private PreferenceManager preferenceManager;
 
 
-    private SpinKitView spinKitBanner, spinKitCate, spinKitSellingProduct;
+    private ProgressBar progressBarBanner, progressBarCate, progressBarSellingProduct;
     private RelativeLayout layoutBanner;
     private ViewPager2 vpgBanner;
     private CircleIndicator3 indicatorBanner;
@@ -147,19 +147,19 @@ public class HomeFragment extends Fragment implements IHomeView {
 
     private void onBannerLoaded() {
         displayBanner();
-        spinKitBanner.setVisibility(View.GONE);
+        progressBarBanner.setVisibility(View.GONE);
         layoutBanner.setVisibility(View.VISIBLE);
     }
 
     private void onCategoryLoaded() {
         displayCategory();
-        spinKitCate.setVisibility(View.GONE);
+        progressBarCate.setVisibility(View.GONE);
         rcvCategory.setVisibility(View.VISIBLE);
     }
 
     private void onSellingProductLoaded() {
         displaySellingProduct();
-        spinKitSellingProduct.setVisibility(View.GONE);
+        progressBarSellingProduct.setVisibility(View.GONE);
         rcvSellingProduct.setVisibility(View.VISIBLE);
     }
 
@@ -230,9 +230,9 @@ public class HomeFragment extends Fragment implements IHomeView {
         indicatorBanner = binding.indicator;
         rcvCategory = binding.rcvCategories;
         rcvSellingProduct = binding.rcvProduct;
-        spinKitBanner = binding.spinKitBanner;
-        spinKitCate = binding.spinKitCate;
-        spinKitSellingProduct = binding.spinKitSellPro;
+        progressBarBanner = binding.progressbarBanner;
+        progressBarCate = binding.progressbarCategory;
+        progressBarSellingProduct = binding.progressbarProduct;
     }
 
     private final Runnable runnable = new Runnable() {

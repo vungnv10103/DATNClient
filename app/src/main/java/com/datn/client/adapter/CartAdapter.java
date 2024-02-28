@@ -45,18 +45,6 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         this.iCartView = iCartView;
     }
 
-    public void updateQuantityCart(int position, String quantity) {
-        ProductCart productCart = productCarts.get(position);
-        productCart.setQuantity_cart(quantity);
-        notifyItemChanged(position);
-    }
-
-    public void updateStatusCart(int position, int status) {
-        ProductCart productCart = productCarts.get(position);
-        productCart.setStatus_cart(status);
-//        notifyItemChanged(position);
-    }
-
 
     @NonNull
     @Override
@@ -95,7 +83,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.setSwipeLayout();
         holder.setLayoutParamsDrag(context);
 
-        holder.cbSelected.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        holder.cbSelected.setOnClickListener(v -> {
+            boolean isChecked = holder.cbSelected.isChecked();
             iCartView.onUpdateStatus(productCart.get_id(), position, isChecked ? 1 : 0);
         });
         holder.layoutCart.setOnClickListener(v -> iActionCart.onClick(productCart));

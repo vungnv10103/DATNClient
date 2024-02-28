@@ -75,8 +75,8 @@ public class CartPresenter {
                         int statusCode = response.body().getStatusCode();
                         if (statusCode == 200) {
                             Log.w(TAG, "onResponse200: updateQuantity: " + code);
-                            String quantity = response.body().getQuantity();
-                            iCartView.onThrowMessage(response.body().getCode() + ":" + quantity);
+                            List<ProductCart> dataProductCart = response.body().getProductCarts();
+                            iCartView.onListCart(dataProductCart);
                         } else if (statusCode == 400) {
                             Log.w(TAG, "onResponse400: updateQuantity: " + code);
                             iCartView.onThrowMessage(response.body().getCode());

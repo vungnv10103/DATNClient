@@ -11,18 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.github.ybq.android.spinkit.SpinKitView
-            android:id="@+id/spin_kit_loading"
-            style="@style/SpinKitView.Large.FadingCircle"
+        <ProgressBar
+            android:id="@+id/progressbar_cart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:maxWidth="48dip"
-            android:maxHeight="48dip"
-            android:minWidth="48dip"
-            android:minHeight="48dip"
-            android:visibility="visible"
-            app:SpinKit_Color="@color/purple_300" />
+            android:visibility="visible" />
 
         <!-- NestedScrollingChild goes here (NestedScrollView, RecyclerView, etc.). -->
         <androidx.core.widget.NestedScrollView

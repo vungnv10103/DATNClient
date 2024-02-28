@@ -6,7 +6,6 @@ import java.util.List;
 
 public class ProductCartResponse extends _BaseResponse {
     private List<ProductCart> productCarts;
-    private String quantity;
 
     public List<ProductCart> getProductCarts() {
         return productCarts;
@@ -14,13 +13,5 @@ public class ProductCartResponse extends _BaseResponse {
 
     public void setProductCarts(List<ProductCart> productCarts) {
         this.productCarts = productCarts;
-    }
-
-    public String getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(String quantity) {
-        this.quantity = quantity;
     }
 }

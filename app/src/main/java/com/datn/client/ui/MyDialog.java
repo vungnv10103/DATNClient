@@ -39,4 +39,13 @@ public class MyDialog {
                 .setPositiveButton(android.R.string.ok, (dialog, whichButton) -> dialog.dismiss())
                 .show();
     }
+
+    public void startDlgOK(Context context, String title, String message) {
+        new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setIcon(R.drawable.logo)
+                .setPositiveButton(android.R.string.ok, (dialog, whichButton) -> dialog.dismiss())
+                .show();
+    }
 }
