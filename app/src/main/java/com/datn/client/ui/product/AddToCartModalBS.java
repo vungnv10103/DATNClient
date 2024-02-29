@@ -64,9 +64,19 @@ public class AddToCartModalBS extends BottomSheetDialogFragment implements IProd
         if (mProduct != null) {
             Glide.with(this).load(mProduct.getImg_cover()).into(imgProduct);
             tvName.setText(mProduct.getName());
-            tvPrice.setText(Currency.formatCurrency(mProduct.getPrice()));
-            tvQuantityStock.setText("Kho: " + mProduct.getQuantity());
-            tvPriceTemp.setText("Tạm tính: " + Currency.formatCurrency(mProduct.getPrice()));
+            tvPrice.setText("Giá: " + Currency.formatCurrency(mProduct.getPrice()));
+            int quantityProduct = Integer.parseInt(mProduct.getQuantity());
+            tvQuantityStock.setText("Kho: " + quantityProduct);
+            if (quantityProduct <= 0) {
+                tvQuantity.setText("0");
+//                btnPlus.setIconTintResource(R.color.gray_400);
+                btnMinus.setEnabled(false);
+                btnPlus.setEnabled(false);
+                tvPriceTemp.setText("Tạm tính: " + Currency.formatCurrency("0"));
+                btnAddToCart.setEnabled(false);
+            } else {
+                tvPriceTemp.setText("Tạm tính: " + Currency.formatCurrency(mProduct.getPrice()));
+            }
             initEventClick();
         }
     }
@@ -150,6 +160,14 @@ public class AddToCartModalBS extends BottomSheetDialogFragment implements IProd
                 break;
             case "cart/update-quantity-success":
                 showToast("Cập nhật số lượng thành công");
+                DetailProductActivity.modalAddToCart.dismiss();
+                break;
+            case "cart/update-quantity-failed":
+                showToast("Sản phẩm đã có trong giỏ hàng\nSố lượng vượt quá giới hạn");
+                DetailProductActivity.modalAddToCart.dismiss();
+                break;
+            case "cart/product-is-temporarily-out-of-stock":
+                showToast("Sản phẩm tạm hết hàng, không thể đặt");
                 DetailProductActivity.modalAddToCart.dismiss();
                 break;
             default:

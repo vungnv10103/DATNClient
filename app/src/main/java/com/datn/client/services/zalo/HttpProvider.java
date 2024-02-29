@@ -43,10 +43,14 @@ public class HttpProvider {
             Response response = client.newCall(request).execute();
 
             if (!response.isSuccessful()) {
-                Log.println(Log.ERROR, "BAD_REQUEST", response.body().string());
+                if (response.body() != null) {
+                    Log.println(Log.ERROR, "BAD_REQUEST", response.body().string());
+                }
                 data = null;
             } else {
-                data = new JSONObject(response.body().string());
+                if (response.body() != null) {
+                    data = new JSONObject(response.body().string());
+                }
             }
 
         }  catch (IOException | JSONException e) {

@@ -2,6 +2,7 @@ package com.datn.client.ui;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.CountDownTimer;
 
 import com.datn.client.R;
@@ -46,6 +47,24 @@ public class MyDialog {
                 .setMessage(message)
                 .setIcon(R.drawable.logo)
                 .setPositiveButton(android.R.string.ok, (dialog, whichButton) -> dialog.dismiss())
+                .show();
+    }
+
+    public void startDlgOKWithAction(Context context, String message, DialogInterface.OnClickListener action) {
+        new AlertDialog.Builder(context)
+                .setTitle(context.getString(R.string.notifications))
+                .setMessage(message)
+                .setIcon(R.drawable.logo)
+                .setPositiveButton(android.R.string.ok, action)
+                .show();
+    }
+
+    public void startDlgOKWithAction(Context context, String title, String message, DialogInterface.OnClickListener action) {
+        new AlertDialog.Builder(context)
+                .setTitle(title)
+                .setMessage(message)
+                .setIcon(R.drawable.logo)
+                .setPositiveButton(android.R.string.ok, action)
                 .show();
     }
 }

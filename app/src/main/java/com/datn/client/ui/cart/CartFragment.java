@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,7 +26,7 @@ import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.MyDialog;
 import com.datn.client.ui.checkout.CheckoutActivity;
-import com.datn.client.ui.product.ProductPresenter;
+import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.datn.client.utils.PreferenceManager;
@@ -41,10 +40,10 @@ public class CartFragment extends Fragment implements ICartView {
     private CartPresenter cartPresenter;
     private PreferenceManager preferenceManager;
     private CircularProgressIndicator progressBarCart;
-    private NestedScrollView layoutCart;
+
     private TextView tvTotal;
     private CheckBox cbAllCart;
-    private Button btnCheckout;
+    private Button btnCheckout, btnGoShopping;
 
     private RecyclerView rcvCart;
 
@@ -84,6 +83,7 @@ public class CartFragment extends Fragment implements ICartView {
     public void onStart() {
         super.onStart();
         requireActivity().runOnUiThread(() -> {
+            setLoading(true);
             resetValue();
             cartPresenter.getDataCart();
             initEventClick();
@@ -94,6 +94,7 @@ public class CartFragment extends Fragment implements ICartView {
     @SuppressLint("SetTextI18n")
     private void displayCart() {
         requireActivity().runOnUiThread(() -> {
+            resetValue();
             if (getContext() != null && getContext() instanceof Activity && !((Activity) getContext()).isFinishing()) {
                 if (mProductCart.size() == 0) {
                     if (cartAdapter != null) {
@@ -122,15 +123,17 @@ public class CartFragment extends Fragment implements ICartView {
                 cartAdapter.updateList(mProductCart);
             }
             for (ProductCart productCart : mProductCart) {
-                if (productCart.getStatus_cart() == ProductPresenter.STATUS_CART.SELECTED.getValue()) {
+                if (productCart.getStatus_cart() == STATUS_CART.SELECTED.getValue()) {
                     countCartSelected++;
                     priceCartSelected += Integer.parseInt(productCart.getPrice()) * Integer.parseInt(productCart.getQuantity_cart());
                 }
             }
             if (mProductCart.size() == 0) {
                 setLoading(false);
+                setLayoutEmpty(true);
                 return;
             }
+            setLayoutEmpty(false);
             cbAllCart.setText("Tất cả(" + mProductCart.size() + ")");
             cbAllCart.setChecked(countCartSelected == mProductCart.size());
             tvTotal.setText(Currency.formatCurrency(String.valueOf(priceCartSelected)));
@@ -153,7 +156,6 @@ public class CartFragment extends Fragment implements ICartView {
     @Override
     public void onUpdateQuantity(String cartID, int position, String type, int value) {
         requireActivity().runOnUiThread(() -> {
-            resetValue();
             setLoading(true);
             cartPresenter.updateQuantity(cartID, type, value);
         });
@@ -162,7 +164,6 @@ public class CartFragment extends Fragment implements ICartView {
     @Override
     public void onUpdateStatus(String cartID, int position, int value) {
         requireActivity().runOnUiThread(() -> {
-            resetValue();
             setLoading(true);
             cartPresenter.updateStatus(cartID, value);
         });
@@ -194,11 +195,24 @@ public class CartFragment extends Fragment implements ICartView {
         cartPresenter = new CartPresenter(this, apiService, mToken, mCustomer.get_id());
     }
 
+    private void setLayoutEmpty(boolean isEmpty) {
+        if (isEmpty) {
+            binding.layoutCartEmpty.setVisibility(View.VISIBLE);
+            binding.layoutPrice.setVisibility(View.GONE);
+            binding.layoutCart.setVisibility(View.GONE);
+        } else {
+            binding.layoutCartEmpty.setVisibility(View.GONE);
+            binding.layoutPrice.setVisibility(View.VISIBLE);
+            binding.layoutCart.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void setLoading(boolean isLoading) {
         requireActivity().runOnUiThread(() -> {
             this.isLoading = isLoading;
             progressBarCart.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-            layoutCart.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
+            binding.layoutPrice.setVisibility(!isLoading ? View.VISIBLE : View.GONE);
+            binding.layoutCart.setVisibility(!isLoading ? View.VISIBLE : View.GONE);
         });
     }
 
@@ -208,35 +222,32 @@ public class CartFragment extends Fragment implements ICartView {
     }
 
     private void initEventClick() {
-        btnCheckout.setOnClickListener(v -> {
-            requireActivity().runOnUiThread(() -> {
-                if (!isLoading) {
-                    if (countCartSelected == 0) {
-                        showToast("Vui lòng chọn sản phẩm để thanh toán!");
-                    } else {
-                        startActivity(new Intent(requireActivity(), CheckoutActivity.class));
-                    }
+        btnCheckout.setOnClickListener(v -> requireActivity().runOnUiThread(() -> {
+            if (!isLoading) {
+                if (countCartSelected == 0) {
+                    showToast("Vui lòng chọn sản phẩm để thanh toán!");
+                } else {
+                    startActivity(new Intent(requireActivity(), CheckoutActivity.class));
                 }
-            });
-
-        });
-        cbAllCart.setOnClickListener(v -> {
-            requireActivity().runOnUiThread(() -> {
-                resetValue();
-                boolean isChecked = cbAllCart.isChecked();
-                setLoading(true);
-                requireActivity().runOnUiThread(() -> cartPresenter.updateStatusAll(isChecked));
-            });
+            }
+        }));
+        cbAllCart.setOnClickListener(v -> requireActivity().runOnUiThread(() -> {
+            boolean isChecked = cbAllCart.isChecked();
+            setLoading(true);
+            requireActivity().runOnUiThread(() -> cartPresenter.updateStatusAll(isChecked));
+        }));
+        btnGoShopping.setOnClickListener(v -> {
+            showToast("123");
         });
     }
 
     private void initUI() {
         progressBarCart = binding.progressbarCart;
-        layoutCart = binding.layoutCart;
         rcvCart = binding.rcvCart;
         tvTotal = binding.tvTotal;
         cbAllCart = binding.cbSelectedAll;
         btnCheckout = binding.btnCheckout;
+        btnGoShopping = binding.btnGoShopping;
     }
 
 

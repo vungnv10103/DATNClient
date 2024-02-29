@@ -1,5 +1,6 @@
 package com.datn.client.ui.product;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -93,7 +94,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     private void displayVideo() {
         spinKitVideo.setVisibility(View.GONE);
         playerView.setVisibility(View.VISIBLE);
-        player.play();
+//        player.play();
     }
 
     private void setPlayer() {
@@ -110,9 +111,10 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
         displayVideo();
     }
 
+    @SuppressLint("SetTextI18n")
     private void displayProduct() {
         tvName.setText(mProduct.getName());
-        tvPrice.setText(Currency.formatCurrency(mProduct.getPrice()));
+        tvPrice.setText("Giá: " + Currency.formatCurrency(mProduct.getPrice()));
         setPlayer();
     }
 

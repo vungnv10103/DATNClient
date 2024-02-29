@@ -15,6 +15,33 @@
         android:indeterminate="true"
         android:visibility="visible" />
 
+    <LinearLayout
+        android:id="@+id/layout_cart_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/img_cart_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/cart_empty"
+            tools:ignore="ContentDescription" />
+
+        <Button
+            android:id="@+id/btn_go_shopping"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="30dp"
+            android:fontFamily="@font/inter_bold"
+            android:paddingVertical="15dp"
+            android:text="@string/go_shopping"
+            android:textSize="18sp" />
+    </LinearLayout>
+
     <!-- NestedScrollingChild goes here (NestedScrollView, RecyclerView, etc.). -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/layout_cart"
@@ -23,7 +50,7 @@
         android:paddingBottom="?attr/actionBarSize"
         android:scrollbarSize="2dp"
         android:scrollbars="none"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_behavior="@string/searchbar_scrolling_view_behavior"
         tools:ignore="PrivateResource">
         <!-- Screen content goes here. -->
@@ -41,7 +68,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginBottom="10dp"
-        android:paddingHorizontal="5dp">
+        android:paddingHorizontal="5dp"
+        android:visibility="gone">
 
         <CheckBox
             android:id="@+id/cb_selected_all"

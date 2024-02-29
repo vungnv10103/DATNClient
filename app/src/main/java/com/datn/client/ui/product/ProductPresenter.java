@@ -138,7 +138,23 @@ public class ProductPresenter {
         }
     }
 
+    public enum STATUS_PRODUCT {
+        OUT_OF_STOCK(0),
+        STOCKING(1);
+        private final int value;
+
+        STATUS_PRODUCT(final int newValue) {
+            value = newValue;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
+
     public enum STATUS_CART {
+        DELETED(-1),
         DEFAULT(0),
         SELECTED(1),
         BUYING(2);

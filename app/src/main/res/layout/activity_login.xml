@@ -7,17 +7,16 @@
     android:scrollbars="none"
     tools:context=".ui.LoginActivity">
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center">
+        android:layout_height="wrap_content">
 
         <com.github.ybq.android.spinkit.SpinKitView
             android:id="@+id/spin_kit_loading"
             style="@style/SpinKitView.Large.FadingCircle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            android:layout_gravity="center"
             android:maxWidth="48dip"
             android:maxHeight="48dip"
             android:minWidth="48dip"
@@ -173,9 +172,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
+                        android:fontFamily="@font/inter_bold"
                         android:text="OR"
                         android:textSize="20sp"
-                        android:fontFamily="@font/inter_bold"
                         tools:ignore="HardcodedText" />
 
                     <ImageView
@@ -224,7 +223,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
         </RelativeLayout>
-    </RelativeLayout>
+    </FrameLayout>
 
 
 </ScrollView>

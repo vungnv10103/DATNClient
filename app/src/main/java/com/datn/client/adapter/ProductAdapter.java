@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.datn.client.R;
 import com.datn.client.action.IAction;
 import com.datn.client.models.Product;
+import com.datn.client.ui.product.ProductPresenter.STATUS_PRODUCT;
 import com.datn.client.utils.Currency;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             String price = product.getPrice();
             String formattedAmount = Currency.formatCurrency(price);
             holder.tvPrice.setText(formattedAmount);
-            holder.tvStatus.setText(product.getStatus());
+            holder.tvStatus.setText(Integer.parseInt(product.getStatus()) == STATUS_PRODUCT.STOCKING.getValue() ? "Đang bán" : "Tạm hết hàng");
             holder.tvSold.setText("Đã bán: " + product.getSold());
 
             holder.itemView.setOnClickListener(v -> iActionProduct.onClick(product));
@@ -68,11 +69,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvName = (TextView) itemView.findViewById(R.id.tv_name);
-            tvSold = (TextView) itemView.findViewById(R.id.tv_sold);
-            tvPrice = (TextView) itemView.findViewById(R.id.tv_price);
-            tvStatus = (TextView) itemView.findViewById(R.id.tv_status);
-            imgProduct = (ImageView) itemView.findViewById(R.id.img_product);
+            tvName = itemView.findViewById(R.id.tv_name);
+            tvSold = itemView.findViewById(R.id.tv_sold);
+            tvPrice = itemView.findViewById(R.id.tv_price);
+            tvStatus = itemView.findViewById(R.id.tv_status);
+            imgProduct = itemView.findViewById(R.id.img_product);
         }
     }
 }

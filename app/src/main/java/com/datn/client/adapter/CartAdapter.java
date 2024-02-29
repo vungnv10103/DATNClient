@@ -27,11 +27,14 @@ import com.datn.client.action.IAction;
 import com.datn.client.models.ProductCart;
 import com.datn.client.ui.cart.ICartView;
 import com.datn.client.ui.product.DetailProductActivity;
+import com.datn.client.ui.product.ProductPresenter;
 import com.datn.client.utils.Currency;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 import java.util.Objects;
+
+import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     private final List<ProductCart> productCarts;
@@ -86,15 +89,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
         holder.cbSelected.setOnClickListener(v -> {
             boolean isChecked = holder.cbSelected.isChecked();
-            iCartView.onUpdateStatus(productCart.get_id(), position, isChecked ? 1 : 0);
+            iCartView.onUpdateStatus(productCart.get_id(), position, isChecked ? STATUS_CART.SELECTED.getValue() : STATUS_CART.DEFAULT.getValue());
         });
         holder.layoutCart.setOnClickListener(v -> iActionCart.onClick(productCart));
 
 
         // Drag layout
-        holder.btnGoShop.setOnClickListener(v -> doGoShop(context, productCart.getProduct_id()));
-        holder.layoutGoShop.setOnClickListener(v -> doGoShop(context, productCart.getProduct_id()));
 
+        holder.layoutGoShop.setOnClickListener(v -> doGoShop(context, productCart.getProduct_id()));
+        holder.btnGoShop.setOnClickListener(v -> doGoShop(context, productCart.getProduct_id()));
+        holder.layoutDelete.setOnClickListener(v -> iCartView.onUpdateStatus(productCart.get_id(), position, STATUS_CART.DELETED.getValue()));
+        holder.btnDelete.setOnClickListener(v -> iCartView.onUpdateStatus(productCart.get_id(), position, STATUS_CART.DELETED.getValue()));
 
     }
 
@@ -106,12 +111,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final SwipeLayout swipeLayout;
-        private final LinearLayout dragLayout, layoutGoShop;
+        private final LinearLayout dragLayout, layoutDelete, layoutGoShop;
         private final RelativeLayout layoutCart;
         private final ImageView imgProduct;
-        private final MaterialButton btnGoShop;
         private final TextView tvName, tvQuantity, tvPrice, tvOptions, tv_go_shop, tv_delete, tv_buy_now;
-        private final MaterialButton btnMinus, btnPlus;
+        private final MaterialButton btnMinus, btnPlus, btnDelete, btnGoShop;
         private final CheckBox cbSelected;
 
 
@@ -121,12 +125,14 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             swipeLayout = itemView.findViewById(R.id.swipe_cart);
             dragLayout = itemView.findViewById(R.id.bottom_wrapper);
             layoutCart = itemView.findViewById(R.id.layout_cart);
+            layoutDelete = itemView.findViewById(R.id.layout_delete);
             layoutGoShop = itemView.findViewById(R.id.layout_go_shop);
             imgProduct = itemView.findViewById(R.id.img_product);
             tvName = itemView.findViewById(R.id.tv_name);
             tvQuantity = itemView.findViewById(R.id.tv_quantity);
             tvPrice = itemView.findViewById(R.id.tv_price);
             tvOptions = itemView.findViewById(R.id.tv_options);
+            btnDelete = itemView.findViewById(R.id.btn_delete);
             btnGoShop = itemView.findViewById(R.id.btn_go_shop);
             tv_go_shop = itemView.findViewById(R.id.tv_go_shop);
             tv_delete = itemView.findViewById(R.id.tv_delete);

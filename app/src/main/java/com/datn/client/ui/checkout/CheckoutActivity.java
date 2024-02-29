@@ -1,5 +1,6 @@
 package com.datn.client.ui.checkout;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -163,7 +164,17 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     @Override
     public void onThrowMessage(String message) {
         setLoading(false);
-        MyDialog.gI().startDlgOK(this, message);
+        switch (message) {
+            case "order/create-order-zalopay-success":
+                MyDialog.gI().startDlgOKWithAction(this, "Đặt hàng thành công", (dialog, which) -> {
+                    finish();
+                });
+                break;
+            case "":
+            default:
+                MyDialog.gI().startDlgOK(this, message);
+                break;
+        }
     }
 
     private Customer getLogin() {
@@ -207,10 +218,18 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         try {
             JSONObject data = orderApi.createOrder(amount);
             String code = data.getString("return_code");
-            if (code.equals("1")) {
-                String token = data.getString("zp_trans_token");
-                Log.w(TAG, "createOrderZaloPay: " + token);
-                payOrderZaloPay(token);
+            switch (code) {
+                case "1":
+                    String token = data.getString("zp_trans_token");
+                    Log.w(TAG, "createOrderZaloPay: Successful: " + token);
+                    payOrderZaloPay(token);
+                    break;
+                case "2":
+                    Log.w(TAG, "createOrderZaloPay: Error: FAIL");
+                    break;
+                case "3":
+                    Log.w(TAG, "createOrderZaloPay: Pending: PROCESSING");
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -230,14 +249,20 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
 
             @Override
             public void onPaymentCanceled(String zpTransToken, String appTransID) {
-                runOnUiThread(() -> MyDialog.gI().startDlgOK(CheckoutActivity.this, "User Cancel Payment",
-                        String.format("zpTransToken: %s \n", zpTransToken)));
+                runOnUiThread(() -> {
+                    setLoading(false);
+                    MyDialog.gI().startDlgOK(CheckoutActivity.this, "User Cancel Payment",
+                            String.format("zpTransToken: %s \n", zpTransToken));
+                });
             }
 
             @Override
             public void onPaymentError(ZaloPayError zaloPayError, String zpTransToken, String appTransID) {
-                runOnUiThread(() -> MyDialog.gI().startDlgOK(CheckoutActivity.this, "Payment Fail",
-                        String.format("ZaloPayErrorCode: %s \nTransToken: %s", zaloPayError.toString(), zpTransToken)));
+                runOnUiThread(() -> {
+                    setLoading(false);
+                    MyDialog.gI().startDlgOK(CheckoutActivity.this, "Payment Fail",
+                            String.format("ZaloPayErrorCode: %s \nTransToken: %s", zaloPayError.toString(), zpTransToken));
+                });
             }
         });
     }
@@ -249,11 +274,12 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
 
     private void initEventClick() {
         eventPaymentMethod();
-        int type = isDelivery ? PAYMENT_METHOD.ON_DELIVERY.getValue() : isEBanking ? PAYMENT_METHOD.E_BANKING.getValue() : PAYMENT_METHOD.ZALO_PAY.getValue();
         binding.btnPayment.setOnClickListener(v -> {
             if (!isLoading) {
-                setLoading(true);
-                checkoutPresenter.getAmountZaloPay(type);
+                if (isZaloPay) {
+                    setLoading(true);
+                    checkoutPresenter.getAmountZaloPay(PAYMENT_METHOD.ZALO_PAY.getValue());
+                }
             }
         });
     }
