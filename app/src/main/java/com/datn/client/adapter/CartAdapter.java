@@ -3,8 +3,6 @@ package com.datn.client.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +15,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -27,14 +26,12 @@ import com.datn.client.action.IAction;
 import com.datn.client.models.ProductCart;
 import com.datn.client.ui.cart.ICartView;
 import com.datn.client.ui.product.DetailProductActivity;
-import com.datn.client.ui.product.ProductPresenter;
+import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 import com.datn.client.utils.Currency;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
 import java.util.Objects;
-
-import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     private final List<ProductCart> productCarts;
@@ -68,17 +65,22 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.tvPrice.setText(Currency.formatCurrency(String.valueOf(priceOne * quantityCart)));
         holder.tvQuantity.setText(String.valueOf(quantityCart));
         holder.tvOptions.setText(productCart.getCreated_at());
-        holder.cbSelected.setChecked(productCart.getStatus_cart() == 1);
-
+        holder.cbSelected.setChecked(productCart.getStatus_cart() == STATUS_CART.SELECTED.getValue());
+        boolean isNightMode = isNightMode(context);
+        int colorId;
+        if (isNightMode) {
+            colorId = ContextCompat.getColor(context, R.color.black_200);
+        } else {
+            colorId = ContextCompat.getColor(context, R.color.tutu);
+        }
+        holder.layoutCart.setBackgroundColor(colorId);
 
         if (quantityCart <= 1) {
             holder.btnMinus.setIconTintResource(R.color.gray_400);
             holder.btnPlus.setIconTintResource(R.color.big_stone);
-
         } else if (quantityCart >= Math.min(quantityProduct, 20)) {
             holder.btnMinus.setIconTintResource(R.color.big_stone);
             holder.btnPlus.setIconTintResource(R.color.gray_400);
-
         }
         holder.btnPlus.setOnClickListener(v -> iCartView.onUpdateQuantity(productCart.get_id(), position, "plus", 1));
         holder.btnMinus.setOnClickListener(v -> iCartView.onUpdateQuantity(productCart.get_id(), position, "minus", 1));
@@ -100,6 +102,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.btnGoShop.setOnClickListener(v -> doGoShop(context, productCart.getProduct_id()));
         holder.layoutDelete.setOnClickListener(v -> iCartView.onUpdateStatus(productCart.get_id(), position, STATUS_CART.DELETED.getValue()));
         holder.btnDelete.setOnClickListener(v -> iCartView.onUpdateStatus(productCart.get_id(), position, STATUS_CART.DELETED.getValue()));
+        holder.layoutBuyNow.setOnClickListener(v -> iCartView.onBuyNow(productCart.get_id()));
+        holder.btnBuyNow.setOnClickListener(v -> iCartView.onBuyNow(productCart.get_id()));
 
     }
 
@@ -111,11 +115,11 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final SwipeLayout swipeLayout;
-        private final LinearLayout dragLayout, layoutDelete, layoutGoShop;
+        private final LinearLayout dragLayout, layoutDelete, layoutGoShop, layoutBuyNow;
         private final RelativeLayout layoutCart;
         private final ImageView imgProduct;
         private final TextView tvName, tvQuantity, tvPrice, tvOptions, tv_go_shop, tv_delete, tv_buy_now;
-        private final MaterialButton btnMinus, btnPlus, btnDelete, btnGoShop;
+        private final MaterialButton btnMinus, btnPlus, btnDelete, btnGoShop, btnBuyNow;
         private final CheckBox cbSelected;
 
 
@@ -127,6 +131,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             layoutCart = itemView.findViewById(R.id.layout_cart);
             layoutDelete = itemView.findViewById(R.id.layout_delete);
             layoutGoShop = itemView.findViewById(R.id.layout_go_shop);
+            layoutBuyNow = itemView.findViewById(R.id.layout_buy_now);
             imgProduct = itemView.findViewById(R.id.img_product);
             tvName = itemView.findViewById(R.id.tv_name);
             tvQuantity = itemView.findViewById(R.id.tv_quantity);
@@ -134,6 +139,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             tvOptions = itemView.findViewById(R.id.tv_options);
             btnDelete = itemView.findViewById(R.id.btn_delete);
             btnGoShop = itemView.findViewById(R.id.btn_go_shop);
+            btnBuyNow = itemView.findViewById(R.id.btn_buy_now);
             tv_go_shop = itemView.findViewById(R.id.tv_go_shop);
             tv_delete = itemView.findViewById(R.id.tv_delete);
             tv_buy_now = itemView.findViewById(R.id.tv_buy_now);
@@ -210,10 +216,17 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         return view.getMeasuredHeight();
     }
 
+    private static boolean isNightMode(Context context) {
+        return context.getResources().getBoolean(R.bool.isNight);
+    }
+
     private static void doGoShop(Context context, String productID) {
         Intent intent = new Intent(context, DetailProductActivity.class);
         intent.putExtra("productID", productID);
         context.startActivity(intent);
+    }
+    private static void doBuyNow(Context context, String cartID) {
+
     }
 
     public void updateList(List<ProductCart> newList) {

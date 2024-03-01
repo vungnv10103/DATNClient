@@ -25,7 +25,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
-        if (message.getData().size() > 0) {
+        if (!message.getData().isEmpty()) {
             String title = message.getData().get("title");
             String body = message.getData().get("body");
             Log.w("onMessageReceived", title + "-" + body);

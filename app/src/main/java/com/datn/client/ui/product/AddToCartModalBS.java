@@ -38,11 +38,13 @@ public class AddToCartModalBS extends BottomSheetDialogFragment implements IProd
     private final ApiService apiService;
     private final String token;
     private final String customerID;
+    private final int mType;
 
-    public AddToCartModalBS(ApiService apiService, String token, String customerID) {
+    public AddToCartModalBS(ApiService apiService, String token, String customerID, int type) {
         this.apiService = apiService;
         this.token = token;
         this.customerID = customerID;
+        this.mType = type;
     }
 
 
@@ -77,6 +79,11 @@ public class AddToCartModalBS extends BottomSheetDialogFragment implements IProd
             } else {
                 tvPriceTemp.setText("Tạm tính: " + Currency.formatCurrency(mProduct.getPrice()));
             }
+            if (mType == 0) {
+                btnAddToCart.setText(getString(R.string.buy_now));
+            } else if (mType == 1) {
+                btnAddToCart.setText(getString(R.string.add_to_cart));
+            }
             initEventClick();
         }
     }
@@ -89,7 +96,12 @@ public class AddToCartModalBS extends BottomSheetDialogFragment implements IProd
         btnAddToCart.setOnClickListener(v -> {
             int quantity = Integer.parseInt(tvQuantity.getText().toString().trim());
             String notes = ""; // custom note
-            productPresenter.addToCart(mProduct.get_id(), quantity, notes);
+            if (mType == DetailProductActivity.TYPE_BUY.ADD_TO_CART.getValue()) {
+                productPresenter.addToCart(mProduct.get_id(), quantity, notes);
+            } else if (mType == DetailProductActivity.TYPE_BUY.BUY_NOW.getValue()) {
+                productPresenter.buyNow(requireActivity(), mProduct.get_id(), quantity, notes);
+            }
+
         });
         btnMinus.setOnClickListener(v -> setBtnMinus());
         btnPlus.setOnClickListener(v -> setBtnPlus());

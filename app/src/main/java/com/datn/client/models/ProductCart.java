@@ -2,7 +2,9 @@ package com.datn.client.models;
 
 import androidx.annotation.NonNull;
 
-public class ProductCart extends _BaseModel {
+import java.io.Serializable;
+
+public class ProductCart extends _BaseModel implements Serializable {
     private String product_id;
 
     private String name;

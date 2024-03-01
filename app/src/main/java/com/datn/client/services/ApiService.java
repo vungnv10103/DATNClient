@@ -90,6 +90,16 @@ public interface ApiService {
                                               @Field("customerID") String customerID,
                                               @Field("isSelected") boolean isSelected);
 
+    @POST("/v1/api/cart/buynow")
+    Call<ProductCartResponse> buyNow(@Header("Authorization") String token, @Body Cart cart);
+
+    @FormUrlEncoded
+    @POST("/v1/api/cart/buynow-cart")
+    Call<ProductCartResponse> buyNow(@Header("Authorization") String token,
+                                     @Field("customerID") String customerID,
+                                     @Field("cartID") String cartID);
+
+
     @FormUrlEncoded
     @POST("/v1/api/checkout/get/product")
     Call<ProductCartResponse> getProductCheckout(@Header("Authorization") String token,

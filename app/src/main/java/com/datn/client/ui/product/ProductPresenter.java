@@ -1,15 +1,21 @@
 package com.datn.client.ui.product;
 
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.datn.client.models.Cart;
 import com.datn.client.models.Product;
+import com.datn.client.models.ProductCart;
+import com.datn.client.response.ProductCartResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.response.ProductResponse;
 import com.datn.client.services.ApiService;
+import com.datn.client.ui.checkout.CheckoutActivity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,6 +144,45 @@ public class ProductPresenter {
         }
     }
 
+    public void buyNow(Context context, String productID, int quantity, String notes) {
+        try {
+            Cart cart = new Cart(customerID, productID, quantity, STATUS_CART.BUYING.getValue(), notes);
+            Call<ProductCartResponse> buyNow = apiService.buyNow(token, cart);
+            buyNow.enqueue(new Callback<ProductCartResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<ProductCartResponse> call, @NonNull Response<ProductCartResponse> response) {
+                    if (response.body() != null) {
+                        if (response.body().getStatusCode() == 200) {
+                            Log.w(TAG, "onResponse200: getProductByCateID: " + response.body().getCode());
+                            List<ProductCart> dataProduct = response.body().getProductCarts();
+                            Intent intent = new Intent(context, CheckoutActivity.class);
+                            intent.putExtra("productCart", (Serializable) dataProduct);
+                            context.startActivity(intent);
+                        } else if (response.body().getStatusCode() == 400) {
+                            Log.w(TAG, "onResponse400: getProductByCateID: " + response.body().getCode());
+                            iProductView.onThrowMessage(response.body().getCode());
+                        } else {
+                            Log.w(TAG, "onResponse: " + response.body().getCode());
+                            iProductView.onThrowMessage(response.body().getCode());
+                        }
+                    } else {
+                        Log.w(TAG, "onResponse: " + response);
+                        iProductView.onThrowMessage("body null");
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<ProductCartResponse> call, @NonNull Throwable t) {
+                    iProductView.onThrowMessage(t.getMessage());
+                }
+            });
+        } catch (Exception e) {
+            Log.w(TAG, "buyNow: " + e.getMessage());
+            iProductView.onThrowMessage(e.getMessage());
+        }
+
+    }
+
     public enum STATUS_PRODUCT {
         OUT_OF_STOCK(0),
         STOCKING(1);
@@ -157,7 +202,8 @@ public class ProductPresenter {
         DELETED(-1),
         DEFAULT(0),
         SELECTED(1),
-        BUYING(2);
+        BOUGHT(2),
+        BUYING(3);
         private final int value;
 
         STATUS_CART(final int newValue) {

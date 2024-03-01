@@ -178,9 +178,11 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
             showToast("message");
         });
         btnBuyNow.setOnClickListener(v -> {
+            modalAddToCart = new AddToCartModalBS(apiService, mToken, mCustomer.get_id(), TYPE_BUY.BUY_NOW.getValue());
+            modalAddToCart.show(getSupportFragmentManager(), AddToCartModalBS.TAG);
         });
         btnAddToCart.setOnClickListener(v -> {
-            modalAddToCart = new AddToCartModalBS(apiService, mToken, mCustomer.get_id());
+            modalAddToCart = new AddToCartModalBS(apiService, mToken, mCustomer.get_id(), TYPE_BUY.ADD_TO_CART.getValue());
             modalAddToCart.show(getSupportFragmentManager(), AddToCartModalBS.TAG);
         });
     }
@@ -239,6 +241,20 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
 
     public static Product getProduct() {
         return mProduct;
+    }
+
+    public enum TYPE_BUY {
+        BUY_NOW(0),
+        ADD_TO_CART(1);
+        private final int value;
+
+        TYPE_BUY(final int newValue) {
+            value = newValue;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 
 

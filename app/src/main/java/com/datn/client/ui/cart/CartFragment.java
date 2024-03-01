@@ -96,7 +96,7 @@ public class CartFragment extends Fragment implements ICartView {
         requireActivity().runOnUiThread(() -> {
             resetValue();
             if (getContext() != null && getContext() instanceof Activity && !((Activity) getContext()).isFinishing()) {
-                if (mProductCart.size() == 0) {
+                if (mProductCart.isEmpty()) {
                     if (cartAdapter != null) {
                         System.out.println("displayCart");
                         cartAdapter.updateList(mProductCart);
@@ -105,13 +105,7 @@ public class CartFragment extends Fragment implements ICartView {
             }
             if (cartAdapter == null) {
                 cartAdapter = new CartAdapter(requireActivity(), mProductCart, cart -> {
-                    String cartID = cart.get_id();
-                    for (ProductCart productCart : mProductCart) {
-                        if (productCart.get_id().equals(cartID)) {
-                            System.out.println(productCart);
-                            showToast(productCart.toString());
-                        }
-                    }
+
                 }, this);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
                 linearLayoutManager.setSmoothScrollbarEnabled(true);
@@ -128,7 +122,7 @@ public class CartFragment extends Fragment implements ICartView {
                     priceCartSelected += Integer.parseInt(productCart.getPrice()) * Integer.parseInt(productCart.getQuantity_cart());
                 }
             }
-            if (mProductCart.size() == 0) {
+            if (mProductCart.isEmpty()) {
                 setLoading(false);
                 setLayoutEmpty(true);
                 return;
@@ -169,6 +163,10 @@ public class CartFragment extends Fragment implements ICartView {
         });
     }
 
+    @Override
+    public void onBuyNow(String cartID) {
+        cartPresenter.buyNow(requireActivity(), cartID);
+    }
 
     private Customer getLogin() {
         Gson gson = new Gson();

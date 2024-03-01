@@ -68,7 +68,6 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     private HashMap<Integer, String> mPaymentMethod;
     private List<PaymentMethod> paymentMethodList;
     private List<ProductCart> mProductCart;
-    private int mTotalPrice;
 
     public boolean isLoading = false;
 
@@ -100,8 +99,16 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     @Override
     protected void onStart() {
         super.onStart();
+        setLoading(true);
+        Intent i = getIntent();
+        List<ProductCart> dataProductCarts = (List<ProductCart>) i.getSerializableExtra("productCart");
+        if (dataProductCarts != null) {
+            this.mProductCart = dataProductCarts;
+            displayProductCart();
+        } else {
+            checkoutPresenter.getProductCheckout();
+        }
 
-        checkoutPresenter.getProductCheckout();
 //        checkoutPresenter.getPaymentMethod();
     }
 
@@ -121,13 +128,15 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
             count += quantityCart;
             price += Integer.parseInt(productCart.getPrice()) * quantityCart;
         }
-        this.mTotalPrice = price;
         binding.tvQuantity.setText(String.valueOf(count));
         binding.tvTotalPrice.setText(Currency.formatCurrency(String.valueOf(price)));
-        binding.tvPricePayment.setText(Currency.formatCurrency(String.valueOf(mTotalPrice)));
+        binding.tvPricePayment.setText(Currency.formatCurrency(String.valueOf(price)));
     }
 
     private void displayProductCart() {
+        if (mProductCart.isEmpty()) {
+            finish();
+        }
         ProductCheckoutAdapter productCheckoutAdapter = new ProductCheckoutAdapter(this, mProductCart);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         linearLayoutManager.setSmoothScrollbarEnabled(true);
@@ -135,6 +144,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         rcvProduct.setAdapter(productCheckoutAdapter);
         progressBarProduct.setVisibility(View.GONE);
         rcvProduct.setVisibility(View.VISIBLE);
+        setLoading(false);
     }
 
     @Override

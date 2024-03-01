@@ -1,4 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <bool name="isNight">true</bool>
     <!-- Base application theme. -->
     <style name="Theme.Stech" parent="Theme.Material3.DynamicColors.DayNight">
         <!-- Primary brand color. -->
@@ -24,6 +25,7 @@
         <item name="materialThemeOverlay">@style/ThemeOverlay.App.Card</item>
         <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
     </style>
+
     <style name="ThemeOverlay.App.Card" parent="">
         <item name="colorSecondary">@color/blue_400</item>
         <item name="colorSurface">@color/teal_200</item>
