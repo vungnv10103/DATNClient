@@ -4,6 +4,7 @@ import com.datn.client.models.Cart;
 import com.datn.client.models.Customer;
 import com.datn.client.response.BannerResponse;
 import com.datn.client.response.CreateOrderResponse;
+import com.datn.client.response.EBankingResponse;
 import com.datn.client.response.PaymentMethodResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.response.CategoryResponse;
@@ -109,5 +110,12 @@ public interface ApiService {
     @POST("/v1/api/order/create/zalopay")
     Call<_BaseResponse> createOrderZaloPay(@Header("Authorization") String token,
                                            @Field("customerID") String customerID);
+
+    @FormUrlEncoded
+    @POST("/v1/api/order/create_payment_url")
+    Call<EBankingResponse> createPaymentURL(@Header("Authorization") String token,
+                                            @Field("customerID") String customerID,
+                                            @Field("bankCode") String bankCode,
+                                            @Field("language") String language);
 
 }

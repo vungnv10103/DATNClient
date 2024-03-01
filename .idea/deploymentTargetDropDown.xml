@@ -4,7 +4,30 @@
     <value>
       <entry key="app">
         <State>
-          <targetSelectedWithDropDown>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="SERIAL_NUMBER" />
+                  <value value="bd2b9081" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-03-01T07:49:34.050273800Z" />
+          <runningDeviceTargetsSelectedWithDialog>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="SERIAL_NUMBER" />
+                  <value value="bd2b9081" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetsSelectedWithDialog>
+          <targetsSelectedWithDialog>
             <Target>
               <type value="QUICK_BOOT_TARGET" />
               <deviceKey>
@@ -14,8 +37,7 @@
                 </Key>
               </deviceKey>
             </Target>
-          </targetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-02-29T09:39:31.949564900Z" />
+          </targetsSelectedWithDialog>
         </State>
       </entry>
     </value>

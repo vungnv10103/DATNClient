@@ -79,7 +79,7 @@ public class CartPresenter {
                             iCartView.onListCart(dataProductCart);
                         } else if (statusCode == 400) {
                             Log.w(TAG, "onResponse400: updateQuantity: " + code);
-                            iCartView.onThrowMessage(response.body().getCode());
+                            iCartView.onThrowMessage(code);
                         } else {
                             Log.w(TAG, "onResponse: " + code);
                             iCartView.onThrowMessage(code);

@@ -1,6 +1,5 @@
 package com.datn.client.ui.checkout;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -15,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.datn.client.activity.EBankingActivity;
 import com.datn.client.adapter.PaymentMethodAdapter;
 import com.datn.client.adapter.ProductCheckoutAdapter;
 import com.datn.client.databinding.ActivityCheckoutBinding;
@@ -232,7 +232,8 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
                     break;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.w(TAG, "createOrderZaloPay: " + e.getMessage());
+            MyDialog.gI().startDlgOK(CheckoutActivity.this, e.getMessage());
         }
     }
 
@@ -279,10 +280,13 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
                 if (isZaloPay) {
                     setLoading(true);
                     checkoutPresenter.getAmountZaloPay(PAYMENT_METHOD.ZALO_PAY.getValue());
+                } else if (isEBanking) {
+                    startActivity(new Intent(CheckoutActivity.this, EBankingActivity.class));
                 }
             }
         });
     }
+
 
     private void eventPaymentMethod() {
         btnEBanking.setOnClickListener(v -> {

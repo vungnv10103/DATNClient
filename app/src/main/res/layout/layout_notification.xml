@@ -2,6 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="5dp"
     android:layout_height="wrap_content">
 
     <ImageView
@@ -38,7 +40,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:fontFamily="@font/inter_medium"
-            android:maxLength="2"
+            android:maxLines="2"
             android:textSize="14sp" />
     </LinearLayout>
 
