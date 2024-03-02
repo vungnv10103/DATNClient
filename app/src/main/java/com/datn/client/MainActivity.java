@@ -72,8 +72,8 @@ public class MainActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).hide();
         getOnBackPressedDispatcher().addCallback(this, callback);
 
-        @SuppressLint("RestrictedApi") BottomNavigationMenuView mBottomNavigationMenuView =
-                (BottomNavigationMenuView) navView.getChildAt(0);
+        @SuppressLint("RestrictedApi")
+        BottomNavigationMenuView mBottomNavigationMenuView = (BottomNavigationMenuView) navView.getChildAt(0);
         View view = mBottomNavigationMenuView.getChildAt(2);
 
         @SuppressLint("RestrictedApi")
@@ -101,4 +101,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 }

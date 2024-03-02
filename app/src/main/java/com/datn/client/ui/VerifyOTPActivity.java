@@ -186,7 +186,6 @@ public class VerifyOTPActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             if (response.body().getStatusCode() == 200) {
                                 Log.w(TAG, "onResponse200: " + response.body().getCode());
-                                String message;
                                 switch (response.body().getCode()) {
                                     case "auth/login-success":
                                         saveLogin(response.body().getCustomer());
@@ -196,7 +195,6 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                         break;
                                     case "auth/wrong-otp":
                                     default:
-                                        message = response.body().getMessage();
                                         MyDialog.gI().startDlgOK(VerifyOTPActivity.this, response.body().getMessage());
                                         setLoading(false);
                                 }

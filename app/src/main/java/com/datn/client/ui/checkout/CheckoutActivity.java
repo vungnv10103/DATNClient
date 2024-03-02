@@ -177,9 +177,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         setLoading(false);
         switch (message) {
             case "order/create-order-zalopay-success":
-                MyDialog.gI().startDlgOKWithAction(this, "Đặt hàng thành công", (dialog, which) -> {
-                    finish();
-                });
+                MyDialog.gI().startDlgOKWithAction(this, "Đặt hàng thành công", (dialog, which) -> finish());
                 break;
             case "":
             default:
@@ -301,7 +299,13 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
                     }
 
                 } else if (isEBanking) {
-                    startActivity(new Intent(CheckoutActivity.this, EBankingActivity.class));
+                    if (mTypeBuy == TYPE_BUY.ADD_TO_CART.getValue()) {
+                        startActivity(new Intent(CheckoutActivity.this, EBankingActivity.class));
+                    } else if (mTypeBuy == TYPE_BUY.BUY_NOW.getValue()) {
+                        MyDialog.gI().startDlgOK(this, "Updating...");
+                    }
+                } else if (isDelivery) {
+                    MyDialog.gI().startDlgOK(this, "Updating...");
                 }
             }
         });
@@ -388,5 +392,11 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         ZaloPaySDK.getInstance().onResult(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        checkoutPresenter.cancelAPI();
     }
 }

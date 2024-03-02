@@ -26,6 +26,13 @@ public class CheckoutPresenter {
     private final String token;
     private final String customerID;
 
+    private Call<ProductCartResponse> getProductCheckout;
+    private Call<PaymentMethodResponse> getPaymentMethod;
+    private Call<CreateOrderResponse> createOrder;
+    private Call<CreateOrderResponse> getAmountZaloPay;
+    private Call<_BaseResponse> createOrderZaloPay;
+    private Call<_BaseResponse> createOrderZaloPayNow;
+
     public CheckoutPresenter(ICheckoutView iCheckoutView, ApiService apiService, String token, String customerID) {
         this.iCheckoutView = iCheckoutView;
         this.apiService = apiService;
@@ -33,9 +40,30 @@ public class CheckoutPresenter {
         this.customerID = customerID;
     }
 
+    public void cancelAPI() {
+        if (getProductCheckout != null) {
+            getProductCheckout.cancel();
+        }
+        if (getPaymentMethod != null) {
+            getPaymentMethod.cancel();
+        }
+        if (createOrder != null) {
+            createOrder.cancel();
+        }
+        if (getAmountZaloPay != null) {
+            getAmountZaloPay.cancel();
+        }
+        if (createOrderZaloPay != null) {
+            createOrderZaloPay.cancel();
+        }
+        if (createOrderZaloPayNow != null) {
+            createOrderZaloPayNow.cancel();
+        }
+    }
+
     public void getProductCheckout() {
         try {
-            Call<ProductCartResponse> getProductCheckout = apiService.getProductCheckout(token, customerID);
+            getProductCheckout = apiService.getProductCheckout(token, customerID);
             getProductCheckout.enqueue(new Callback<ProductCartResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<ProductCartResponse> call, @NonNull Response<ProductCartResponse> response) {
@@ -55,7 +83,7 @@ public class CheckoutPresenter {
                         }
                     } else {
                         Log.w(TAG, "onResponse: " + response);
-                        iCheckoutView.onThrowMessage("body null");
+                        iCheckoutView.onThrowMessage(response.toString());
                     }
                 }
 
@@ -73,7 +101,7 @@ public class CheckoutPresenter {
 
     public void getPaymentMethod() {
         try {
-            Call<PaymentMethodResponse> getPaymentMethod = apiService.getPaymentMethod(token, customerID);
+            getPaymentMethod = apiService.getPaymentMethod(token, customerID);
             getPaymentMethod.enqueue(new Callback<PaymentMethodResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<PaymentMethodResponse> call, @NonNull Response<PaymentMethodResponse> response) {
@@ -93,7 +121,7 @@ public class CheckoutPresenter {
                         }
                     } else {
                         Log.w(TAG, "onResponse: " + response);
-                        iCheckoutView.onThrowMessage("body null");
+                        iCheckoutView.onThrowMessage(response.toString());
                     }
                 }
 
@@ -112,7 +140,7 @@ public class CheckoutPresenter {
 
     public void getAmountZaloPay(int type) {
         try {
-            Call<CreateOrderResponse> createOrder = apiService.getAmountZaloPay(token, customerID, type);
+            createOrder = apiService.getAmountZaloPay(token, customerID, type);
             createOrder.enqueue(new Callback<CreateOrderResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<CreateOrderResponse> call, @NonNull Response<CreateOrderResponse> response) {
@@ -123,7 +151,6 @@ public class CheckoutPresenter {
                             Log.w(TAG, "onResponse200: getAmountZaloPay: " + code);
                             String amount = response.body().getAmount();
                             iCheckoutView.onCreateOrder(amount);
-
                         } else if (statusCode == 400) {
                             Log.w(TAG, "onResponse400: getAmountZaloPay: " + code);
                             iCheckoutView.onThrowMessage(code);
@@ -133,13 +160,13 @@ public class CheckoutPresenter {
                         }
                     } else {
                         Log.w(TAG, "onResponse: " + response);
-                        iCheckoutView.onThrowMessage("body null");
+                        iCheckoutView.onThrowMessage(response.toString());
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<CreateOrderResponse> call, @NonNull Throwable t) {
-                    Log.w(TAG, "createOrder: " + t.getMessage());
+                    Log.w(TAG, "getAmountZaloPay: " + t.getMessage());
                     iCheckoutView.onThrowMessage(t.getMessage());
                 }
             });
@@ -155,7 +182,7 @@ public class CheckoutPresenter {
             cartBuyNow.setCustomerID(customerID);
             cartBuyNow.setType(type);
             cartBuyNow.setProductCarts(productCartList);
-            Call<CreateOrderResponse> getAmountZaloPay = apiService.getAmountZaloPayNow(token, cartBuyNow);
+            getAmountZaloPay = apiService.getAmountZaloPayNow(token, cartBuyNow);
             getAmountZaloPay.enqueue(new Callback<CreateOrderResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<CreateOrderResponse> call, @NonNull Response<CreateOrderResponse> response) {
@@ -175,13 +202,13 @@ public class CheckoutPresenter {
                         }
                     } else {
                         Log.w(TAG, "onResponse: " + response);
-                        iCheckoutView.onThrowMessage("body null");
+                        iCheckoutView.onThrowMessage(response.toString());
                     }
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<CreateOrderResponse> call, @NonNull Throwable t) {
-                    Log.w(TAG, "createOrder: " + t.getMessage());
+                    Log.w(TAG, "getAmountZaloPay: " + t.getMessage());
                     iCheckoutView.onThrowMessage(t.getMessage());
                 }
             });
@@ -193,7 +220,7 @@ public class CheckoutPresenter {
 
     public void createOrderZaloPay() {
         try {
-            Call<_BaseResponse> createOrderZaloPay = apiService.createOrderZaloPay(token, customerID);
+            createOrderZaloPay = apiService.createOrderZaloPay(token, customerID);
             createOrderZaloPay.enqueue(new Callback<_BaseResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
@@ -212,7 +239,7 @@ public class CheckoutPresenter {
                         }
                     } else {
                         Log.w(TAG, "onResponse: " + response);
-                        iCheckoutView.onThrowMessage("body null");
+                        iCheckoutView.onThrowMessage(response.toString());
                     }
                 }
 
@@ -233,8 +260,8 @@ public class CheckoutPresenter {
             CartBuyNow cartBuyNow = new CartBuyNow();
             cartBuyNow.setCustomerID(customerID);
             cartBuyNow.setProductCarts(productCartList);
-            Call<_BaseResponse> createOrderZaloPay = apiService.createOrderZaloPayNow(token, cartBuyNow);
-            createOrderZaloPay.enqueue(new Callback<_BaseResponse>() {
+            createOrderZaloPayNow = apiService.createOrderZaloPayNow(token, cartBuyNow);
+            createOrderZaloPayNow.enqueue(new Callback<_BaseResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
                     if (response.body() != null) {

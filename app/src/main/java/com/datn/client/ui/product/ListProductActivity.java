@@ -1,15 +1,14 @@
 package com.datn.client.ui.product;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Toast;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.Toast;
-
-import com.datn.client.R;
 import com.datn.client.adapter.ProductAdapter;
 import com.datn.client.databinding.ActivityListProductBinding;
 import com.datn.client.models.Customer;
@@ -29,7 +28,6 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
 
     private ProductPresenter productPresenter;
     private PreferenceManager preferenceManager;
-    private ApiService apiService;
 
     private Customer mCustomer;
     private String mToken;
@@ -68,7 +66,7 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
     }
 
     private void initService() {
-        apiService = RetrofitConnection.getApiService();
+        ApiService apiService = RetrofitConnection.getApiService();
         productPresenter = new ProductPresenter(this, apiService, mToken, mCustomer.get_id());
     }
 
@@ -113,7 +111,7 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
     }
 
     private void displayProduct() {
-        if (mProductList.size() == 0) {
+        if (mProductList.isEmpty()) {
             showToast("No product");
             return;
         }
@@ -131,5 +129,11 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
     @Override
     public void onThrowMessage(String message) {
         MyDialog.gI().startDlgOK(this, message);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        productPresenter.cancelAPI();
     }
 }

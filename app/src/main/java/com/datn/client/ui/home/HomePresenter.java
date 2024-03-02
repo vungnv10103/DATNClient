@@ -20,7 +20,6 @@ import retrofit2.Response;
 
 public class HomePresenter {
     private static final String TAG = HomePresenter.class.getSimpleName();
-    private boolean isSuccess = false;
 
     private final IHomeView iHomeView;
     private final ApiService apiService;
@@ -38,6 +37,18 @@ public class HomePresenter {
         this.customerID = customerID;
     }
 
+    public void cancelAPI() {
+        if (getBanner != null) {
+            getBanner.cancel();
+        }
+        if (getCategory != null) {
+            getCategory.cancel();
+        }
+        if (getSellingProduct != null) {
+            getSellingProduct.cancel();
+        }
+    }
+
     public void getListBanner() {
         try {
             getBanner = apiService.getBanner(token, customerID);
@@ -48,7 +59,6 @@ public class HomePresenter {
                         int statusCode = response.body().getStatusCode();
                         String code = response.body().getCode();
                         if (statusCode == 200) {
-                            isSuccess = true;
                             Log.w(TAG, "onResponse200: " + code);
                             List<Banner> data = response.body().getBanners();
                             iHomeView.onListBanner(data);
@@ -88,7 +98,6 @@ public class HomePresenter {
                         int statusCode = response.body().getStatusCode();
                         String code = response.body().getCode();
                         if (statusCode == 200) {
-                            isSuccess = true;
                             Log.w(TAG, "onResponse200: " + code);
                             List<Category> data = response.body().getCategories();
                             iHomeView.onListCategory(data);
@@ -127,7 +136,6 @@ public class HomePresenter {
                         int statusCode = response.body().getStatusCode();
                         String code = response.body().getCode();
                         if (statusCode == 200) {
-                            isSuccess = true;
                             Log.w(TAG, "onResponse200: " + code);
                             List<Product> data = response.body().getProducts();
                             iHomeView.onListSellingProduct(data);

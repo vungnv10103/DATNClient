@@ -168,19 +168,19 @@ public class AddToCartModalBS extends BottomSheetDialogFragment implements IProd
         switch (code) {
             case "cart/add-success":
                 showToast("Đã thêm vào giỏ hàng");
-                DetailProductActivity.modalAddToCart.dismiss();
+                this.dismiss();
                 break;
             case "cart/update-quantity-success":
                 showToast("Cập nhật số lượng thành công");
-                DetailProductActivity.modalAddToCart.dismiss();
+                this.dismiss();
                 break;
             case "cart/update-quantity-failed":
                 showToast("Sản phẩm đã có trong giỏ hàng\nSố lượng vượt quá giới hạn");
-                DetailProductActivity.modalAddToCart.dismiss();
+                this.dismiss();
                 break;
             case "cart/product-is-temporarily-out-of-stock":
                 showToast("Sản phẩm tạm hết hàng, không thể đặt");
-                DetailProductActivity.modalAddToCart.dismiss();
+                this.dismiss();
                 break;
             default:
                 MyDialog.gI().startDlgOK(requireActivity(), code);

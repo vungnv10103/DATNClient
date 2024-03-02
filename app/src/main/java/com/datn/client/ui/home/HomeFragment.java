@@ -85,11 +85,10 @@ public class HomeFragment extends Fragment implements IHomeView {
         homePresenter.getListCategory();
         homePresenter.getListSellingProduct();
 
-
     }
 
     private void displayBanner() {
-        if (mBannerList.size() == 0) {
+        if (mBannerList.isEmpty()) {
             showToast("No banner");
             return;
         }
@@ -102,7 +101,7 @@ public class HomeFragment extends Fragment implements IHomeView {
     }
 
     private void displayCategory() {
-        if (mCategoryList.size() == 0) {
+        if (mCategoryList.isEmpty()) {
             showToast("No category");
             return;
         }
@@ -130,7 +129,7 @@ public class HomeFragment extends Fragment implements IHomeView {
     }
 
     private void displaySellingProduct() {
-        if (mProductList.size() == 0) {
+        if (mProductList.isEmpty()) {
             showToast("No product");
             return;
         }
@@ -279,10 +278,12 @@ public class HomeFragment extends Fragment implements IHomeView {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+        homePresenter.cancelAPI();
     }
 
     @Override

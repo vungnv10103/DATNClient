@@ -11,8 +11,6 @@ import com.datn.client.response.ProductCartResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.ui.checkout.CheckoutActivity;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -26,6 +24,12 @@ public class CartPresenter {
     private final String token;
     private final String customerID;
 
+    private Call<ProductCartResponse> getCart;
+    private Call<ProductCartResponse> updateQuantity;
+    private Call<ProductCartResponse> updateStatus;
+    private Call<ProductCartResponse> updateStatusAll;
+    private Call<ProductCartResponse> buyNow;
+
     public CartPresenter(ICartView iCartView, ApiService apiService, String token, String customerID) {
         this.iCartView = iCartView;
         this.apiService = apiService;
@@ -33,9 +37,28 @@ public class CartPresenter {
         this.customerID = customerID;
     }
 
+    public void cancelAPI() {
+        if (getCart != null) {
+            getCart.cancel();
+        }
+        if (updateQuantity != null) {
+            updateQuantity.cancel();
+        }
+        if (updateStatus != null) {
+            updateStatus.cancel();
+        }
+        if (updateStatusAll != null) {
+            updateStatusAll.cancel();
+        }
+        if (buyNow != null) {
+            buyNow.cancel();
+        }
+
+    }
+
     public void getDataCart() {
         try {
-            Call<ProductCartResponse> getCart = apiService.getCart(token, customerID);
+            getCart = apiService.getCart(token, customerID);
             getCart.enqueue(new Callback<ProductCartResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<ProductCartResponse> call, @NonNull Response<ProductCartResponse> response) {
@@ -71,7 +94,7 @@ public class CartPresenter {
 
     public void updateQuantity(String cartID, String type, int quantity) {
         try {
-            Call<ProductCartResponse> updateQuantity = apiService.updateQuantity(token, customerID, type, quantity, cartID);
+            updateQuantity = apiService.updateQuantity(token, customerID, type, quantity, cartID);
             updateQuantity.enqueue(new Callback<ProductCartResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<ProductCartResponse> call, @NonNull Response<ProductCartResponse> response) {
@@ -110,7 +133,7 @@ public class CartPresenter {
 
     public void updateStatus(String cartID, int status) {
         try {
-            Call<ProductCartResponse> updateStatus = apiService.updateStatus(token, customerID, status, cartID);
+            updateStatus = apiService.updateStatus(token, customerID, status, cartID);
             updateStatus.enqueue(new Callback<ProductCartResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<ProductCartResponse> call, @NonNull Response<ProductCartResponse> response) {
@@ -148,7 +171,7 @@ public class CartPresenter {
 
     public void updateStatusAll(boolean isSelected) {
         try {
-            Call<ProductCartResponse> updateStatusAll = apiService.updateStatusAll(token, customerID, isSelected);
+            updateStatusAll = apiService.updateStatusAll(token, customerID, isSelected);
             updateStatusAll.enqueue(new Callback<ProductCartResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<ProductCartResponse> call, @NonNull Response<ProductCartResponse> response) {
@@ -186,7 +209,7 @@ public class CartPresenter {
 
     public void buyNowCart(Context context, String cartID) {
         try {
-            Call<ProductCartResponse> buyNow = apiService.buyNowCart(token, customerID, cartID);
+            buyNow = apiService.buyNowCart(token, customerID, cartID);
             buyNow.enqueue(new Callback<ProductCartResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<ProductCartResponse> call, @NonNull Response<ProductCartResponse> response) {

@@ -38,13 +38,12 @@ import java.util.Objects;
 import pl.droidsonroids.gif.GifImageView;
 
 public class DetailProductActivity extends AppCompatActivity implements IProductView {
-    private static final String TAG = DetailProductActivity.class.getSimpleName();
     private ActivityDetailProductBinding binding;
 
     private ProductPresenter productPresenter;
     private ApiService apiService;
     private PreferenceManager preferenceManager;
-    public static AddToCartModalBS modalAddToCart;
+    private AddToCartModalBS modalAddToCart;
 
     private LinearLayout layoutDetailProduct;
     private SpinKitView spinKitDetail, spinKitVideo;
@@ -175,7 +174,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
 
     private void initEventClick() {
         imgChat.setOnClickListener(v -> {
-            showToast("message");
+
         });
         btnBuyNow.setOnClickListener(v -> {
             modalAddToCart = new AddToCartModalBS(apiService, mToken, mCustomer.get_id(), TYPE_BUY.BUY_NOW.getValue());
@@ -237,6 +236,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     protected void onDestroy() {
         super.onDestroy();
         player.release();
+        productPresenter.cancelAPI();
     }
 
     public static Product getProduct() {

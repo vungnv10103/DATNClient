@@ -49,7 +49,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             String price = product.getPrice();
             String formattedAmount = Currency.formatCurrency(price);
             holder.tvPrice.setText(formattedAmount);
-            holder.tvStatus.setText(Integer.parseInt(product.getStatus()) == STATUS_PRODUCT.STOCKING.getValue() ? "Đang bán" : "Tạm hết hàng");
+            String status = "";
+            if (Integer.parseInt(product.getStatus()) == STATUS_PRODUCT.STOCKING.getValue()) {
+                status = "Đang bán";
+            } else if (Integer.parseInt(product.getStatus()) == STATUS_PRODUCT.OUT_OF_STOCK.getValue()) {
+                status = "Tạm hết hàng";
+            }
+            holder.tvStatus.setText(status);
             holder.tvSold.setText("Đã bán: " + product.getSold());
 
             holder.itemView.setOnClickListener(v -> iActionProduct.onClick(product));

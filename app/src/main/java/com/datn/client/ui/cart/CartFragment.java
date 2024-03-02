@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.datn.client.R;
 import com.datn.client.adapter.CartAdapter;
 import com.datn.client.databinding.FragmentCartBinding;
 import com.datn.client.models.Customer;
@@ -25,6 +26,7 @@ import com.datn.client.models.ProductCart;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.MyNavController;
 import com.datn.client.ui.checkout.CheckoutActivity;
 import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 import com.datn.client.utils.Constants;
@@ -234,9 +236,7 @@ public class CartFragment extends Fragment implements ICartView {
             setLoading(true);
             requireActivity().runOnUiThread(() -> cartPresenter.updateStatusAll(isChecked));
         }));
-        btnGoShopping.setOnClickListener(v -> {
-            showToast("123");
-        });
+        btnGoShopping.setOnClickListener(v -> MyNavController.gI().navigateFragment(requireActivity(), R.id.navigation_home));
     }
 
     private void initUI() {
@@ -253,10 +253,10 @@ public class CartFragment extends Fragment implements ICartView {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+        cartPresenter.cancelAPI();
     }
 }
