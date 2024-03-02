@@ -165,7 +165,7 @@ public class CartFragment extends Fragment implements ICartView {
 
     @Override
     public void onBuyNow(String cartID) {
-        cartPresenter.buyNow(requireActivity(), cartID);
+        cartPresenter.buyNowCart(requireActivity(), cartID);
     }
 
     private Customer getLogin() {

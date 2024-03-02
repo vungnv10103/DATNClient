@@ -1,7 +1,5 @@
 package com.datn.client.models;
 
-import androidx.annotation.NonNull;
-
 public class _BaseModel {
     private String _id;
     private String created_at;

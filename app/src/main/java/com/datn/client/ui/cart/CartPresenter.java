@@ -12,6 +12,7 @@ import com.datn.client.services.ApiService;
 import com.datn.client.ui.checkout.CheckoutActivity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -183,9 +184,9 @@ public class CartPresenter {
         }
     }
 
-    public void buyNow(Context context, String cartID) {
+    public void buyNowCart(Context context, String cartID) {
         try {
-            Call<ProductCartResponse> buyNow = apiService.buyNow(token, customerID, cartID);
+            Call<ProductCartResponse> buyNow = apiService.buyNowCart(token, customerID, cartID);
             buyNow.enqueue(new Callback<ProductCartResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<ProductCartResponse> call, @NonNull Response<ProductCartResponse> response) {
@@ -194,9 +195,9 @@ public class CartPresenter {
                         int statusCode = response.body().getStatusCode();
                         if (statusCode == 200) {
                             Log.w(TAG, "onResponse200: buyNow: " + code);
-                            List<ProductCart> dataProductCart = response.body().getProductCarts();
+//                            ArrayList<ProductCart> dataProductCart = (ArrayList<ProductCart>) response.body().getProductCarts();
                             Intent intent = new Intent(context, CheckoutActivity.class);
-                            intent.putExtra("productCart", (Serializable) dataProductCart);
+//                            intent.putParcelableArrayListExtra("productCart", dataProductCart);
                             context.startActivity(intent);
                         } else if (statusCode == 400) {
                             Log.w(TAG, "onResponse400: buyNow: " + code);

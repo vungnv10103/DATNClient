@@ -26,6 +26,7 @@ import com.datn.client.services.RetrofitConnection;
 import com.datn.client.services.zalo.CreateOrder;
 import com.datn.client.ui.MyDialog;
 import com.datn.client.ui.checkout.CheckoutPresenter.PAYMENT_METHOD;
+import com.datn.client.ui.product.DetailProductActivity.TYPE_BUY;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.datn.client.utils.PreferenceManager;
@@ -68,6 +69,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     private HashMap<Integer, String> mPaymentMethod;
     private List<PaymentMethod> paymentMethodList;
     private List<ProductCart> mProductCart;
+    private int mTypeBuy = TYPE_BUY.ADD_TO_CART.getValue();
 
     public boolean isLoading = false;
 
@@ -100,15 +102,14 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     protected void onStart() {
         super.onStart();
         setLoading(true);
-        Intent i = getIntent();
-        List<ProductCart> dataProductCarts = (List<ProductCart>) i.getSerializableExtra("productCart");
+        ArrayList<ProductCart> dataProductCarts = getIntent().getParcelableArrayListExtra("productCart");
         if (dataProductCarts != null) {
             this.mProductCart = dataProductCarts;
+            mTypeBuy = TYPE_BUY.BUY_NOW.getValue();
             displayProductCart();
         } else {
             checkoutPresenter.getProductCheckout();
         }
-
 //        checkoutPresenter.getPaymentMethod();
     }
 
@@ -253,7 +254,11 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
             public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
                 runOnUiThread(() -> {
                     Log.d(TAG, "Payment Success: " + String.format("TransactionId: %s - TransToken: %s", transactionId, transToken));
-                    checkoutPresenter.createOrderZaloPay();
+                    if (mTypeBuy == TYPE_BUY.ADD_TO_CART.getValue()) {
+                        checkoutPresenter.createOrderZaloPay();
+                    } else if (mTypeBuy == TYPE_BUY.BUY_NOW.getValue()) {
+                        checkoutPresenter.createOrderZaloPayNow(mProductCart);
+                    }
                 });
 
             }
@@ -289,7 +294,12 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
             if (!isLoading) {
                 if (isZaloPay) {
                     setLoading(true);
-                    checkoutPresenter.getAmountZaloPay(PAYMENT_METHOD.ZALO_PAY.getValue());
+                    if (mTypeBuy == TYPE_BUY.ADD_TO_CART.getValue()) {
+                        checkoutPresenter.getAmountZaloPay(PAYMENT_METHOD.ZALO_PAY.getValue());
+                    } else if (mTypeBuy == TYPE_BUY.BUY_NOW.getValue()) {
+                        checkoutPresenter.getAmountZaloPay(PAYMENT_METHOD.ZALO_PAY.getValue(), mProductCart);
+                    }
+
                 } else if (isEBanking) {
                     startActivity(new Intent(CheckoutActivity.this, EBankingActivity.class));
                 }

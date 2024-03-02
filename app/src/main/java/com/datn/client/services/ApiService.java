@@ -1,7 +1,9 @@
 package com.datn.client.services;
 
 import com.datn.client.models.Cart;
+import com.datn.client.models.CartBuyNow;
 import com.datn.client.models.Customer;
+import com.datn.client.models.ProductCart;
 import com.datn.client.response.BannerResponse;
 import com.datn.client.response.CreateOrderResponse;
 import com.datn.client.response.EBankingResponse;
@@ -13,6 +15,7 @@ import com.datn.client.response.ProductCartResponse;
 import com.datn.client.response.ProductResponse;
 
 import java.util.HashMap;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -95,7 +98,7 @@ public interface ApiService {
 
     @FormUrlEncoded
     @POST("/v1/api/cart/buynow-cart")
-    Call<ProductCartResponse> buyNow(@Header("Authorization") String token,
+    Call<ProductCartResponse> buyNowCart(@Header("Authorization") String token,
                                      @Field("customerID") String customerID,
                                      @Field("cartID") String cartID);
 
@@ -116,10 +119,19 @@ public interface ApiService {
                                                @Field("customerID") String customerID,
                                                @Field("type") int type);
 
+    @POST("/v1/api/order/get/amount-zalopay-now")
+    Call<CreateOrderResponse> getAmountZaloPayNow(@Header("Authorization") String token,
+                                                  @Body CartBuyNow cartBuyNow);
+
     @FormUrlEncoded
     @POST("/v1/api/order/create/zalopay")
     Call<_BaseResponse> createOrderZaloPay(@Header("Authorization") String token,
                                            @Field("customerID") String customerID);
+
+    @POST("/v1/api/order/create/zalopay-now")
+    Call<_BaseResponse> createOrderZaloPayNow(@Header("Authorization") String token,
+                                              @Body CartBuyNow cartBuyNow);
+
 
     @FormUrlEncoded
     @POST("/v1/api/order/create_payment_url")
