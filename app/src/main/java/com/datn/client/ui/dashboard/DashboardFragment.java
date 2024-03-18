@@ -18,6 +18,7 @@ import com.datn.client.R;
 import com.datn.client.databinding.FragmentDashboardBinding;
 import com.datn.client.databinding.FragmentHomeBinding;
 import com.datn.client.models.Customer;
+import com.datn.client.models.MessageResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.LoginActivity;
@@ -60,6 +61,11 @@ public class DashboardFragment extends Fragment implements IDashboardView {
 
     private void doLogout() {
         dashboardPresenter.logout();
+    }
+
+    @Override
+    public void onThrowMessage(MessageResponse message) {
+
     }
 
     @Override

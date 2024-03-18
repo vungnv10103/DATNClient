@@ -25,6 +25,7 @@ import com.datn.client.databinding.FragmentHomeBinding;
 import com.datn.client.models.Banner;
 import com.datn.client.models.Category;
 import com.datn.client.models.Customer;
+import com.datn.client.models.MessageResponse;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
@@ -180,6 +181,11 @@ public class HomeFragment extends Fragment implements IHomeView {
     public void onListSellingProduct(List<Product> productList) {
         this.mProductList = productList;
         onSellingProductLoaded();
+    }
+
+    @Override
+    public void onThrowMessage(MessageResponse message) {
+
     }
 
     public void switchToLogin() {

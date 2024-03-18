@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.datn.client.MainActivity;
 import com.datn.client.databinding.ActivityLoginBinding;
 import com.datn.client.models.Customer;
+import com.datn.client.models.MessageResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.services.ApiService;
@@ -105,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            String message = response.body().getMessage();
+                            MessageResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 Log.w(TAG, "onResponse200: " + code);
                                 switch (code) {
@@ -115,12 +116,11 @@ public class LoginActivity extends AppCompatActivity {
                                         break;
                                     case "":
                                     default:
-                                        MyDialog.gI().startDlgOK(LoginActivity.this, message);
+                                        MyDialog.gI().startDlgOK(LoginActivity.this, message.getContent());
                                 }
-                                setLoading(false);
                             } else if (statusCode == 400) {
                                 Log.w(TAG, "onResponse400: " + code);
-                                MyDialog.gI().startDlgOK(LoginActivity.this, message);
+                                MyDialog.gI().startDlgOK(LoginActivity.this, message.getContent());
                                 if (code.equals("auth/wrong-token")) {
 //                                    preferenceManager.putBoolean("isRemember", false);
                                     preferenceManager.putString("token", "");
@@ -193,7 +193,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            String message = response.body().getMessage();
+                            MessageResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 Log.w(TAG, "onResponse200: " + code);
                                 switch (code) {
@@ -205,12 +205,12 @@ public class LoginActivity extends AppCompatActivity {
                                     case "auth/verify-phone":
                                     case "auth/no-verify":
                                     default:
-                                        MyDialog.gI().startDlgOK(LoginActivity.this, message);
+                                        MyDialog.gI().startDlgOK(LoginActivity.this, message.getContent());
                                 }
                                 setLoading(false);
                             } else if (statusCode == 400) {
                                 Log.w(TAG, "onResponse400: " + code);
-                                MyDialog.gI().startDlgOK(LoginActivity.this, message);
+                                MyDialog.gI().startDlgOK(LoginActivity.this, message.getContent());
                             }
                         } else {
                             MyDialog.gI().startDlgOK(LoginActivity.this, "body null");

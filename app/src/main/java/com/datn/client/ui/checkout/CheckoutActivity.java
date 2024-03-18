@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,6 +20,7 @@ import com.datn.client.adapter.PaymentMethodAdapter;
 import com.datn.client.adapter.ProductCheckoutAdapter;
 import com.datn.client.databinding.ActivityCheckoutBinding;
 import com.datn.client.models.Customer;
+import com.datn.client.models.MessageResponse;
 import com.datn.client.models.PaymentMethod;
 import com.datn.client.models.ProductCart;
 import com.datn.client.services.ApiService;
@@ -173,17 +175,23 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     }
 
     @Override
-    public void onThrowMessage(String message) {
-        setLoading(false);
-        switch (message) {
-            case "order/create-order-zalopay-success":
-                MyDialog.gI().startDlgOKWithAction(this, "Đặt hàng thành công", (dialog, which) -> finish());
+    public void onThrowMessage(@NonNull MessageResponse message) {
+        Log.w(TAG, "onThrowMessage: " + message.toString());
+        switch (message.getCode()) {
+            case 200:
+                MyDialog.gI().startDlgOKWithAction(this, message.getTitle(), message.getContent(), (dialog, which) -> finish());
                 break;
-            case "":
+            case 400:
             default:
-                MyDialog.gI().startDlgOK(this, message);
+                MyDialog.gI().startDlgOK(this, message.getContent());
                 break;
         }
+    }
+
+    @Override
+    public void onThrowMessage(@NonNull String message) {
+        setLoading(false);
+        MyDialog.gI().startDlgOK(this, message);
     }
 
     private Customer getLogin() {

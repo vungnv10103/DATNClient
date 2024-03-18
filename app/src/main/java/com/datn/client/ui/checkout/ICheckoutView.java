@@ -1,5 +1,6 @@
 package com.datn.client.ui.checkout;
 
+import com.datn.client.models.MessageResponse;
 import com.datn.client.models.ProductCart;
 
 import java.util.HashMap;
@@ -12,5 +13,6 @@ public interface ICheckoutView {
 
     void onCreateOrder(String amount);
 
+    void onThrowMessage(MessageResponse message);
     void onThrowMessage(String message);
 }

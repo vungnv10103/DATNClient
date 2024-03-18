@@ -38,6 +38,7 @@ public class MyDialog {
                 .setMessage(message)
                 .setIcon(R.drawable.logo)
                 .setPositiveButton(android.R.string.ok, (dialog, whichButton) -> dialog.dismiss())
+                .setCancelable(false)
                 .show();
     }
 
@@ -47,6 +48,7 @@ public class MyDialog {
                 .setMessage(message)
                 .setIcon(R.drawable.logo)
                 .setPositiveButton(android.R.string.ok, (dialog, whichButton) -> dialog.dismiss())
+                .setCancelable(false)
                 .show();
     }
 
@@ -56,6 +58,7 @@ public class MyDialog {
                 .setMessage(message)
                 .setIcon(R.drawable.logo)
                 .setPositiveButton(android.R.string.ok, action)
+                .setCancelable(false)
                 .show();
     }
 
@@ -65,6 +68,7 @@ public class MyDialog {
                 .setMessage(message)
                 .setIcon(R.drawable.logo)
                 .setPositiveButton(android.R.string.ok, action)
+                .setCancelable(false)
                 .show();
     }
 }

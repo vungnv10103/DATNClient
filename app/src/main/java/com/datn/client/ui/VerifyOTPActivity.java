@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.datn.client.MainActivity;
 import com.datn.client.databinding.ActivityVerifyOtpactivityBinding;
 import com.datn.client.models.Customer;
+import com.datn.client.models.MessageResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.services.ApiService;
@@ -121,47 +122,52 @@ public class VerifyOTPActivity extends AppCompatActivity {
     }
 
     private void addTokenFMC(String token, @NonNull Customer cus) {
-        System.out.println("token: " + token);
-        String fcm = preferenceManager.getString("fcm");
-        Customer customer = new Customer(cus.get_id(), cus.getPassword(), false);
-        customer.setFcm(fcm);
-        Call<_BaseResponse> addFCM = apiService.addFCM(token, customer);
-        addFCM.enqueue(new Callback<_BaseResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
-                runOnUiThread(() -> {
-                    if (response.body() != null) {
-                        Log.w(TAG, "onResponse200: " + response.body().getCode());
-                        String message = response.body().getMessage();
-                        switch (response.body().getCode()) {
-                            case "auth/add-fcm-success":
-                                showToast("Đăng nhập thành công");
-                                setLoading(false);
-                                startActivity(new Intent(VerifyOTPActivity.this, MainActivity.class));
-                                finishAffinity();
-                                break;
-                            case "":
-                            default:
-                                MyDialog.gI().startDlgOK(VerifyOTPActivity.this, message);
-                                setLoading(false);
-                                break;
+        try {
+            System.out.println("token: " + token);
+            String fcm = preferenceManager.getString("fcm");
+            Customer customer = new Customer(cus.get_id(), cus.getPassword(), false);
+            customer.setFcm(fcm);
+            Call<_BaseResponse> addFCM = apiService.addFCM(token, customer);
+            addFCM.enqueue(new Callback<_BaseResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
+                    runOnUiThread(() -> {
+                        if (response.body() != null) {
+                            Log.w(TAG, "onResponse200: " + response.body().getCode());
+                            MessageResponse message = response.body().getMessage();
+                            switch (response.body().getCode()) {
+                                case "auth/add-fcm-success":
+                                    showToast("Đăng nhập thành công");
+                                    setLoading(false);
+                                    startActivity(new Intent(VerifyOTPActivity.this, MainActivity.class));
+                                    finishAffinity();
+                                    break;
+                                case "":
+                                default:
+                                    MyDialog.gI().startDlgOK(VerifyOTPActivity.this, message.getContent());
+                                    break;
+                            }
+                        } else {
+                            MyDialog.gI().startDlgOK(VerifyOTPActivity.this, "body null");
                         }
-                    } else {
-                        MyDialog.gI().startDlgOK(VerifyOTPActivity.this, "body null");
-                        setLoading(false);
-                    }
-                });
+                    });
 
-            }
+                }
 
-            @Override
-            public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
-                runOnUiThread(() -> {
-                    MyDialog.gI().startDlgOK(VerifyOTPActivity.this, t.getMessage());
-                    setLoading(false);
-                });
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
+                    runOnUiThread(() -> {
+                        MyDialog.gI().startDlgOK(VerifyOTPActivity.this, t.getMessage());
+                    });
+                }
+            });
+        } catch (Exception e) {
+            Log.w(TAG, "addTokenFMC: " + e.getMessage());
+            MyDialog.gI().startDlgOK(VerifyOTPActivity.this, e.getMessage());
+        } finally {
+            setLoading(false);
+        }
+
     }
 
     private void verify() {
@@ -186,7 +192,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            String message = response.body().getMessage();
+                            MessageResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 Log.w(TAG, "onResponse200: " + code);
                                 switch (code) {
@@ -198,7 +204,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                         break;
                                     case "auth/wrong-otp":
                                     default:
-                                        MyDialog.gI().startDlgOK(VerifyOTPActivity.this, message);
+                                        MyDialog.gI().startDlgOK(VerifyOTPActivity.this, message.getContent());
                                 }
                             } else if (statusCode == 400) {
                                 Log.w(TAG, "onResponse400: " + code);

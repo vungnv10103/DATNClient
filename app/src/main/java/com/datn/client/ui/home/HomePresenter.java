@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.datn.client.models.Banner;
 import com.datn.client.models.Category;
+import com.datn.client.models.MessageResponse;
 import com.datn.client.models.Product;
 import com.datn.client.response.BannerResponse;
 import com.datn.client.response.CategoryResponse;
@@ -58,6 +59,7 @@ public class HomePresenter {
                     if (response.body() != null) {
                         int statusCode = response.body().getStatusCode();
                         String code = response.body().getCode();
+                        MessageResponse message= response.body().getMessage();
                         if (statusCode == 200) {
                             Log.w(TAG, "onResponse200: " + code);
                             List<Banner> data = response.body().getBanners();
@@ -67,7 +69,7 @@ public class HomePresenter {
                                 iHomeView.onFinish();
                             } else {
                                 Log.w(TAG, "onResponse400: " + code);
-                                iHomeView.onThrowMessage(response.body().getMessage());
+                                iHomeView.onThrowMessage(message);
                             }
 
                         }

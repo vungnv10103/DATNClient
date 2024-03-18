@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.datn.client.databinding.ActivityRegisterBinding;
 import com.datn.client.models.Customer;
+import com.datn.client.models.MessageResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
@@ -120,41 +121,36 @@ public class RegisterActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<CustomerResponse> call, @NonNull Response<CustomerResponse> response) {
                     runOnUiThread(() -> {
                         if (response.body() != null) {
-                            if (response.body().getStatusCode() == 200) {
-                                Log.w(TAG, "onResponse200: " + response.body().getCode());
-                                String message = response.body().getMessage();
-                                switch (response.body().getCode()) {
+                            int statusCode = response.body().getStatusCode();
+                            String code = response.body().getCode();
+                            MessageResponse message = response.body().getMessage();
+                            if (statusCode == 200) {
+                                Log.w(TAG, "onResponse200: " + code);
+                                switch (code) {
                                     case "auth/verify":
-                                        showToast(message);
+                                        showToast(message.getContent());
                                         saveLogin(response.body().getCustomer());
                                         startActivity(new Intent(RegisterActivity.this, VerifyOTPActivity.class));
                                         break;
                                     case "":
-                                        break;
                                     default:
-                                        message = response.body().getCode();
                                         break;
                                 }
-                                MyDialog.gI().startDlgOK(RegisterActivity.this, message);
-                                setLoading(false);
-                            } else if (response.body().getStatusCode() == 400) {
-                                Log.w(TAG, "onResponse400: " + response.body().getCode());
-                                String message;
-                                switch (response.body().getCode()) {
+                                MyDialog.gI().startDlgOK(RegisterActivity.this, message.getContent());
+                            } else if (statusCode == 400) {
+                                Log.w(TAG, "onResponse400: " + code);
+                                switch (code) {
                                     case "auth/missing-email":
                                     case "auth/missing-fullname":
                                     case "auth/phone-exists":
                                     case "auth/email-exists":
                                     default:
-                                        message = response.body().getMessage();
                                         break;
                                 }
-                                MyDialog.gI().startDlgOK(RegisterActivity.this, message);
-                                setLoading(false);
+                                MyDialog.gI().startDlgOK(RegisterActivity.this, message.getContent());
                             }
                         } else {
                             MyDialog.gI().startDlgOK(RegisterActivity.this, "body null");
-                            setLoading(false);
                         }
                     });
                 }
@@ -162,11 +158,11 @@ public class RegisterActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Call<CustomerResponse> call, @NonNull Throwable t) {
                     MyDialog.gI().startDlgOK(RegisterActivity.this, t.getMessage());
-                    setLoading(false);
                 }
             });
         } catch (Exception e) {
             System.out.println(e.getMessage());
+        } finally {
             setLoading(false);
         }
     }

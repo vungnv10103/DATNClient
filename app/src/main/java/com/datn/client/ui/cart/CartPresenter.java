@@ -63,16 +63,18 @@ public class CartPresenter {
                 @Override
                 public void onResponse(@NonNull Call<ProductCartResponse> call, @NonNull Response<ProductCartResponse> response) {
                     if (response.body() != null) {
-                        if (response.body().getStatusCode() == 200) {
-                            Log.w(TAG, "onResponse200: getDataCart: " + response.body().getCode());
+                        int statusCode = response.body().getStatusCode();
+                        String code = response.body().getCode();
+                        if (statusCode == 200) {
+                            Log.w(TAG, "onResponse200: getDataCart: " + code);
                             List<ProductCart> dataProductCart = response.body().getProductCarts();
                             iCartView.onListCart(dataProductCart);
-                        } else if (response.body().getStatusCode() == 400) {
-                            Log.w(TAG, "onResponse400: getDataCart: " + response.body().getCode());
-                            iCartView.onThrowMessage(response.body().getCode());
+                        } else if (statusCode == 400) {
+                            Log.w(TAG, "onResponse400: getDataCart: " + code);
+                            iCartView.onThrowMessage(code);
                         } else {
-                            Log.w(TAG, "onResponse: " + response.body().getCode());
-                            iCartView.onThrowMessage(response.body().getCode());
+                            Log.w(TAG, "onResponse: " + code);
+                            iCartView.onThrowMessage(code);
                         }
                     } else {
                         Log.w(TAG, "onResponse: " + response);
@@ -176,8 +178,8 @@ public class CartPresenter {
                 @Override
                 public void onResponse(@NonNull Call<ProductCartResponse> call, @NonNull Response<ProductCartResponse> response) {
                     if (response.body() != null) {
-                        String code = response.body().getCode();
                         int statusCode = response.body().getStatusCode();
+                        String code = response.body().getCode();
                         if (statusCode == 200) {
                             Log.w(TAG, "onResponse200: updateStatusAll: " + code);
                             List<ProductCart> dataProductCart = response.body().getProductCarts();
@@ -214,8 +216,8 @@ public class CartPresenter {
                 @Override
                 public void onResponse(@NonNull Call<ProductCartResponse> call, @NonNull Response<ProductCartResponse> response) {
                     if (response.body() != null) {
-                        String code = response.body().getCode();
                         int statusCode = response.body().getStatusCode();
+                        String code = response.body().getCode();
                         if (statusCode == 200) {
                             Log.w(TAG, "onResponse200: buyNow: " + code);
 //                            ArrayList<ProductCart> dataProductCart = (ArrayList<ProductCart>) response.body().getProductCarts();

@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.datn.client.models.Banner;
+import com.datn.client.models.MessageResponse;
 import com.datn.client.response.BannerResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
@@ -51,7 +52,7 @@ public class DashboardPresenter {
                     if (response.body() != null) {
                         int statusCode = response.body().getStatusCode();
                         String code = response.body().getCode();
-                        String message = response.body().getMessage();
+                        MessageResponse message = response.body().getMessage();
                         if (statusCode == 200) {
                             Log.w(TAG, "onResponse200: " + code);
                             iDashboardView.onLogout();

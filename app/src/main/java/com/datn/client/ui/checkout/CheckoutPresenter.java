@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.datn.client.models.CartBuyNow;
+import com.datn.client.models.MessageResponse;
 import com.datn.client.models.ProductCart;
 import com.datn.client.response.CreateOrderResponse;
 import com.datn.client.response.PaymentMethodResponse;
@@ -227,9 +228,11 @@ public class CheckoutPresenter {
                     if (response.body() != null) {
                         int statusCode = response.body().getStatusCode();
                         String code = response.body().getCode();
+                        MessageResponse message = response.body().getMessage();
                         if (statusCode == 200) {
                             Log.w(TAG, "onResponse200: createOrderZaloPay: " + code);
-                            iCheckoutView.onThrowMessage(code);
+//                            MessageResponse messageResponse = new MessageResponse(code,);
+                            iCheckoutView.onThrowMessage(message);
                         } else if (statusCode == 400) {
                             Log.w(TAG, "onResponse400: createOrderZaloPay: " + code);
                             iCheckoutView.onThrowMessage(code);
