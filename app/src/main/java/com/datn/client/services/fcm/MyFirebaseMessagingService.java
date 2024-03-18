@@ -52,7 +52,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, "Stech")
-                        .setSmallIcon(R.drawable.logo)
+                        .setSmallIcon(R.drawable.logo_no)
                         .setCustomContentView(createNotificationView(title, messageBody))
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)

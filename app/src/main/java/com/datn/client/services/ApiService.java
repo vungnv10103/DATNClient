@@ -3,19 +3,15 @@ package com.datn.client.services;
 import com.datn.client.models.Cart;
 import com.datn.client.models.CartBuyNow;
 import com.datn.client.models.Customer;
-import com.datn.client.models.ProductCart;
 import com.datn.client.response.BannerResponse;
+import com.datn.client.response.CategoryResponse;
 import com.datn.client.response.CreateOrderResponse;
+import com.datn.client.response.CustomerResponse;
 import com.datn.client.response.EBankingResponse;
 import com.datn.client.response.PaymentMethodResponse;
-import com.datn.client.response._BaseResponse;
-import com.datn.client.response.CategoryResponse;
-import com.datn.client.response.CustomerResponse;
 import com.datn.client.response.ProductCartResponse;
 import com.datn.client.response.ProductResponse;
-
-import java.util.HashMap;
-import java.util.List;
+import com.datn.client.response._BaseResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -39,6 +35,10 @@ public interface ApiService {
 
     @POST("/v1/api/customer/add/fcm")
     Call<_BaseResponse> addFCM(@Header("Authorization") String token, @Body Customer customer);
+
+    @FormUrlEncoded
+    @POST("/v1/api/customer/logout")
+    Call<_BaseResponse> logout(@Header("Authorization") String token, @Field("customerID") String customerID);
 
 
     @FormUrlEncoded
@@ -99,8 +99,8 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("/v1/api/cart/buynow-cart")
     Call<ProductCartResponse> buyNowCart(@Header("Authorization") String token,
-                                     @Field("customerID") String customerID,
-                                     @Field("cartID") String cartID);
+                                         @Field("customerID") String customerID,
+                                         @Field("cartID") String cartID);
 
 
     @FormUrlEncoded

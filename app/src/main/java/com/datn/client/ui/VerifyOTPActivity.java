@@ -184,9 +184,12 @@ public class VerifyOTPActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<CustomerResponse> call, @NonNull Response<CustomerResponse> response) {
                     runOnUiThread(() -> {
                         if (response.body() != null) {
-                            if (response.body().getStatusCode() == 200) {
-                                Log.w(TAG, "onResponse200: " + response.body().getCode());
-                                switch (response.body().getCode()) {
+                            int statusCode = response.body().getStatusCode();
+                            String code = response.body().getCode();
+                            String message = response.body().getMessage();
+                            if (statusCode == 200) {
+                                Log.w(TAG, "onResponse200: " + code);
+                                switch (code) {
                                     case "auth/login-success":
                                         saveLogin(response.body().getCustomer());
                                         String token = response.body().getToken();
@@ -195,15 +198,13 @@ public class VerifyOTPActivity extends AppCompatActivity {
                                         break;
                                     case "auth/wrong-otp":
                                     default:
-                                        MyDialog.gI().startDlgOK(VerifyOTPActivity.this, response.body().getMessage());
-                                        setLoading(false);
+                                        MyDialog.gI().startDlgOK(VerifyOTPActivity.this, message);
                                 }
-                            } else if (response.body().getStatusCode() == 400) {
-                                Log.w(TAG, "onResponse400: " + response.body().getCode());
+                            } else if (statusCode == 400) {
+                                Log.w(TAG, "onResponse400: " + code);
                             }
                         } else {
                             MyDialog.gI().startDlgOK(VerifyOTPActivity.this, "body null");
-                            setLoading(false);
                         }
                     });
                 }
@@ -212,13 +213,12 @@ public class VerifyOTPActivity extends AppCompatActivity {
                 public void onFailure(@NonNull Call<CustomerResponse> call, @NonNull Throwable t) {
                     runOnUiThread(() -> {
                         MyDialog.gI().startDlgOK(VerifyOTPActivity.this, t.getMessage());
-                        setLoading(false);
                     });
                 }
             });
-
         } catch (Exception e) {
             Log.w(TAG, "verify: " + e.getMessage());
+        } finally {
             setLoading(false);
         }
     }

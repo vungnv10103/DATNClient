@@ -95,50 +95,59 @@ public class LoginActivity extends AppCompatActivity {
 
     private void checkLogin() {
         setLoading(true);
-        Call<_BaseResponse> checkLogin = apiService.checkLogin(mCustomer);
-        checkLogin.enqueue(new Callback<_BaseResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
-                runOnUiThread(() -> {
-                    if (response.body() != null) {
-                        if (response.body().getStatusCode() == 200) {
-                            Log.w(TAG, "onResponse200: " + response.body().getCode());
-                            String message;
-                            switch (response.body().getCode()) {
-                                case "auth/200":
-                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                                    finishAffinity();
-                                    break;
-                                case "":
-                                default:
-                                    message = response.body().getMessage();
-                                    MyDialog.gI().startDlgOK(LoginActivity.this, message);
+        mCustomer.setToken(preferenceManager.getString("token"));
+        try {
+            Call<_BaseResponse> checkLogin = apiService.checkLogin(mCustomer);
+            checkLogin.enqueue(new Callback<_BaseResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
+                    runOnUiThread(() -> {
+                        if (response.body() != null) {
+                            int statusCode = response.body().getStatusCode();
+                            String code = response.body().getCode();
+                            String message = response.body().getMessage();
+                            if (statusCode == 200) {
+                                Log.w(TAG, "onResponse200: " + code);
+                                switch (code) {
+                                    case "auth/200":
+                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                        finishAffinity();
+                                        break;
+                                    case "":
+                                    default:
+                                        MyDialog.gI().startDlgOK(LoginActivity.this, message);
+                                }
+                                setLoading(false);
+                            } else if (statusCode == 400) {
+                                Log.w(TAG, "onResponse400: " + code);
+                                MyDialog.gI().startDlgOK(LoginActivity.this, message);
+                                if (code.equals("auth/wrong-token")) {
+//                                    preferenceManager.putBoolean("isRemember", false);
+                                    preferenceManager.putString("token", "");
+                                }
                             }
-                            setLoading(false);
-                        } else if (response.body().getStatusCode() == 400) {
-                            Log.w(TAG, "onResponse400: " + response.body().getCode());
-                            MyDialog.gI().startDlgOK(LoginActivity.this, response.body().getMessage());
-                            setLoading(false);
+                        } else {
+                            MyDialog.gI().startDlgOK(LoginActivity.this, "body null");
                         }
-                    } else {
-                        MyDialog.gI().startDlgOK(LoginActivity.this, "body null");
-                        setLoading(false);
-                    }
-                    spinKitLoading.setVisibility(View.GONE);
-                    layoutLogin.setVisibility(View.VISIBLE);
-                });
-            }
+                    });
+                }
 
-            @Override
-            public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
-                runOnUiThread(() -> {
-                    MyDialog.gI().startDlgOK(LoginActivity.this, t.getMessage());
-                    setLoading(false);
-                    spinKitLoading.setVisibility(View.GONE);
-                    layoutLogin.setVisibility(View.VISIBLE);
-                });
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
+                    runOnUiThread(() -> {
+                        MyDialog.gI().startDlgOK(LoginActivity.this, t.getMessage());
+                    });
+                }
+            });
+        } catch (Exception e) {
+            Log.w(TAG, "checkLogin: " + e.getMessage());
+            MyDialog.gI().startDlgOK(LoginActivity.this, e.getMessage());
+        } finally {
+            setLoading(false);
+            spinKitLoading.setVisibility(View.GONE);
+            layoutLogin.setVisibility(View.VISIBLE);
+        }
+
     }
 
     private Customer getLogin() {
@@ -182,10 +191,12 @@ public class LoginActivity extends AppCompatActivity {
                 public void onResponse(@NonNull Call<CustomerResponse> call, @NonNull Response<CustomerResponse> response) {
                     runOnUiThread(() -> {
                         if (response.body() != null) {
-                            if (response.body().getStatusCode() == 200) {
-                                Log.w(TAG, "onResponse200: " + response.body().getCode());
-                                String message;
-                                switch (response.body().getCode()) {
+                            int statusCode = response.body().getStatusCode();
+                            String code = response.body().getCode();
+                            String message = response.body().getMessage();
+                            if (statusCode == 200) {
+                                Log.w(TAG, "onResponse200: " + code);
+                                switch (code) {
                                     case "auth/verify":
                                         preferenceManager.putBoolean("isRemember", cbRemember.isChecked());
                                         saveLogin(response.body().getCustomer());
@@ -194,19 +205,15 @@ public class LoginActivity extends AppCompatActivity {
                                     case "auth/verify-phone":
                                     case "auth/no-verify":
                                     default:
-                                        message = response.body().getMessage();
                                         MyDialog.gI().startDlgOK(LoginActivity.this, message);
                                 }
                                 setLoading(false);
-                            } else if (response.body().getStatusCode() == 400) {
-                                Log.w(TAG, "onResponse400: " + response.body().getCode());
-                                MyDialog.gI().startDlgOK(LoginActivity.this, response.body().getMessage());
-                                setLoading(false);
+                            } else if (statusCode == 400) {
+                                Log.w(TAG, "onResponse400: " + code);
+                                MyDialog.gI().startDlgOK(LoginActivity.this, message);
                             }
-
                         } else {
                             MyDialog.gI().startDlgOK(LoginActivity.this, "body null");
-                            setLoading(false);
                         }
                     });
                 }
@@ -215,14 +222,13 @@ public class LoginActivity extends AppCompatActivity {
                 public void onFailure(@NonNull Call<CustomerResponse> call, @NonNull Throwable t) {
                     runOnUiThread(() -> {
                         MyDialog.gI().startDlgOK(LoginActivity.this, t.getMessage());
-                        setLoading(false);
                     });
                 }
             });
 
-
         } catch (Exception e) {
             Log.w(TAG, "login: " + e.getMessage());
+        } finally {
             setLoading(false);
         }
     }

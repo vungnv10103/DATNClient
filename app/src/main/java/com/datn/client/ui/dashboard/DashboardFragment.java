@@ -1,10 +1,13 @@
 package com.datn.client.ui.dashboard;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,28 +16,111 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.datn.client.R;
 import com.datn.client.databinding.FragmentDashboardBinding;
+import com.datn.client.databinding.FragmentHomeBinding;
+import com.datn.client.models.Customer;
+import com.datn.client.services.ApiService;
+import com.datn.client.services.RetrofitConnection;
+import com.datn.client.ui.LoginActivity;
 import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.MyNavController;
+import com.datn.client.ui.checkout.CheckoutActivity;
+import com.datn.client.ui.home.HomePresenter;
+import com.datn.client.utils.Constants;
+import com.datn.client.utils.PreferenceManager;
+import com.google.gson.Gson;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends Fragment implements IDashboardView {
 
     private FragmentDashboardBinding binding;
 
+    private DashboardPresenter dashboardPresenter;
+
+    private PreferenceManager preferenceManager;
+
+    private Button btnLogout;
+    private Customer mCustomer;
+    private String mToken;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        DashboardViewModel dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
-
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
-
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
-        return root;
+        initUI();
+        preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
+        checkLogin();
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        initEventClick();
+        initService();
+    }
+
+    private void doLogout() {
+        dashboardPresenter.logout();
+    }
+
+    @Override
+    public void onThrowMessage(String message) {
+        MyDialog.gI().startDlgOK(requireActivity(), message);
+    }
+
+    @Override
+    public void onLogout() {
+        showToast("Đăng xuất thành công");
+//        preferenceManager.putBoolean("isRemember", false);
+        startActivity(new Intent(requireActivity(), LoginActivity.class));
+        requireActivity().finish();
+    }
+
+    @Override
+    public void onFinish() {
+        switchToLogin();
+    }
+
+    private void initService() {
+        ApiService apiService = RetrofitConnection.getApiService();
+        dashboardPresenter = new DashboardPresenter(this, apiService, mToken, mCustomer.get_id());
+    }
+
+    private Customer getLogin() {
+        Gson gson = new Gson();
+        String json = preferenceManager.getString("user");
+        return gson.fromJson(json, Customer.class);
+    }
+
+    private void checkLogin() {
+        mCustomer = getLogin();
+        if (mCustomer == null) {
+            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
+            requireActivity().finishAffinity();
+            return;
+        }
+        mToken = preferenceManager.getString("token");
+        if (mToken == null || mToken.isEmpty()) {
+            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
+            requireActivity().finishAffinity();
+        }
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    public void switchToLogin() {
+        preferenceManager.clear();
+        startActivity(new Intent(requireActivity(), LoginActivity.class));
+        requireActivity().finishAffinity();
+    }
+
+    private void initEventClick() {
+        btnLogout.setOnClickListener(v -> doLogout());
+    }
+
+    private void initUI() {
+        btnLogout = binding.btnLogout;
     }
 
     @Override
@@ -42,4 +128,6 @@ public class DashboardFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
+
 }

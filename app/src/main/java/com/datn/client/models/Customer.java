@@ -4,6 +4,7 @@ public class Customer extends _BaseModel {
     private String avatar;
     private String email;
     private String password;
+    private String token;
     private String full_name;
     private String phone_number;
     private String status;
@@ -11,10 +12,15 @@ public class Customer extends _BaseModel {
     private String fcm;
 
 
-
     public Customer(String email, String password) {
         this.email = email;
         this.password = password;
+    }
+
+    public Customer(String email, String password, String token) {
+        this.email = email;
+        this.password = password;
+        this.token = token;
     }
 
     public Customer(String _id, String password, boolean _is) {
@@ -76,6 +82,14 @@ public class Customer extends _BaseModel {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getOtp() {
