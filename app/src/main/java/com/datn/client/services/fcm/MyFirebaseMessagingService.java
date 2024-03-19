@@ -1,11 +1,14 @@
 package com.datn.client.services.fcm;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -14,32 +17,37 @@ import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import com.datn.client.R;
 import com.datn.client.ui.LoginActivity;
+import com.datn.client.utils.Constants;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.io.IOException;
+import java.net.URL;
+
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+
     @Override
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
         if (!message.getData().isEmpty()) {
             String title = message.getData().get("title");
             String body = message.getData().get("body");
-            Log.w("onMessageReceived", title + "-" + body);
-            sendNotification(title, body);
+            String imageURL = message.getData().get("imageURL");
+            Log.w("onMessageReceived", title + "-" + body + "-" + imageURL);
+            sendNotification(title, body, imageURL);
         }
     }
 
-    private void sendNotification(String title, String messageBody) {
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    private void sendNotification(String title, String messageBody, String imageURL) {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    "Stech", "Stech",
+            NotificationChannel channel = new NotificationChannel("Stech", "Stech",
                     NotificationManager.IMPORTANCE_DEFAULT
             );
             notificationManager.createNotificationChannel(channel);
@@ -50,23 +58,66 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, "Stech")
-                        .setSmallIcon(R.drawable.logo_no)
-                        .setCustomContentView(createNotificationView(title, messageBody))
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
 
-        notificationManager.notify(0, notificationBuilder.build());
+        // Get the layouts to use in the custom notification
+        RemoteViews notificationLayout = createNotificationView(R.layout.layout_notification_small, title, messageBody);
+        RemoteViews notificationLayoutExpanded = createNotificationView(R.layout.layout_notification_large, title, messageBody);
+
+//        NotificationCompat.Builder notificationBuilder =
+//                new NotificationCompat.Builder(this, "Stech")
+//                        .setSmallIcon(R.drawable.logo_no)
+//                        .setCustomContentView(notificationLayout)
+//                        .setCustomBigContentView(notificationLayoutExpanded)
+//                        .setAutoCancel(true)
+//                        .setSound(defaultSoundUri)
+//                        .setContentIntent(pendingIntent);
+//
+//        notificationManager.notify(0, notificationBuilder.build());
+        // Apply the layouts to the notification.
+        boolean isNightMode = Constants.isNightMode;
+        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo_app_gradient);
+        Bitmap mBitmap2 = null;
+        if (!imageURL.trim().isEmpty()) {
+            try {
+                URL url = new URL(imageURL);
+                mBitmap2 = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        Notification customNotification = new NotificationCompat.Builder(this, "Stech")
+                .setSmallIcon(R.drawable.logo_app_black)
+                .setLargeIcon(mBitmap2)
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setCustomContentView(notificationLayout)
+                .setCustomBigContentView(notificationLayoutExpanded)
+                .setPriority(NotificationManager.IMPORTANCE_DEFAULT)
+                .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .build();
+
+        notificationManager.notify(666, customNotification);
     }
 
     @NonNull
     @SuppressLint("RemoteViewLayout")
-    private RemoteViews createNotificationView(String title, String content) {
-        RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.layout_notification);
-        remoteViews.setTextViewText(R.id.tv_title_notification, title);
-        remoteViews.setTextViewText(R.id.tv_content_notification, content);
+    private RemoteViews createNotificationView(int layout, String title, String content) {
+        boolean isNightMode = Constants.isNightMode;
+        int idTitle = R.id.tv_title_notification;
+        int idContent = R.id.tv_content_notification;
+        RemoteViews remoteViews = new RemoteViews(getPackageName(), layout);
+        if (isNightMode) {
+            remoteViews.setTextColor(idTitle, ContextCompat.getColor(this, R.color.white));
+            remoteViews.setTextColor(idContent, ContextCompat.getColor(this, R.color.white));
+        }
+        remoteViews.setTextViewText(idTitle, title);
+        remoteViews.setTextViewText(idContent, content);
         return remoteViews;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

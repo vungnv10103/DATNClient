@@ -183,8 +183,7 @@ public class VerifyOTPActivity extends AppCompatActivity {
             }
             Customer customer = new Customer(mCustomer.get_id(), mCustomer.getPassword(), false);
             customer.setOtp(OTP);
-            String token = preferenceManager.getString("token");
-            Call<CustomerResponse> verify = apiService.verify(token, customer);
+            Call<CustomerResponse> verify = apiService.verify(customer);
             verify.enqueue(new Callback<CustomerResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<CustomerResponse> call, @NonNull Response<CustomerResponse> response) {

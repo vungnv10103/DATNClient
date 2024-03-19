@@ -28,10 +28,10 @@ public interface ApiService {
     Call<CustomerResponse> loginCustomer(@Body Customer customer);
 
     @POST("/v1/api/customer/login/check")
-    Call<_BaseResponse> checkLogin(@Body Customer customer);
+    Call<_BaseResponse> checkLogin(@Header("Authorization") String token, @Body Customer customer);
 
     @POST("/v1/api/customer/login/verify")
-    Call<CustomerResponse> verify(@Header("Authorization") String token, @Body Customer customer);
+    Call<CustomerResponse> verify(@Body Customer customer);
 
     @POST("/v1/api/customer/add/fcm")
     Call<_BaseResponse> addFCM(@Header("Authorization") String token, @Body Customer customer);

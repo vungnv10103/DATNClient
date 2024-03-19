@@ -96,9 +96,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void checkLogin() {
         setLoading(true);
-        mCustomer.setToken(preferenceManager.getString("token"));
         try {
-            Call<_BaseResponse> checkLogin = apiService.checkLogin(mCustomer);
+            String token = preferenceManager.getString("token");
+            mCustomer.setToken(token);
+            Call<_BaseResponse> checkLogin = apiService.checkLogin(token, mCustomer);
             checkLogin.enqueue(new Callback<_BaseResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
@@ -130,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             }
                         } else {
-                            MyDialog.gI().startDlgOK(LoginActivity.this, "body null");
+                            MyDialog.gI().startDlgOK(LoginActivity.this, response.message());
                         }
                     });
                 }
@@ -224,9 +225,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(@NonNull Call<CustomerResponse> call, @NonNull Throwable t) {
-                    runOnUiThread(() -> {
-                        MyDialog.gI().startDlgOK(LoginActivity.this, t.getMessage());
-                    });
+                    runOnUiThread(() -> MyDialog.gI().startDlgOK(LoginActivity.this, t.getMessage()));
                 }
             });
 

@@ -18,6 +18,7 @@ import com.datn.client.databinding.BottomsheetAddToCartBinding;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.ui.MyDialog;
+import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
@@ -69,6 +70,10 @@ public class AddToCartModalBS extends BottomSheetDialogFragment implements IProd
             tvPrice.setText("Giá: " + Currency.formatCurrency(mProduct.getPrice()));
             int quantityProduct = Integer.parseInt(mProduct.getQuantity());
             tvQuantityStock.setText("Kho: " + quantityProduct);
+            boolean isNightMode = Constants.isNightMode;
+            if (isNightMode){
+                btnPlus.setIconTintResource(R.color.white);
+            }
             if (quantityProduct <= 0) {
                 tvQuantity.setText("0");
 //                btnPlus.setIconTintResource(R.color.gray_400);

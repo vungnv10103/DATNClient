@@ -27,6 +27,7 @@ import com.datn.client.models.ProductCart;
 import com.datn.client.ui.cart.ICartView;
 import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
+import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.google.android.material.button.MaterialButton;
 
@@ -66,7 +67,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.tvQuantity.setText(String.valueOf(quantityCart));
         holder.tvOptions.setText(productCart.getCreated_at());
         holder.cbSelected.setChecked(productCart.getStatus_cart() == STATUS_CART.SELECTED.getValue());
-        boolean isNightMode = isNightMode(context);
+        boolean isNightMode = Constants.isNightMode;
         int colorId;
         if (isNightMode) {
             colorId = ContextCompat.getColor(context, R.color.black_200);
@@ -216,15 +217,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         return view.getMeasuredHeight();
     }
 
-    private static boolean isNightMode(Context context) {
-        return context.getResources().getBoolean(R.bool.isNight);
-    }
 
     private static void doGoShop(Context context, String productID) {
         Intent intent = new Intent(context, DetailProductActivity.class);
         intent.putExtra("productID", productID);
         context.startActivity(intent);
     }
+
     private static void doBuyNow(Context context, String cartID) {
 
     }

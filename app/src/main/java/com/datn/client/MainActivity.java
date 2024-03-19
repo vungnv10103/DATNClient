@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -22,6 +23,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.datn.client.databinding.ActivityMainBinding;
 import com.datn.client.ui.home.HomeFragment;
+import com.datn.client.utils.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -100,6 +102,14 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("FragmentName", "Label null");
             }
         });
+
+        Constants.isNightMode = isNightMode();
+
+
+    }
+
+    private boolean isNightMode() {
+        return getResources().getBoolean(R.bool.isNight);
     }
 
 }

@@ -36,7 +36,7 @@ public class MyDialog {
         new AlertDialog.Builder(context)
                 .setTitle(context.getString(R.string.notifications))
                 .setMessage(message)
-                .setIcon(R.drawable.logo)
+                .setIcon(R.drawable.logo_app_gradient)
                 .setPositiveButton(android.R.string.ok, (dialog, whichButton) -> dialog.dismiss())
                 .setCancelable(false)
                 .show();
@@ -46,7 +46,7 @@ public class MyDialog {
         new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
-                .setIcon(R.drawable.logo)
+                .setIcon(R.drawable.logo_app_gradient)
                 .setPositiveButton(android.R.string.ok, (dialog, whichButton) -> dialog.dismiss())
                 .setCancelable(false)
                 .show();
@@ -56,7 +56,7 @@ public class MyDialog {
         new AlertDialog.Builder(context)
                 .setTitle(context.getString(R.string.notifications))
                 .setMessage(message)
-                .setIcon(R.drawable.logo)
+                .setIcon(R.drawable.logo_app_gradient)
                 .setPositiveButton(android.R.string.ok, action)
                 .setCancelable(false)
                 .show();
@@ -66,7 +66,7 @@ public class MyDialog {
         new AlertDialog.Builder(context)
                 .setTitle(title)
                 .setMessage(message)
-                .setIcon(R.drawable.logo)
+                .setIcon(R.drawable.logo_app_gradient)
                 .setPositiveButton(android.R.string.ok, action)
                 .setCancelable(false)
                 .show();

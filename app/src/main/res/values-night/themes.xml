@@ -29,7 +29,7 @@
     <style name="ThemeOverlay.App.Card" parent="">
         <item name="colorSecondary">@color/blue_400</item>
         <item name="colorSurface">@color/teal_200</item>
-        <item name="colorOnSurfaceVariant">@color/big_stone</item>
+        <item name="colorOnSurfaceVariant">@color/white</item>
     </style>
 
     <style name="ShapeAppearanceOverlay.App.Card.Media" parent="">

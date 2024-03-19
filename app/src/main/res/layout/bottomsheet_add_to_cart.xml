@@ -39,7 +39,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/logo"
+                android:src="@drawable/logo_app_gradient"
                 app:shapeAppearance="?attr/shapeAppearanceMediumComponent"
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Card.Media" />
 
@@ -131,7 +131,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:icon="@drawable/ic_plus_24"
-                    app:iconTint="@color/big_stone"
                     tools:ignore="PrivateResource,SpeakableTextPresentCheck" />
             </LinearLayout>
         </RelativeLayout>
