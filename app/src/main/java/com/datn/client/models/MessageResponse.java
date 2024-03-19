@@ -3,24 +3,34 @@ package com.datn.client.models;
 import androidx.annotation.NonNull;
 
 public class MessageResponse extends _BaseModel {
-    private int code;
+    private int statusCode;
+    private String code;
     private String title;
     private String content;
     private String image;
 
-    public MessageResponse(String _id, String created_at, int code, String title, String content, String image) {
+    public MessageResponse(String _id, String created_at, int statusCode, String code, String title, String content, String image) {
         super(_id, created_at);
+        this.statusCode = statusCode;
         this.code = code;
         this.title = title;
         this.content = content;
         this.image = image;
     }
 
-    public int getCode() {
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public String getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
@@ -48,14 +58,4 @@ public class MessageResponse extends _BaseModel {
         this.image = image;
     }
 
-    @NonNull
-    @Override
-    public String toString() {
-        return "MessageResponse{" +
-                "code=" + code +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", image='" + image + '\'' +
-                '}';
-    }
 }

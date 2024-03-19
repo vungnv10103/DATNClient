@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.datn.client.models.MessageResponse;
 import com.datn.client.models.ProductCart;
 import com.datn.client.response.ProductCartResponse;
 import com.datn.client.services.ApiService;
@@ -65,16 +66,17 @@ public class CartPresenter {
                     if (response.body() != null) {
                         int statusCode = response.body().getStatusCode();
                         String code = response.body().getCode();
+                        MessageResponse message = response.body().getMessage();
                         if (statusCode == 200) {
                             Log.w(TAG, "onResponse200: getDataCart: " + code);
                             List<ProductCart> dataProductCart = response.body().getProductCarts();
                             iCartView.onListCart(dataProductCart);
                         } else if (statusCode == 400) {
                             Log.w(TAG, "onResponse400: getDataCart: " + code);
-                            iCartView.onThrowMessage(code);
+                            iCartView.onThrowMessage(message);
                         } else {
                             Log.w(TAG, "onResponse: " + code);
-                            iCartView.onThrowMessage(code);
+                            iCartView.onThrowMessage(message);
                         }
                     } else {
                         Log.w(TAG, "onResponse: " + response);

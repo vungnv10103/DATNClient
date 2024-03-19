@@ -176,8 +176,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
 
     @Override
     public void onThrowMessage(@NonNull MessageResponse message) {
-        Log.w(TAG, "onThrowMessage: " + message.toString());
-        switch (message.getCode()) {
+        switch (message.getStatusCode()) {
             case 200:
                 MyDialog.gI().startDlgOKWithAction(this, message.getTitle(), message.getContent(), (dialog, which) -> finish());
                 break;

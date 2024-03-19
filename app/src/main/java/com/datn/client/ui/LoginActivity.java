@@ -121,9 +121,12 @@ public class LoginActivity extends AppCompatActivity {
                             } else if (statusCode == 400) {
                                 Log.w(TAG, "onResponse400: " + code);
                                 MyDialog.gI().startDlgOK(LoginActivity.this, message.getContent());
-                                if (code.equals("auth/wrong-token")) {
-//                                    preferenceManager.putBoolean("isRemember", false);
-                                    preferenceManager.putString("token", "");
+                                switch (code) {
+                                    case "auth/wrong-token":
+                                    case "jwt expired":
+                                        //preferenceManager.putBoolean("isRemember", false);
+                                        preferenceManager.putString("token", "");
+                                        break;
                                 }
                             }
                         } else {
@@ -135,6 +138,7 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
                     runOnUiThread(() -> {
+                        Log.w(TAG, "checkLogin: onFailure: " + t.getMessage());
                         MyDialog.gI().startDlgOK(LoginActivity.this, t.getMessage());
                     });
                 }

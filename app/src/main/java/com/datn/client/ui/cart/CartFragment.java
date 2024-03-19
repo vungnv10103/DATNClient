@@ -22,6 +22,7 @@ import com.datn.client.R;
 import com.datn.client.adapter.CartAdapter;
 import com.datn.client.databinding.FragmentCartBinding;
 import com.datn.client.models.Customer;
+import com.datn.client.models.MessageResponse;
 import com.datn.client.models.ProductCart;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
@@ -141,6 +142,12 @@ public class CartFragment extends Fragment implements ICartView {
     public void onListCart(List<ProductCart> productCartList) {
         this.mProductCart = productCartList;
         displayCart();
+    }
+
+    @Override
+    public void onThrowMessage(@NonNull MessageResponse message) {
+        setLoading(false);
+        MyDialog.gI().startDlgOK(requireActivity(), message.getTitle(), message.getContent());
     }
 
     @Override
