@@ -3,6 +3,7 @@ package com.datn.client.ui.home;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
 import com.datn.client.models.Banner;
 import com.datn.client.models.Category;
@@ -20,7 +21,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HomePresenter {
-    private static final String TAG = HomePresenter.class.getSimpleName();
+    private final FragmentActivity context;
 
     private final IHomeView iHomeView;
     private final ApiService apiService;
@@ -31,7 +32,8 @@ public class HomePresenter {
     private Call<CategoryResponse> getCategory;
     private Call<ProductResponse> getSellingProduct;
 
-    public HomePresenter(IHomeView iHomeView, ApiService apiService, String token, String customerID) {
+    public HomePresenter(FragmentActivity context, IHomeView iHomeView, ApiService apiService, String token, String customerID) {
+        this.context = context;
         this.iHomeView = iHomeView;
         this.apiService = apiService;
         this.token = token;
@@ -51,119 +53,119 @@ public class HomePresenter {
     }
 
     public void getListBanner() {
-        try {
-            getBanner = apiService.getBanner(token, customerID);
-            getBanner.enqueue(new Callback<BannerResponse>() {
-                @Override
-                public void onResponse(@NonNull Call<BannerResponse> call, @NonNull Response<BannerResponse> response) {
-                    if (response.body() != null) {
-                        int statusCode = response.body().getStatusCode();
-                        String code = response.body().getCode();
-                        MessageResponse message= response.body().getMessage();
-                        if (statusCode == 200) {
-                            Log.w(TAG, "onResponse200: " + code);
-                            List<Banner> data = response.body().getBanners();
-                            iHomeView.onListBanner(data);
-                        } else if (statusCode == 400) {
-                            if (code.equals("auth/wrong-token")) {
-                                iHomeView.onFinish();
-                            } else {
-                                Log.w(TAG, "onResponse400: " + code);
-                                iHomeView.onThrowMessage(message);
+        context.runOnUiThread(() -> {
+            try {
+                getBanner = apiService.getBanner(token, customerID);
+                getBanner.enqueue(new Callback<BannerResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<BannerResponse> call, @NonNull Response<BannerResponse> response) {
+                        if (response.body() != null) {
+                            int statusCode = response.body().getStatusCode();
+                            String code = response.body().getCode();
+                            MessageResponse message = response.body().getMessage();
+                            if (statusCode == 200) {
+                                iHomeView.onThrowLog("getListBanner200", code);
+                                List<Banner> data = response.body().getBanners();
+                                iHomeView.onListBanner(data);
+                            } else if (statusCode == 400) {
+                                if (code.equals("auth/wrong-token")) {
+                                    iHomeView.onFinish();
+                                } else {
+                                    iHomeView.onThrowLog("getListBanner400", code);
+                                    iHomeView.onThrowMessage(message);
+                                }
                             }
-
+                        } else {
+                            iHomeView.onThrowLog("getListBanner: onResponse", response.toString());
                         }
-                    } else {
-                        Log.w(TAG, "onResponse: " + response.message());
-                        iHomeView.onThrowMessage(response.toString());
                     }
-                }
 
-                @Override
-                public void onFailure(@NonNull Call<BannerResponse> call, @NonNull Throwable t) {
-                    iHomeView.onThrowMessage(t.getMessage() + "getListBanner");
-                }
-            });
-        } catch (Exception e) {
-            Log.w(TAG, "getListBanner: " + e.getMessage());
-            iHomeView.onThrowMessage(e.getMessage());
-        }
+                    @Override
+                    public void onFailure(@NonNull Call<BannerResponse> call, @NonNull Throwable t) {
+                        iHomeView.onThrowLog("getListBanner: onFailure", t.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                iHomeView.onThrowLog("getListBanner", e.getMessage());
+            }
+        });
     }
 
     public void getListCategory() {
-        try {
-            getCategory = apiService.getCategory(token, customerID);
-            getCategory.enqueue(new Callback<CategoryResponse>() {
-                @Override
-                public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
-                    if (response.body() != null) {
-                        int statusCode = response.body().getStatusCode();
-                        String code = response.body().getCode();
-                        if (statusCode == 200) {
-                            Log.w(TAG, "onResponse200: " + code);
-                            List<Category> data = response.body().getCategories();
-                            iHomeView.onListCategory(data);
-                        } else if (statusCode == 400) {
-                            if (code.equals("auth/wrong-token")) {
-                                iHomeView.onFinish();
-                            } else {
-                                Log.w(TAG, "onResponse400: " + code);
-                                iHomeView.onThrowMessage(response.body().getMessage());
+        context.runOnUiThread(() -> {
+            try {
+                getCategory = apiService.getCategory(token, customerID);
+                getCategory.enqueue(new Callback<CategoryResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<CategoryResponse> call, @NonNull Response<CategoryResponse> response) {
+                        if (response.body() != null) {
+                            int statusCode = response.body().getStatusCode();
+                            String code = response.body().getCode();
+                            MessageResponse message = response.body().getMessage();
+                            if (statusCode == 200) {
+                                iHomeView.onThrowLog("getListCategory200", code);
+                                List<Category> data = response.body().getCategories();
+                                iHomeView.onListCategory(data);
+                            } else if (statusCode == 400) {
+                                if (code.equals("auth/wrong-token")) {
+                                    iHomeView.onFinish();
+                                } else {
+                                    iHomeView.onThrowLog("getListCategory400", code);
+                                    iHomeView.onThrowMessage(message);
+                                }
                             }
+                        } else {
+                            iHomeView.onThrowLog("getListCategory: onResponse", response.message());
                         }
-                    } else {
-                        Log.w(TAG, "onResponse: getListCategory: " + response);
-                        iHomeView.onThrowMessage("body null");
                     }
-                }
 
-                @Override
-                public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
-                    iHomeView.onThrowMessage(t.getMessage() + "getListCategory");
-                }
-            });
-        } catch (Exception e) {
-            Log.w(TAG, "getListCategory: " + e.getMessage());
-            iHomeView.onThrowMessage(e.getMessage());
-        }
+                    @Override
+                    public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
+                        iHomeView.onThrowLog("getListCategory: onFailure", t.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                iHomeView.onThrowLog("getListCategory", e.getMessage());
+            }
+        });
     }
 
     public void getListSellingProduct() {
-        try {
-            getSellingProduct = apiService.getSellingProduct(token, customerID);
-            getSellingProduct.enqueue(new Callback<ProductResponse>() {
-                @Override
-                public void onResponse(@NonNull Call<ProductResponse> call, @NonNull Response<ProductResponse> response) {
-                    if (response.body() != null) {
-                        int statusCode = response.body().getStatusCode();
-                        String code = response.body().getCode();
-                        if (statusCode == 200) {
-                            Log.w(TAG, "onResponse200: " + code);
-                            List<Product> data = response.body().getProducts();
-                            iHomeView.onListSellingProduct(data);
-                        } else if (statusCode == 400) {
-                            if (code.equals("auth/wrong-token")) {
-                                iHomeView.onFinish();
-                            } else {
-                                Log.w(TAG, "onResponse400: " + code);
-                                iHomeView.onThrowMessage(response.body().getMessage());
+        context.runOnUiThread(() -> {
+            try {
+                getSellingProduct = apiService.getSellingProduct(token, customerID);
+                getSellingProduct.enqueue(new Callback<ProductResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ProductResponse> call, @NonNull Response<ProductResponse> response) {
+                        if (response.body() != null) {
+                            int statusCode = response.body().getStatusCode();
+                            String code = response.body().getCode();
+                            MessageResponse message = response.body().getMessage();
+                            if (statusCode == 200) {
+                                iHomeView.onThrowLog("getListSellingProduct200", code);
+                                List<Product> data = response.body().getProducts();
+                                iHomeView.onListSellingProduct(data);
+                            } else if (statusCode == 400) {
+                                if (code.equals("auth/wrong-token")) {
+                                    iHomeView.onFinish();
+                                } else {
+                                    iHomeView.onThrowLog("getListSellingProduct400", code);
+                                    iHomeView.onThrowMessage(message);
+                                }
                             }
+                        } else {
+                            iHomeView.onThrowLog("getListSellingProduct: onResponse", response.message());
                         }
-                    } else {
-                        Log.w(TAG, "onResponse: getListSellingProduct: " + response);
-                        iHomeView.onThrowMessage("body null");
                     }
-                }
 
-                @Override
-                public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
-                    iHomeView.onThrowMessage(t.getMessage() + "getListSellingProduct");
-                }
-            });
-        } catch (Exception e) {
-            Log.w(TAG, "getListSellingProduct: " + e.getMessage());
-            iHomeView.onThrowMessage(e.getMessage());
-        }
+                    @Override
+                    public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
+                        iHomeView.onThrowLog("getListSellingProduct: onFailure", t.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                iHomeView.onThrowLog("getListSellingProduct", e.getMessage());
+            }
+        });
     }
-
 }

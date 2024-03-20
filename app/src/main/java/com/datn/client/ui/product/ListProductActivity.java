@@ -9,13 +9,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.datn.client.R;
 import com.datn.client.adapter.ProductAdapter;
 import com.datn.client.databinding.ActivityListProductBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
-import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.google.gson.Gson;
@@ -79,19 +80,17 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
     private void checkLogin() {
         mCustomer = getLogin();
         if (mCustomer == null) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            finishAffinity();
+            switchToLogin();
             return;
         }
         mToken = preferenceManager.getString("token");
         if (mToken == null || mToken.isEmpty()) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            finishAffinity();
+            switchToLogin();
             return;
         }
         mCategoryID = getIntent().getStringExtra("categoryID");
         if (mCategoryID == null) {
-            showToast("Lỗi chọn thể loại.");
+            showToast(getString(R.string.category_selection_error));
             finishAffinity();
         }
     }
@@ -129,6 +128,11 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
     @Override
     public void onThrowMessage(String message) {
         MyDialog.gI().startDlgOK(this, message);
+    }
+
+    private void switchToLogin() {
+        showToast(getString(R.string.please_log_in_again));
+        finishAffinity();
     }
 
     @Override

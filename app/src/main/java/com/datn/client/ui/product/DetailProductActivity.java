@@ -20,12 +20,13 @@ import androidx.media3.datasource.HttpDataSource;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
 
+import com.datn.client.R;
 import com.datn.client.databinding.ActivityDetailProductBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
-import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.datn.client.utils.PreferenceManager;
@@ -43,7 +44,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     private ProductPresenter productPresenter;
     private ApiService apiService;
     private PreferenceManager preferenceManager;
-    private AddToCartModalBS modalAddToCart;
+    private AddToCartBS bottomSheetAddToCart;
 
     private LinearLayout layoutDetailProduct;
     private SpinKitView spinKitDetail, spinKitVideo;
@@ -146,19 +147,17 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     private void checkLogin() {
         mCustomer = getLogin();
         if (mCustomer == null) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            finishAffinity();
+            switchToLogin();
             return;
         }
         mToken = preferenceManager.getString("token");
         if (mToken == null || mToken.isEmpty()) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            finishAffinity();
+            switchToLogin();
             return;
         }
         mProductID = getIntent().getStringExtra("productID");
         if (mProductID == null) {
-            showToast("Lỗi chọn sản phẩm.");
+            showToast(getString(R.string.product_selection_error));
             finishAffinity();
         }
     }
@@ -177,12 +176,12 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
 
         });
         btnBuyNow.setOnClickListener(v -> {
-            modalAddToCart = new AddToCartModalBS(apiService, mToken, mCustomer.get_id(), TYPE_BUY.BUY_NOW.getValue());
-            modalAddToCart.show(getSupportFragmentManager(), AddToCartModalBS.TAG);
+            bottomSheetAddToCart = new AddToCartBS(apiService, mToken, mCustomer.get_id(), TYPE_BUY.BUY_NOW.getValue());
+            bottomSheetAddToCart.show(getSupportFragmentManager(), AddToCartBS.TAG);
         });
         btnAddToCart.setOnClickListener(v -> {
-            modalAddToCart = new AddToCartModalBS(apiService, mToken, mCustomer.get_id(), TYPE_BUY.ADD_TO_CART.getValue());
-            modalAddToCart.show(getSupportFragmentManager(), AddToCartModalBS.TAG);
+            bottomSheetAddToCart = new AddToCartBS(apiService, mToken, mCustomer.get_id(), TYPE_BUY.ADD_TO_CART.getValue());
+            bottomSheetAddToCart.show(getSupportFragmentManager(), AddToCartBS.TAG);
         });
     }
 
@@ -224,6 +223,11 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
                 }
             }
         });
+    }
+
+    private void switchToLogin(){
+        showToast(getString(R.string.please_log_in_again));
+        finishAffinity();
     }
 
     @Override

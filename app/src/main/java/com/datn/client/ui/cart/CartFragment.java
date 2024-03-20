@@ -26,8 +26,8 @@ import com.datn.client.models.MessageResponse;
 import com.datn.client.models.ProductCart;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
-import com.datn.client.ui.MyDialog;
-import com.datn.client.ui.MyNavController;
+import com.datn.client.ui.components.MyDialog;
+import com.datn.client.ui.components.MyNavController;
 import com.datn.client.ui.checkout.CheckoutActivity;
 import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 import com.datn.client.utils.Constants;
@@ -186,14 +186,12 @@ public class CartFragment extends Fragment implements ICartView {
     private void checkLogin() {
         mCustomer = getLogin();
         if (mCustomer == null) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            requireActivity().finishAffinity();
+            switchToLogin();
             return;
         }
         mToken = preferenceManager.getString("token");
         if (mToken == null || mToken.isEmpty()) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            requireActivity().finishAffinity();
+            switchToLogin();
         }
     }
 
@@ -255,6 +253,10 @@ public class CartFragment extends Fragment implements ICartView {
         btnGoShopping = binding.btnGoShopping;
     }
 
+    private void switchToLogin(){
+        showToast(getString(R.string.please_log_in_again));
+        requireActivity().finishAffinity();
+    }
 
     private void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();

@@ -1,4 +1,4 @@
-package com.datn.client.ui;
+package com.datn.client.ui.components;
 
 import android.app.AlertDialog;
 import android.content.Context;

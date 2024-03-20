@@ -5,24 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="none"
-    tools:context=".ui.LoginActivity">
+    tools:context=".ui.auth.LoginActivity">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
-        <com.github.ybq.android.spinkit.SpinKitView
-            android:id="@+id/spin_kit_loading"
-            style="@style/SpinKitView.Large.FadingCircle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:maxWidth="48dip"
-            android:maxHeight="48dip"
-            android:minWidth="48dip"
-            android:minHeight="48dip"
-            android:visibility="visible"
-            app:SpinKit_Color="@color/purple_300" />
 
         <RelativeLayout
             android:id="@+id/layout_login"
@@ -127,18 +114,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="20dp">
 
-                    <com.github.ybq.android.spinkit.SpinKitView
-                        android:id="@+id/spin_kit"
-                        style="@style/SpinKitView.Large.FadingCircle"
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/progressbar_login"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:maxWidth="48dip"
-                        android:maxHeight="48dip"
-                        android:minWidth="48dip"
-                        android:minHeight="48dip"
-                        android:visibility="gone"
-                        app:SpinKit_Color="@color/purple_300" />
+                        android:indeterminate="true"
+                        android:visibility="visible" />
 
                     <Button
                         android:id="@+id/btn_login"
@@ -223,6 +205,14 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
         </RelativeLayout>
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progressbar_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="visible" />
     </FrameLayout>
 
 

@@ -17,7 +17,7 @@ import com.datn.client.R;
 import com.datn.client.databinding.BottomsheetAddToCartBinding;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
-import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -26,7 +26,7 @@ import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 
-public class AddToCartModalBS extends BottomSheetDialogFragment implements IProductView {
+public class AddToCartBS extends BottomSheetDialogFragment implements IProductView {
     private BottomsheetAddToCartBinding binding;
     public static final String TAG = "AddToCartBottomSheet";
 
@@ -41,7 +41,7 @@ public class AddToCartModalBS extends BottomSheetDialogFragment implements IProd
     private final String customerID;
     private final int mType;
 
-    public AddToCartModalBS(ApiService apiService, String token, String customerID, int type) {
+    public AddToCartBS(ApiService apiService, String token, String customerID, int type) {
         this.apiService = apiService;
         this.token = token;
         this.customerID = customerID;

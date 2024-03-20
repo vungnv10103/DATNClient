@@ -52,4 +52,17 @@
     <string name="total">Tổng:</string>
     <string name="list_product">Danh sách sản phẩm</string>
     <string name="go_shopping">Đi mua sắm</string>
+    <string name="are_you_sure_exit">Bạn có chắc chắn muốn thoát không?</string>
+    <string name="do_not_leave_it_blank">Vui lòng không để trống!</string>
+    <string name="invalid_email">"Email không hợp lệ!"</string>
+    <string name="invalid_phone">"Số điện thoại không hợp lệ!"</string>
+    <string name="two_passwords_must_match">2 mật khẩu phải trùng khớp nhau</string>
+    <string name="test_email">username@gmail.com</string>
+    <string name="test_name">username</string>
+    <string name="test_phone">0312978546</string>
+    <string name="test_pass">Username@123</string>
+    <string name="please_log_in_again">Có lỗi xảy ra vui lòng đăng nhập lại!</string>
+    <string name="product_selection_error">Lỗi chọn sản phẩm!</string>
+    <string name="category_selection_error">Lỗi chọn thể loại!</string>
+
 </resources>

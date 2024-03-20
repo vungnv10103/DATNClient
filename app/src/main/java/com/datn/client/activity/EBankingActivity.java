@@ -14,12 +14,13 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.datn.client.R;
 import com.datn.client.databinding.ActivityEbankingBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.response.EBankingResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
-import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -143,14 +144,12 @@ public class EBankingActivity extends AppCompatActivity {
     private void checkLogin() {
         mCustomer = getLogin();
         if (mCustomer == null) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            finishAffinity();
+            switchToLogin();
             return;
         }
         mToken = preferenceManager.getString("token");
         if (mToken == null || mToken.isEmpty()) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            finishAffinity();
+            switchToLogin();
         }
     }
 
@@ -170,6 +169,11 @@ public class EBankingActivity extends AppCompatActivity {
         WebSettings webSettings = webViewPay.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setSupportZoom(true);
+    }
+
+    private void switchToLogin(){
+        showToast(getString(R.string.please_log_in_again));
+        finishAffinity();
     }
 
     private void initEventClick() {

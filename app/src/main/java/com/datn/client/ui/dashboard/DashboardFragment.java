@@ -6,26 +6,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.datn.client.R;
 import com.datn.client.databinding.FragmentDashboardBinding;
-import com.datn.client.databinding.FragmentHomeBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
-import com.datn.client.ui.LoginActivity;
-import com.datn.client.ui.MyDialog;
-import com.datn.client.ui.MyNavController;
-import com.datn.client.ui.checkout.CheckoutActivity;
-import com.datn.client.ui.home.HomePresenter;
+import com.datn.client.ui.auth.LoginActivity;
+import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.google.gson.Gson;
@@ -76,13 +70,6 @@ public class DashboardFragment extends Fragment implements IDashboardView {
     @Override
     public void onLogout() {
         showToast("Đăng xuất thành công");
-//        preferenceManager.putBoolean("isRemember", false);
-        startActivity(new Intent(requireActivity(), LoginActivity.class));
-        requireActivity().finish();
-    }
-
-    @Override
-    public void onFinish() {
         switchToLogin();
     }
 
@@ -100,14 +87,12 @@ public class DashboardFragment extends Fragment implements IDashboardView {
     private void checkLogin() {
         mCustomer = getLogin();
         if (mCustomer == null) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            requireActivity().finishAffinity();
+            reLogin();
             return;
         }
         mToken = preferenceManager.getString("token");
         if (mToken == null || mToken.isEmpty()) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            requireActivity().finishAffinity();
+            reLogin();
         }
     }
 
@@ -116,11 +101,17 @@ public class DashboardFragment extends Fragment implements IDashboardView {
     }
 
     public void switchToLogin() {
-        preferenceManager.clear();
+        preferenceManager.putBoolean("isRemember", false);
+        preferenceManager.putString("token", "");
+
         startActivity(new Intent(requireActivity(), LoginActivity.class));
         requireActivity().finishAffinity();
     }
 
+    private void reLogin(){
+        showToast(getString(R.string.please_log_in_again));
+        requireActivity().finishAffinity();
+    }
     private void initEventClick() {
         btnLogout.setOnClickListener(v -> doLogout());
     }
@@ -134,6 +125,4 @@ public class DashboardFragment extends Fragment implements IDashboardView {
         super.onDestroyView();
         binding = null;
     }
-
-
 }

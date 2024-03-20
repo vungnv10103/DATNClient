@@ -1,7 +1,6 @@
-package com.datn.client.ui;
+package com.datn.client.ui.components;
 
 import android.app.Activity;
-import android.content.Context;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;

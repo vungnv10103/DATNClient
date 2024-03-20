@@ -1,6 +1,5 @@
-package com.datn.client.ui;
+package com.datn.client.ui.auth;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,12 +15,14 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.datn.client.R;
 import com.datn.client.databinding.ActivityRegisterBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
+import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.github.ybq.android.spinkit.SpinKitView;
@@ -51,15 +52,11 @@ public class RegisterActivity extends AppCompatActivity {
         @Override
         public void handleOnBackPressed() {
             new AlertDialog.Builder(RegisterActivity.this)
-                    .setTitle("Title")
-                    .setMessage("Do you really want to whatever?")
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> {
-                        System.out.println("OnBackPressed");
-                        finish();
-                    })
+                    .setTitle(TAG.split("Activity")[0])
+                    .setMessage(getString(R.string.are_you_sure_exit))
+                    .setIcon(R.drawable.logo_app_gradient)
+                    .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> finish())
                     .setNegativeButton(android.R.string.no, null).show();
-
         }
     };
 
@@ -74,8 +71,6 @@ public class RegisterActivity extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, callback);
 
         initService();
-
-        fakeData();
         initEventClick();
     }
 
@@ -111,7 +106,7 @@ public class RegisterActivity extends AppCompatActivity {
             String password = Objects.requireNonNull(edPass.getText()).toString().trim();
             String rePassword = Objects.requireNonNull(edRePass.getText()).toString().trim();
             if (!password.matches(rePassword)) {
-                showToast("2 password must matches");
+                showToast(getString(R.string.two_passwords_must_match));
                 return;
             }
             Customer customer = new Customer(email, password, fullName, phoneNumber);
@@ -130,7 +125,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     case "auth/verify":
                                         showToast(message.getContent());
                                         saveLogin(response.body().getCustomer());
-                                        startActivity(new Intent(RegisterActivity.this, VerifyOTPActivity.class));
+                                        startActivity(new Intent(RegisterActivity.this, VerifyOTPBottomSheet.class));
                                         break;
                                     case "":
                                     default:
@@ -167,15 +162,6 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    private void fakeData() {
-        edEmail.setText("vungnguyenn1001@gmail.com");
-        edName.setText("Vững Nguyễn");
-        edPhone.setText("0366112725");
-        edPass.setText("Vung@123");
-        edRePass.setText("Vung@123");
-    }
-
     private boolean checkInputForm() {
         String email = Objects.requireNonNull(edEmail.getText()).toString().trim();
         String fullName = Objects.requireNonNull(edName.getText()).toString().trim();
@@ -183,17 +169,17 @@ public class RegisterActivity extends AppCompatActivity {
         String password = Objects.requireNonNull(edPass.getText()).toString().trim();
         String rePassword = Objects.requireNonNull(edRePass.getText()).toString().trim();
         if (email.isEmpty() || fullName.isEmpty() || phoneNumber.isEmpty() || password.isEmpty() || rePassword.isEmpty()) {
-            showToast("Vui lòng không để trống!");
+            showToast(getString(R.string.do_not_leave_it_blank));
             return false;
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-//            edEmail.setError("Email không hợp lệ!");
-            showToast("Email không hợp lệ!");
+//            edEmail.setError(R.string.invalid_email));
+            showToast(getString(R.string.invalid_email));
             return false;
         } else if (!Patterns.PHONE.matcher(phoneNumber).matches()) {
-            showToast("Số điện thoại không hợp lệ");
+            showToast(getString(R.string.invalid_phone));
             return false;
         } else if (!password.matches(rePassword)) {
-            showToast("2 password must matches");
+            showToast(getString(R.string.two_passwords_must_match));
             return false;
         }
         return true;
@@ -235,6 +221,18 @@ public class RegisterActivity extends AppCompatActivity {
                 finishAffinity();
             }
         });
+        binding.imgLogo.setOnLongClickListener(v -> {
+            fakeData();
+            return true;
+        });
+    }
+
+    private void fakeData() {
+        edEmail.setText(getString(R.string.test_email));
+        edName.setText(getString(R.string.test_name));
+        edPhone.setText(getString(R.string.test_phone));
+        edPass.setText(getString(R.string.test_pass));
+        edRePass.setText(getString(R.string.test_pass));
     }
 
     private void initUI() {
@@ -251,6 +249,4 @@ public class RegisterActivity extends AppCompatActivity {
         edRePass = binding.edRepass;
         tvLogin = binding.tvLogin;
     }
-
-
 }

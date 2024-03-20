@@ -44,7 +44,6 @@ public class DashboardPresenter {
 
     public void logout() {
         try {
-
             logout = apiService.logout(token, customerID);
             logout.enqueue(new Callback<_BaseResponse>() {
                 @Override
@@ -58,7 +57,7 @@ public class DashboardPresenter {
                             iDashboardView.onLogout();
                         } else if (statusCode == 400) {
                             if (code.equals("auth/wrong-token")) {
-                                iDashboardView.onFinish();
+                                iDashboardView.onLogout();
                             } else {
                                 Log.w(TAG, "onResponse400: " + code);
                                 iDashboardView.onThrowMessage(message);

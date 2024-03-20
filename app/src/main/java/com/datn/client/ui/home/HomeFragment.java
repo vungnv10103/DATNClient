@@ -3,6 +3,7 @@ package com.datn.client.ui.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.datn.client.R;
 import com.datn.client.adapter.BannerAdapter;
 import com.datn.client.adapter.CategoryAdapter;
 import com.datn.client.adapter.ProductAdapter;
@@ -29,8 +31,8 @@ import com.datn.client.models.MessageResponse;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
-import com.datn.client.ui.LoginActivity;
-import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.auth.LoginActivity;
+import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.ui.product.ListProductActivity;
 import com.datn.client.utils.Constants;
@@ -43,6 +45,7 @@ import java.util.List;
 import me.relex.circleindicator.CircleIndicator3;
 
 public class HomeFragment extends Fragment implements IHomeView {
+    private static final String TAG = HomeFragment.class.getSimpleName();
 
     private FragmentHomeBinding binding;
     private final Handler handler = new Handler();
@@ -81,11 +84,15 @@ public class HomeFragment extends Fragment implements IHomeView {
         super.onViewCreated(view, savedInstanceState);
 
         initService();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
 
         homePresenter.getListBanner();
         homePresenter.getListCategory();
         homePresenter.getListSellingProduct();
-
     }
 
     private void displayBanner() {
@@ -94,11 +101,12 @@ public class HomeFragment extends Fragment implements IHomeView {
             return;
         }
         requireActivity().runOnUiThread(() -> {
-            BannerAdapter adapterSlideShow = new BannerAdapter(getContext(), mBannerList, banner -> showToast(banner.get_id()));
+            BannerAdapter adapterSlideShow = new BannerAdapter(getContext(), mBannerList, banner -> {
+
+            });
             vpgBanner.setAdapter(adapterSlideShow);
             animationSlideShow();
         });
-
     }
 
     private void displayCategory() {
@@ -107,9 +115,10 @@ public class HomeFragment extends Fragment implements IHomeView {
             return;
         }
         requireActivity().runOnUiThread(() -> {
+            // limit display category
             if (mCategoryList.size() > 12) {
                 if (!mCategoryList.get(11).getName().equals("Xem thêm")) {
-                    String temp = "https://cdn-icons-png.flaticon.com/512/10348/10348994.png";
+                    String temp = "https://stech-993p.onrender.com/images/category-more.png";
                     Category viewMore = new Category("-1", "Xem thêm", "---", temp);
                     Category viewLess = new Category("-1", "Ẩn bớt", "---", temp);
                     if (isDisableItemCate) {
@@ -119,6 +128,7 @@ public class HomeFragment extends Fragment implements IHomeView {
                     }
                 }
             }
+
             CategoryAdapter categoryAdapter = new CategoryAdapter(getActivity(), mCategoryList, category -> {
                 Intent intent = new Intent(requireActivity(), ListProductActivity.class);
                 intent.putExtra("categoryID", category.get_id());
@@ -184,8 +194,13 @@ public class HomeFragment extends Fragment implements IHomeView {
     }
 
     @Override
-    public void onThrowMessage(MessageResponse message) {
+    public void onThrowMessage(@NonNull MessageResponse message) {
+        MyDialog.gI().startDlgOK(requireActivity(), message.getContent());
+    }
 
+    @Override
+    public void onThrowLog(String key, String message) {
+        showLogW(key, message);
     }
 
     public void switchToLogin() {
@@ -193,11 +208,11 @@ public class HomeFragment extends Fragment implements IHomeView {
         startActivity(new Intent(requireActivity(), LoginActivity.class));
         requireActivity().finishAffinity();
     }
-
-    @Override
-    public void onThrowMessage(@NonNull String message) {
-        MyDialog.gI().startDlgOK(requireActivity(), message);
+    private void reLogin(){
+        showToast(getString(R.string.please_log_in_again));
+        requireActivity().finishAffinity();
     }
+
 
     @Override
     public void onFinish() {
@@ -207,14 +222,12 @@ public class HomeFragment extends Fragment implements IHomeView {
     private void checkLogin() {
         mCustomer = getLogin();
         if (mCustomer == null) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            requireActivity().finishAffinity();
+            reLogin();
             return;
         }
         mToken = preferenceManager.getString("token");
         if (mToken == null || mToken.isEmpty()) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            requireActivity().finishAffinity();
+            reLogin();
         }
     }
 
@@ -227,7 +240,7 @@ public class HomeFragment extends Fragment implements IHomeView {
 
     private void initService() {
         ApiService apiService = RetrofitConnection.getApiService();
-        homePresenter = new HomePresenter(this, apiService, mToken, mCustomer.get_id());
+        homePresenter = new HomePresenter(requireActivity(), this, apiService, mToken, mCustomer.get_id());
     }
 
     private void initUI() {
@@ -282,6 +295,10 @@ public class HomeFragment extends Fragment implements IHomeView {
 
     private void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showLogW(String key, String message) {
+        Log.w(TAG, key + ": " + message);
     }
 
 

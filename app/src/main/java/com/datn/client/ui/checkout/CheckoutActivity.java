@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.datn.client.R;
 import com.datn.client.activity.EBankingActivity;
 import com.datn.client.adapter.PaymentMethodAdapter;
 import com.datn.client.adapter.ProductCheckoutAdapter;
@@ -26,7 +27,7 @@ import com.datn.client.models.ProductCart;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.services.zalo.CreateOrder;
-import com.datn.client.ui.MyDialog;
+import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.checkout.CheckoutPresenter.PAYMENT_METHOD;
 import com.datn.client.ui.product.DetailProductActivity.TYPE_BUY;
 import com.datn.client.utils.Constants;
@@ -202,14 +203,12 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     private void checkLogin() {
         mCustomer = getLogin();
         if (mCustomer == null) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            finishAffinity();
+            switchToLogin();
             return;
         }
         mToken = preferenceManager.getString("token");
         if (mToken == null || mToken.isEmpty()) {
-            showToast("Có lỗi xảy ra, vui lòng đăng nhập lại.");
-            finishAffinity();
+            switchToLogin();
         }
     }
 
@@ -395,7 +394,13 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         btnEBanking3 = binding.btnEBanking3;
     }
 
+    private void switchToLogin(){
+        showToast(getString(R.string.please_log_in_again));
+        finishAffinity();
+    }
+
     @Override
+
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         ZaloPaySDK.getInstance().onResult(intent);

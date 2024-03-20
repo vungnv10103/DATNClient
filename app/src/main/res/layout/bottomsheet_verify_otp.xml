@@ -1,32 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:scrollbars="none"
-    tools:context=".ui.VerifyOTPActivity">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingBottom="20dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <ImageView
+        <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+            android:id="@+id/drag_handle"
             android:layout_width="match_parent"
-            android:layout_height="270dp"
-            android:layout_gravity="center_horizontal"
-            android:scaleType="fitXY"
-            android:src="@drawable/img_verify"
-            tools:ignore="ContentDescription" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:paddingHorizontal="20dp"
             android:fontFamily="@font/inter_bold"
             android:gravity="center"
+            android:paddingHorizontal="20dp"
             android:text="@string/otp_msg"
             android:textSize="18sp" />
 
@@ -44,7 +41,7 @@
                 android:autofillHints="postalCode"
                 android:background="@drawable/bg_otp"
                 android:gravity="center"
-                android:inputType="numberPassword"
+                android:inputType="number"
                 android:maxLength="1"
                 tools:ignore="LabelFor,SpeakableTextPresentCheck" />
 
@@ -56,7 +53,7 @@
                 android:autofillHints="postalCode"
                 android:background="@drawable/bg_otp"
                 android:gravity="center"
-                android:inputType="numberPassword"
+                android:inputType="number"
                 android:maxLength="1"
                 tools:ignore="Autofill,LabelFor,SpeakableTextPresentCheck" />
 
@@ -68,7 +65,7 @@
                 android:autofillHints="postalCode"
                 android:background="@drawable/bg_otp"
                 android:gravity="center"
-                android:inputType="numberPassword"
+                android:inputType="number"
                 android:maxLength="1"
                 tools:ignore="Autofill,LabelFor,SpeakableTextPresentCheck" />
 
@@ -80,7 +77,7 @@
                 android:autofillHints="postalCode"
                 android:background="@drawable/bg_otp"
                 android:gravity="center"
-                android:inputType="numberPassword"
+                android:inputType="number"
                 android:maxLength="1"
                 tools:ignore="Autofill,LabelFor,SpeakableTextPresentCheck" />
 
@@ -92,7 +89,7 @@
                 android:autofillHints="postalCode"
                 android:background="@drawable/bg_otp"
                 android:gravity="center"
-                android:inputType="numberPassword"
+                android:inputType="number"
                 android:maxLength="1"
                 tools:ignore="Autofill,LabelFor,SpeakableTextPresentCheck" />
 
@@ -104,7 +101,7 @@
                 android:autofillHints="postalCode"
                 android:background="@drawable/bg_otp"
                 android:gravity="center"
-                android:inputType="numberPassword"
+                android:inputType="number"
                 android:maxLength="1"
                 tools:ignore="Autofill,LabelFor,SpeakableTextPresentCheck" />
         </LinearLayout>
@@ -115,21 +112,10 @@
             android:layout_marginVertical="20dp"
             android:paddingHorizontal="20dp">
 
-            <com.github.ybq.android.spinkit.SpinKitView
-                android:id="@+id/spin_kit"
-                style="@style/SpinKitView.Large.FadingCircle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:maxWidth="48dip"
-                android:maxHeight="48dip"
-                android:minWidth="48dip"
-                android:minHeight="48dip"
-                android:visibility="gone"
-                app:SpinKit_Color="@color/purple_300" />
 
             <Button
                 android:id="@+id/btn_verify"
+                style="?attr/materialIconButtonFilledStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -137,7 +123,15 @@
                 android:paddingVertical="15dp"
                 android:text="@string/verify"
                 android:textSize="18sp" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progressbar_verify"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:indeterminate="true"
+                android:visibility="gone" />
         </FrameLayout>
 
     </LinearLayout>
-</ScrollView>
+</com.google.android.material.card.MaterialCardView>

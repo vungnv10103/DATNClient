@@ -9,7 +9,7 @@
         android:id="@+id/add_to_cart_bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="90dp"
+        android:paddingBottom="20dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <!-- Drag handle for accessibility -->
