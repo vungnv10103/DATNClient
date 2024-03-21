@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat;
 
 import com.datn.client.R;
 import com.datn.client.ui.auth.LoginActivity;
+import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;

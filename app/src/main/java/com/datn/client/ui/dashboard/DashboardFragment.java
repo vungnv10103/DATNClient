@@ -51,6 +51,7 @@ public class DashboardFragment extends Fragment implements IDashboardView {
 
         initEventClick();
         initService();
+        MyDialog.gI().startDlgOK(requireActivity(), getString(R.string.app_name), getString(R.string.app_name), null, null);
     }
 
     private void doLogout() {
