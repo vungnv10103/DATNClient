@@ -108,10 +108,11 @@ public class DashboardFragment extends Fragment implements IDashboardView {
         requireActivity().finishAffinity();
     }
 
-    private void reLogin(){
+    private void reLogin() {
         showToast(getString(R.string.please_log_in_again));
         requireActivity().finishAffinity();
     }
+
     private void initEventClick() {
         btnLogout.setOnClickListener(v -> doLogout());
     }

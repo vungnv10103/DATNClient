@@ -14,5 +14,6 @@ public interface ICheckoutView {
     void onCreateOrder(String amount);
 
     void onThrowMessage(MessageResponse message);
+
     void onThrowMessage(String message);
 }

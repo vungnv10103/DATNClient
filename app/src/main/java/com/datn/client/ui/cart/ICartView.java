@@ -12,9 +12,12 @@ public interface ICartView {
     void onListCart(List<ProductCart> productCartList);
 
     void onThrowMessage(MessageResponse message);
+
     void onThrowMessage(String message);
 
     void onUpdateQuantity(String cartID, int position, String type, int value);
+
     void onUpdateStatus(String cartID, int position, int value);
+
     void onBuyNow(String cartID);
 }

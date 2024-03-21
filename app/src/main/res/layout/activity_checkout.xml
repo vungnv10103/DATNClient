@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/checkout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbarSize="2dp"
@@ -15,16 +16,16 @@
             android:id="@+id/progress_loading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
+            android:layout_alignParentTop="true"
             android:indeterminate="true"
-            android:layout_alignParentTop="true" />
+            android:visibility="invisible" />
 
         <RelativeLayout
             android:id="@+id/layout_address"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:layout_below="@+id/progress_loading"
+            android:layout_marginTop="5dp"
             android:paddingHorizontal="10dp">
 
             <TextView
@@ -342,8 +343,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:visibility="gone"
-                android:indeterminate="true" />
+                android:indeterminate="true"
+                android:visibility="gone" />
 
             <RelativeLayout
                 android:layout_width="match_parent"

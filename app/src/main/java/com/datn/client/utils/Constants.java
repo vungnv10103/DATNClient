@@ -16,5 +16,6 @@ public class Constants {
     public static final String KEY_REMEMBER = "remember";
 
     public static boolean isNightMode = false;
+    public static String language = "vi";
 
 }

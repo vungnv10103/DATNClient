@@ -1,49 +1,40 @@
 <resources>
-    <string name="app_name">Stech</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
-    <string name="notifications">Notifications</string>
+    <string name="app_name" translatable="false">Stech</string>
+    <string name="title_dashboard" translatable="false">Dashboard</string>
     <string name="register">Đăng ký</string>
     <string name="register_account">Tạo tài khoản</string>
-    <string name="register_msg">Tạo tài khoản và bắt đầu mua sắm nào !</string>
-    <string name="email">Email</string>
-    <string name="full_name">Full-name</string>
-    <string name="phone_number">Phone-number</string>
-    <string name="password">Password</string>
-    <string name="re_password">RePassword</string>
+    <string name="email" translatable="false">Email</string>
+    <string name="full_name">Tên</string>
+    <string name="phone_number">Số điện thoại</string>
     <string name="login">Đăng nhập</string>
-    <string name="had_account">Đã có tài khoản ?</string>
     <string name="no_account">Chưa có tài khoản?</string>
-    <string name="remember_me">Remember me</string>
+    <string name="remember_me" translatable="false">Remember me</string>
     <string name="forget_pass">Quên mật khẩu</string>
     <string name="otp_msg">Vui lòng nhập mã xác nhận để hoàn thành đăng nhập</string>
     <string name="verify">Xác thực</string>
     <string name="category">Danh mục</string>
     <string name="selling_products">Sản phẩm bán chạy</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_cart">Cart</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="press_back_again_to_exit">Nhấn back lần nữa để thoát!</string>
     <string name="add_to_cart">Thêm vào giỏ hàng</string>
     <string name="out_stock">Hết hàng</string>
     <string name="buy_now">Mua ngay</string>
     <string name="see_all">Xem tất cả</string>
-    <string name="default_rate">0.0/0</string>
-    <string name="default_review">0 Review</string>
+    <string name="default_rate" translatable="false">0.0/0</string>
+    <string name="default_review" translatable="false">0 Review</string>
     <string name="quantity">Số lượng</string>
-    <string name="default_quantity">1</string>
+    <string name="default_quantity" translatable="false">1</string>
     <string name="delete">Xoá</string>
     <string name="go_shop">Tới shop</string>
-    <string name="search_hint">Enter text to search</string>
     <string name="cb_all">Tất cả</string>
     <string name="total_checkout">Tổng thanh toán:</string>
     <string name="checkout">Đặt hàng</string>
     <string name="delivery_address">Địa chỉ nhận hàng</string>
-    <string name="use_voucher">Bạn có muốn chọn voucher</string>
+    <string name="use_voucher">Bạn có muốn chọn voucher?</string>
     <string name="payment_method">Phương thức thanh toán</string>
-    <string name="e_banking">E-Banking</string>
-    <string name="zalopay">ZaloPay</string>
+    <string name="e_banking" translatable="false">E-Banking</string>
+    <string name="zalopay" translatable="false">ZaloPay</string>
     <string name="on_delivery">Thanh toán khi nhận hàng</string>
     <string name="total_product">Tổng tiền hàng:</string>
     <string name="fee_delivery">Phí vận chuyển:</string>
@@ -64,5 +55,24 @@
     <string name="please_log_in_again">Có lỗi xảy ra vui lòng đăng nhập lại!</string>
     <string name="product_selection_error">Lỗi chọn sản phẩm!</string>
     <string name="category_selection_error">Lỗi chọn thể loại!</string>
+    <string name="session_expired">Phiên đăng nhập hết hạn\nVui lòng đăng nhập lại!</string>
+    <string name="register_msg">Tạo tài khoản và bắt đầu mua sắm nào !</string>
+    <string name="password">Mật khẩu</string>
+    <string name="re_password">Nhập lại mật khẩu</string>
+    <string name="had_account">Đã có tài khoản ?</string>
+    <string name="title_home">Trang chủ</string>
+    <string name="title_notifications">Thông báo</string>
+    <string name="notifications">Thông báo</string>
+    <string name="title_cart">Giỏ hàng</string>
+    <string name="search_hint">Tìm  kiếm</string>
+    <string name="stock">Kho: </string>
+    <string name="price">Giá: </string>
+    <string name="provisional">Tạm tính: </string>
+    <string name="added_to_cart">Đã thêm vào giỏ hàng</string>
+    <string name="updated_quantity_success">Cập nhật số lượng thành công</string>
+    <string name="quantity_exceeds_limit">Sản phẩm đã có trong giỏ hàng\nSố lượng vượt quá giới hạn</string>
+    <string name="product_is_temporarily_out_of_stock">Sản phẩm tạm hết hàng, không thể đặt</string>
+    <string name="language_vi">VI</string>
+    <string name="language_en">EN</string>
 
 </resources>

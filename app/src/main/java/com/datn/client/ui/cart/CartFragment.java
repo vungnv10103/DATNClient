@@ -253,7 +253,7 @@ public class CartFragment extends Fragment implements ICartView {
         btnGoShopping = binding.btnGoShopping;
     }
 
-    private void switchToLogin(){
+    private void switchToLogin() {
         showToast(getString(R.string.please_log_in_again));
         requireActivity().finishAffinity();
     }

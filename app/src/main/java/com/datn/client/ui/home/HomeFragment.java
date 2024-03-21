@@ -208,7 +208,8 @@ public class HomeFragment extends Fragment implements IHomeView {
         startActivity(new Intent(requireActivity(), LoginActivity.class));
         requireActivity().finishAffinity();
     }
-    private void reLogin(){
+
+    private void reLogin() {
         showToast(getString(R.string.please_log_in_again));
         requireActivity().finishAffinity();
     }

@@ -12,9 +12,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.datn.client.MainActivity;
 import com.datn.client.R;
@@ -61,7 +65,6 @@ public class LoginActivity extends AppCompatActivity {
             new AlertDialog.Builder(LoginActivity.this)
                     .setTitle(TAG.split("Activity")[0])
                     .setMessage(getString(R.string.are_you_sure_exit))
-//                    .setIcon(android.R.drawable.ic_dialog_alert)
                     .setIcon(R.drawable.logo_app_gradient)
                     .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> finish())
                     .setNegativeButton(android.R.string.no, null).show();
@@ -71,9 +74,14 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
-        View root = binding.getRoot();
-        setContentView(root);
+        setContentView(binding.getRoot());
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.login), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
         Objects.requireNonNull(getSupportActionBar()).hide();
         getOnBackPressedDispatcher().addCallback(this, callback);
 
@@ -130,12 +138,15 @@ public class LoginActivity extends AppCompatActivity {
                                 } else if (statusCode == 400) {
                                     managerLoading(false);
                                     showLogW("onResponse400", code);
-                                    MyDialog.gI().startDlgOK(LoginActivity.this, message.getContent());
                                     switch (code) {
                                         case "auth/wrong-token":
                                         case "jwt expired":
                                             //preferenceManager.putBoolean("isRemember", false);
+                                            MyDialog.gI().startDlgOK(LoginActivity.this, getString(R.string.session_expired));
                                             preferenceManager.putString("token", "");
+                                            break;
+                                        default:
+                                            MyDialog.gI().startDlgOK(LoginActivity.this, message.getContent());
                                             break;
                                     }
                                 }

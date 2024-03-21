@@ -8,7 +8,6 @@ public class CartBuyNow {
     private List<ProductCart> productCarts;
 
 
-
     public String getCustomerID() {
         return customerID;
     }

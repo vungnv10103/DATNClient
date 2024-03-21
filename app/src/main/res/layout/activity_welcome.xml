@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/welcome"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scrollbars="none"
+    tools:context=".ui.WelcomeActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="15dp">
+
+        <TextView
+            android:id="@+id/tv_welcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/inter_bold"
+            android:text="@string/app_name"
+            android:textSize="32sp"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/img_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_welcome"
+            android:background="@android:color/transparent"
+            android:layout_marginTop="20dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/logo_app_gradient"
+            tools:ignore="ContentDescription" />
+
+        <com.nex3z.flowlayout.FlowLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/img_app"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="30dp"
+            android:layout_marginTop="20dp"
+            app:flChildSpacing="auto"
+            app:flChildSpacingForLastRow="align"
+            app:flRowSpacing="8dp">
+
+            <ToggleButton
+                android:id="@+id/toggle_language"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/toggle_selector_country"
+                android:textOff=""
+                android:textOn=""
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_language"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_medium"
+                android:text="@string/language_vi"
+                android:visibility="gone" />
+
+            <Chronometer
+                android:id="@+id/chronometer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layout_language"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone" />
+
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.RotatingPlane"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/burnt_orange"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/white" />
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.DoubleBounce"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/pickled_blue"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/white" />
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.Wave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/teal_200"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/white" />
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.WanderingCubes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/blue_400"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/white" />
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.Pulse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/sirocco"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/gray_300" />
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.ChasingDots"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/pizazz"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/white" />
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.ThreeBounce"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/burnt_orange"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/white" />
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.Circle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/teal_200"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/white" />
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.CubeGrid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/burnt_orange"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/white" />
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.FadingCircle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/big_stone"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/white" />
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.FoldingCube"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/teal_200"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/white" />
+
+            <com.github.ybq.android.spinkit.SpinKitView
+                style="@style/SpinKitView.Large.RotatingCircle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/blue_500"
+                android:maxWidth="48dip"
+                android:maxHeight="48dip"
+                android:minWidth="48dip"
+                android:minHeight="48dip"
+                android:padding="20dp"
+                android:visibility="visible"
+                app:SpinKit_Color="@color/white" />
+        </com.nex3z.flowlayout.FlowLayout>
+    </RelativeLayout>
+
+
+</ScrollView>

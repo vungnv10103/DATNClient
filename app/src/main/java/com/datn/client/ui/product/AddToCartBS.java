@@ -67,11 +67,11 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
         if (mProduct != null) {
             Glide.with(this).load(mProduct.getImg_cover()).into(imgProduct);
             tvName.setText(mProduct.getName());
-            tvPrice.setText("Giá: " + Currency.formatCurrency(mProduct.getPrice()));
+            tvPrice.setText(getString(R.string.price) + Currency.formatCurrency(mProduct.getPrice()));
             int quantityProduct = Integer.parseInt(mProduct.getQuantity());
-            tvQuantityStock.setText("Kho: " + quantityProduct);
+            tvQuantityStock.setText(getString(R.string.stock) + quantityProduct);
             boolean isNightMode = Constants.isNightMode;
-            if (isNightMode){
+            if (isNightMode) {
                 btnPlus.setIconTintResource(R.color.white);
             }
             if (quantityProduct <= 0) {
@@ -79,10 +79,10 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
 //                btnPlus.setIconTintResource(R.color.gray_400);
                 btnMinus.setEnabled(false);
                 btnPlus.setEnabled(false);
-                tvPriceTemp.setText("Tạm tính: " + Currency.formatCurrency("0"));
+                tvPriceTemp.setText(getString(R.string.provisional) + Currency.formatCurrency("0"));
                 btnAddToCart.setEnabled(false);
             } else {
-                tvPriceTemp.setText("Tạm tính: " + Currency.formatCurrency(mProduct.getPrice()));
+                tvPriceTemp.setText(getString(R.string.provisional) + Currency.formatCurrency(mProduct.getPrice()));
             }
             if (mType == 0) {
                 btnAddToCart.setText(getString(R.string.buy_now));
@@ -123,7 +123,7 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
             }
             btnPlus.setIconTintResource(R.color.big_stone);
             tvQuantity.setText(String.valueOf(quantity));
-            tvPriceTemp.setText("Tạm tính: " + Currency.formatCurrency(String.valueOf(Integer.parseInt(mProduct.getPrice()) * quantity)));
+            tvPriceTemp.setText(getString(R.string.provisional) + Currency.formatCurrency(String.valueOf(Integer.parseInt(mProduct.getPrice()) * quantity)));
         } catch (NumberFormatException e) {
             Log.w(TAG, "minus: " + e.getMessage());
         }
@@ -141,7 +141,7 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
             }
             btnMinus.setIconTintResource(R.color.big_stone);
             tvQuantity.setText(String.valueOf(quantity));
-            tvPriceTemp.setText("Tạm tính: " + Currency.formatCurrency(String.valueOf(Integer.parseInt(mProduct.getPrice()) * quantity)));
+            tvPriceTemp.setText(getString(R.string.provisional) + Currency.formatCurrency(String.valueOf(Integer.parseInt(mProduct.getPrice()) * quantity)));
         } catch (NumberFormatException e) {
             Log.w(TAG, "plus: " + e.getMessage());
         }
@@ -172,19 +172,19 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
     public void onThrowMessage(@NonNull String code) {
         switch (code) {
             case "cart/add-success":
-                showToast("Đã thêm vào giỏ hàng");
+                showToast(getString(R.string.added_to_cart));
                 this.dismiss();
                 break;
             case "cart/update-quantity-success":
-                showToast("Cập nhật số lượng thành công");
+                showToast(getString(R.string.updated_quantity_success));
                 this.dismiss();
                 break;
             case "cart/update-quantity-failed":
-                showToast("Sản phẩm đã có trong giỏ hàng\nSố lượng vượt quá giới hạn");
+                showToast(getString(R.string.quantity_exceeds_limit));
                 this.dismiss();
                 break;
             case "cart/product-is-temporarily-out-of-stock":
-                showToast("Sản phẩm tạm hết hàng, không thể đặt");
+                showToast(getString(R.string.product_is_temporarily_out_of_stock));
                 this.dismiss();
                 break;
             default:

@@ -1,6 +1,7 @@
 package com.datn.client;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -11,9 +12,12 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -23,7 +27,6 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.datn.client.databinding.ActivityMainBinding;
 import com.datn.client.ui.home.HomeFragment;
-import com.datn.client.utils.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -43,7 +46,10 @@ public class MainActivity extends AppCompatActivity {
                 Fragment currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
                 if (currentFragment instanceof HomeFragment) {
                     if (isExit) {
-                        finishAffinity();
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
                         return;
                     }
                     isExit = true;
@@ -59,9 +65,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        EdgeToEdge.enable(this);
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.container), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -102,14 +113,5 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("FragmentName", "Label null");
             }
         });
-
-        Constants.isNightMode = isNightMode();
-
-
     }
-
-    private boolean isNightMode() {
-        return getResources().getBoolean(R.bool.isNight);
-    }
-
 }
