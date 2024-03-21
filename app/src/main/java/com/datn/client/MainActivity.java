@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             if (destination.getLabel() != null) {
                 String fragmentName = destination.getLabel().toString();
                 int marginTopInDp = 15;
-                if (fragmentName.equals("Notifications")) {
+                if (fragmentName.equals(getString(R.string.title_notifications))) {
                     marginTopInDp = 5;
                 }
                 int marginTopInPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, marginTopInDp, getResources().getDisplayMetrics());

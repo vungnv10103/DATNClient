@@ -34,7 +34,7 @@ import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.datn.client.utils.PreferenceManager;
-import com.github.ybq.android.spinkit.SpinKitView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     private AddToCartBS bottomSheetAddToCart;
 
     private LinearLayout layoutDetailProduct;
-    private SpinKitView spinKitDetail, spinKitVideo;
+    private CircularProgressIndicator progressLoadingDetail, progressLoadingVideo;
     private PlayerView playerView;
     private ExoPlayer player;
     private GifImageView imgChat;
@@ -101,7 +101,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     }
 
     private void displayVideo() {
-        spinKitVideo.setVisibility(View.GONE);
+        progressLoadingVideo.setVisibility(View.GONE);
         playerView.setVisibility(View.VISIBLE);
 //        player.play();
     }
@@ -130,7 +130,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
 
     private void onProductLoaded() {
         displayProduct();
-        spinKitDetail.setVisibility(View.GONE);
+        progressLoadingDetail.setVisibility(View.GONE);
         layoutDetailProduct.setVisibility(View.VISIBLE);
     }
 
@@ -192,12 +192,15 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
             bottomSheetAddToCart = new AddToCartBS(apiService, mToken, mCustomer.get_id(), TYPE_BUY.ADD_TO_CART.getValue());
             bottomSheetAddToCart.show(getSupportFragmentManager(), AddToCartBS.TAG);
         });
+        layoutSeeAllFeedback.setOnClickListener(v -> {
+
+        });
     }
 
     private void initUI() {
         layoutDetailProduct = binding.layoutDetailProduct;
-        spinKitDetail = binding.spinKit;
-        spinKitVideo = binding.spinKitVideo;
+        progressLoadingDetail = binding.progressbarLoading;
+        progressLoadingVideo = binding.progressbarLoadingVideo;
         playerView = binding.playerView;
         tvName = binding.tvName;
         tvPrice = binding.tvPrice;

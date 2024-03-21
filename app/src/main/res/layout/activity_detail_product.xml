@@ -12,18 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.github.ybq.android.spinkit.SpinKitView
-            android:id="@+id/spin_kit"
-            style="@style/SpinKitView.Large.FadingCircle"
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/progressbar_loading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:maxWidth="48dip"
-            android:maxHeight="48dip"
-            android:minWidth="48dip"
-            android:minHeight="48dip"
-            android:visibility="gone"
-            app:SpinKit_Color="@color/purple_300" />
+            android:indeterminate="true"
+            android:visibility="visible" />
 
         <LinearLayout
             android:id="@+id/layout_detail_product"
@@ -38,18 +33,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.github.ybq.android.spinkit.SpinKitView
-                    android:id="@+id/spin_kit_video"
-                    style="@style/SpinKitView.Large.FadingCircle"
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/progressbar_loading_video"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:maxWidth="48dip"
-                    android:maxHeight="48dip"
-                    android:minWidth="48dip"
-                    android:minHeight="48dip"
-                    android:visibility="visible"
-                    app:SpinKit_Color="@color/purple_300" />
+                    android:indeterminate="true"
+                    android:visibility="visible" />
 
                 <androidx.media3.ui.PlayerView
                     android:id="@+id/player_view"

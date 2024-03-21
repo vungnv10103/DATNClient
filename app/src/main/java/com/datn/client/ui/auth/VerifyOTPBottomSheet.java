@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.datn.client.MainActivity;
 import com.datn.client.R;
@@ -281,6 +282,9 @@ public class VerifyOTPBottomSheet extends BottomSheetDialogFragment {
 
     private void initUI() {
         progressBarLoading = binding.progressbarVerify;
+        progressBarLoading.setIndicatorColor(Constants.isNightMode ?
+                ContextCompat.getColor(requireContext(), R.color.white) :
+                ContextCompat.getColor(requireContext(), R.color.big_stone));
         btnVerify = binding.btnVerify;
         edOTP1 = binding.edOtp1;
         edOTP2 = binding.edOtp2;
@@ -288,8 +292,18 @@ public class VerifyOTPBottomSheet extends BottomSheetDialogFragment {
         edOTP4 = binding.edOtp4;
         edOTP5 = binding.edOtp5;
         edOTP6 = binding.edOtp6;
+        setBackgroundOTP();
         edOTP1.requestFocus();
         fillInputOTP();
+    }
+
+    private void setBackgroundOTP() {
+        edOTP1.setBackgroundResource(Constants.isNightMode ? R.drawable.bg_otp_night : R.drawable.bg_otp);
+        edOTP2.setBackgroundResource(Constants.isNightMode ? R.drawable.bg_otp_night : R.drawable.bg_otp);
+        edOTP3.setBackgroundResource(Constants.isNightMode ? R.drawable.bg_otp_night : R.drawable.bg_otp);
+        edOTP4.setBackgroundResource(Constants.isNightMode ? R.drawable.bg_otp_night : R.drawable.bg_otp);
+        edOTP5.setBackgroundResource(Constants.isNightMode ? R.drawable.bg_otp_night : R.drawable.bg_otp);
+        edOTP6.setBackgroundResource(Constants.isNightMode ? R.drawable.bg_otp_night : R.drawable.bg_otp);
     }
 
     private void fillInputOTP() {

@@ -2,8 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:id="@+id/login"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="none"
     tools:context=".ui.auth.LoginActivity">
@@ -16,7 +16,7 @@
             android:id="@+id/layout_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="invisible">
+            android:visibility="visible">
 
             <ImageView
                 android:id="@+id/icon_app"
@@ -25,7 +25,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="10dp"
-                android:src="@drawable/logo_app_gradient"
+                android:src="@drawable/selector_logo_app"
                 tools:ignore="ContentDescription" />
 
             <LinearLayout

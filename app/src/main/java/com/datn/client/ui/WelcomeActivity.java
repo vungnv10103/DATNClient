@@ -68,6 +68,7 @@ public class WelcomeActivity extends AppCompatActivity {
         Constants.language = getLocate();
         Constants.isNightMode = isNightMode();
         initUI();
+        binding.imgApp.setImageResource(Constants.isNightMode ? R.drawable.logo_app_white_no_bg : R.drawable.logo_app_gradient);
     }
 
     @Override

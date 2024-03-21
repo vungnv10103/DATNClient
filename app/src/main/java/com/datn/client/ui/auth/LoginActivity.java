@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
@@ -84,6 +85,7 @@ public class LoginActivity extends AppCompatActivity {
         });
         Objects.requireNonNull(getSupportActionBar()).hide();
         getOnBackPressedDispatcher().addCallback(this, callback);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         initUI();
         initService();
@@ -331,6 +333,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initUI() {
         layoutLogin = binding.layoutLogin;
+        layoutLogin.setVisibility(View.INVISIBLE);
         tvForgetPass = binding.tvForgotPass;
         tvRegister = binding.tvRegister;
         progressBarLogin = binding.progressbarLogin;
@@ -339,5 +342,6 @@ public class LoginActivity extends AppCompatActivity {
         edPass = binding.edPass;
         btnLogin = binding.btnLogin;
         cbRemember = binding.cbRemember;
+        binding.iconApp.setImageResource(Constants.isNightMode ? R.drawable.logo_app_white_no_bg : R.drawable.logo_app_gradient);
     }
 }

@@ -31,7 +31,7 @@
             android:background="@android:color/transparent"
             android:layout_marginTop="20dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/logo_app_gradient"
+            android:src="@drawable/selector_logo_app"
             tools:ignore="ContentDescription" />
 
         <com.nex3z.flowlayout.FlowLayout

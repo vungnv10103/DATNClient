@@ -3,17 +3,20 @@
     <!-- Base application theme. -->
     <style name="Theme.Stech" parent="Theme.Material3.DynamicColors.DayNight">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/big_stone</item>
+        <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryVariant">@color/gray_500</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondary">@color/big_stone</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
+        <item name="checkboxStyle">@style/Widget.App.Checkbox</item>
+        <item name="indicatorColor">?attr/colorPrimary</item>
     </style>
 
     <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.Material3.MediumComponent">
@@ -27,13 +30,27 @@
     </style>
 
     <style name="ThemeOverlay.App.Card" parent="">
+        <item name="colorPrimary">@color/big_stone</item>
         <item name="colorSecondary">@color/blue_400</item>
         <item name="colorSurface">@color/teal_200</item>
         <item name="colorOnSurfaceVariant">@color/white</item>
     </style>
 
     <style name="ShapeAppearanceOverlay.App.Card.Media" parent="">
-        <item name="cornerSizeBottomLeft">0dp</item>
-        <item name="cornerSizeBottomRight">0dp</item>
+        <!--        <item name="cornerSizeBottomLeft">0dp</item>-->
+        <!--        <item name="cornerSizeBottomRight">0dp</item>-->
     </style>
+
+    <style name="Widget.App.Button" parent="Widget.Material3.Button">
+        <item name="backgroundTint">?attr/colorSecondary</item>
+    </style>
+
+    <style name="Widget.App.Checkbox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="buttonTint">?attr/colorSecondary</item>
+    </style>
+
+    <style name="Widget.App.Button.IconButton.Filled" parent="Widget.Material3.Button.IconButton.Filled">
+        <item name="backgroundTint">?attr/colorPrimary</item>
+    </style>
+
 </resources>

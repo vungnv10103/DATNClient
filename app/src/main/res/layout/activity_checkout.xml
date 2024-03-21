@@ -139,7 +139,7 @@
 
                     <Button
                         android:id="@+id/btn_delivery"
-                        style="@style/Widget.Material3.Button"
+                        style="@style/Widget.App.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/on_delivery" />
@@ -176,7 +176,7 @@
 
                     <Button
                         android:id="@+id/btn_e_banking2"
-                        style="@style/Widget.Material3.Button"
+                        style="@style/Widget.App.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="8dp"
@@ -214,7 +214,7 @@
 
                     <Button
                         android:id="@+id/btn_zalopay3"
-                        style="@style/Widget.Material3.Button"
+                        style="@style/Widget.App.Button"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/zalopay" />

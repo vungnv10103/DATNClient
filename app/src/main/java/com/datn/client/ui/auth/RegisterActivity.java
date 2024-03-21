@@ -1,18 +1,17 @@
 package com.datn.client.ui.auth;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -29,7 +28,7 @@ import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
-import com.github.ybq.android.spinkit.SpinKitView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 
@@ -42,27 +41,17 @@ import retrofit2.Response;
 public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = RegisterActivity.class.getSimpleName();
     private ActivityRegisterBinding binding;
+    private VerifyOTPBottomSheet layoutVerify;
     private ApiService apiService;
     private PreferenceManager preferenceManager;
     private ImageButton imgBack;
     private Button btnRegister;
-    private SpinKitView spinKitView;
+    private CircularProgressIndicator progressRegister;
     private TextInputEditText edEmail, edName, edPhone, edPass, edRePass;
     private TextView tvLogin;
 
     public boolean isLoading = false;
 
-    private final OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-        @Override
-        public void handleOnBackPressed() {
-            new AlertDialog.Builder(RegisterActivity.this)
-                    .setTitle(TAG.split("Activity")[0])
-                    .setMessage(getString(R.string.are_you_sure_exit))
-                    .setIcon(R.drawable.logo_app_gradient)
-                    .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> finish())
-                    .setNegativeButton(android.R.string.no, null).show();
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +65,9 @@ public class RegisterActivity extends AppCompatActivity {
             return insets;
         });
         Objects.requireNonNull(getSupportActionBar()).hide();
-        initUI();
-        getOnBackPressedDispatcher().addCallback(this, callback);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+        initUI();
         initService();
         initEventClick();
     }
@@ -97,7 +86,7 @@ public class RegisterActivity extends AppCompatActivity {
             edPass.setFocusableInTouchMode(true);
             edRePass.setFocusableInTouchMode(true);
         }
-        spinKitView.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        progressRegister.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         btnRegister.setVisibility(isLoading ? View.GONE : View.VISIBLE);
     }
 
@@ -134,7 +123,9 @@ public class RegisterActivity extends AppCompatActivity {
                                     case "auth/verify":
                                         showToast(message.getContent());
                                         saveLogin(response.body().getCustomer());
-                                        startActivity(new Intent(RegisterActivity.this, VerifyOTPBottomSheet.class));
+                                        layoutVerify = new VerifyOTPBottomSheet();
+                                        layoutVerify.setCancelable(false);
+                                        layoutVerify.show(getSupportFragmentManager(), VerifyOTPBottomSheet.TAG);
                                         break;
                                     case "":
                                     default:
@@ -250,12 +241,13 @@ public class RegisterActivity extends AppCompatActivity {
         scrollingTextView.setSingleLine(true);
         imgBack = binding.imgBack;
         btnRegister = binding.btnRegister;
-        spinKitView = binding.spinKit;
+        progressRegister = binding.progressbarRegister;
         edEmail = binding.edEmail;
         edName = binding.edName;
         edPhone = binding.edPhone;
         edPass = binding.edPass;
         edRePass = binding.edRepass;
         tvLogin = binding.tvLogin;
+        binding.imgLogo.setImageResource(Constants.isNightMode ? R.drawable.logo_app_white_no_bg : R.drawable.logo_app_gradient);
     }
 }

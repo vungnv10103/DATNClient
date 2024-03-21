@@ -55,9 +55,9 @@
     <string name="product_selection_error">Product selection error!</string>
     <string name="category_selection_error">Category selection error!</string>
     <string name="session_expired">Login session expired</string>
-    <string name="stock">Stock: </string>
-    <string name="price">Price: </string>
-    <string name="provisional">Provisional: </string>
+    <string name="stock"><i>Stock: </i></string>
+    <string name="price"><i>Price: </i></string>
+    <string name="provisional"><i>Provisional: </i></string>
     <string name="added_to_cart">Added to cart</string>
     <string name="updated_quantity_success">Updated quantity successfully</string>
     <string name="quantity_exceeds_limit">Products already in the cart\nQuantity exceeds limit</string>

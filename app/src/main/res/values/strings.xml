@@ -65,9 +65,9 @@
     <string name="notifications">Thông báo</string>
     <string name="title_cart">Giỏ hàng</string>
     <string name="search_hint">Tìm  kiếm</string>
-    <string name="stock">Kho: </string>
-    <string name="price">Giá: </string>
-    <string name="provisional">Tạm tính: </string>
+    <string name="stock"><i>Kho: </i></string>
+    <string name="price"><i>Giá: </i></string>
+    <string name="provisional"><i>Tạm tính: </i></string>
     <string name="added_to_cart">Đã thêm vào giỏ hàng</string>
     <string name="updated_quantity_success">Cập nhật số lượng thành công</string>
     <string name="quantity_exceeds_limit">Sản phẩm đã có trong giỏ hàng\nSố lượng vượt quá giới hạn</string>

@@ -45,11 +45,11 @@
         <activity
             android:name=".ui.auth.RegisterActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="stateVisible|adjustResize|adjustPan" />
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="stateVisible|adjustResize|adjustPan">
 
         </activity>
         <activity

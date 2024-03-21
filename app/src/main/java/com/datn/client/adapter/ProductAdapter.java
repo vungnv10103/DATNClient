@@ -5,7 +5,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +16,7 @@ import com.datn.client.action.IAction;
 import com.datn.client.models.Product;
 import com.datn.client.ui.product.ProductPresenter.STATUS_PRODUCT;
 import com.datn.client.utils.Currency;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 
@@ -70,7 +70,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvName, tvStatus, tvSold, tvPrice;
-        private final ImageView imgProduct;
+        private final ShapeableImageView imgProduct;
 
 
         public ViewHolder(@NonNull View itemView) {
