@@ -17,7 +17,9 @@
         android:theme="@style/Theme.Stech"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".activity.TestActivity"
+            android:exported="false" />
         <activity
             android:name=".activity.EBankingActivity"
             android:exported="false" />
@@ -49,9 +51,7 @@
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="true"
-            android:windowSoftInputMode="stateVisible|adjustResize|adjustPan">
-
-        </activity>
+            android:windowSoftInputMode="stateVisible|adjustResize|adjustPan"></activity>
         <activity
             android:name=".activity.WelcomeActivity"
             android:exported="true">

@@ -1,12 +1,20 @@
 package com.datn.client.ui.components;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,16 +26,19 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.datn.client.R;
 import com.datn.client.models.OverlayMessage;
-import com.datn.client.services.ApiService;
 import com.datn.client.ui.BasePresenter;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class MyOverlayMsgDialog {
+    @SuppressLint("StaticFieldLeak")
     private static MyOverlayMsgDialog instance;
+    private Context mContext;
+    private AlertDialog mDialog;
 
     public static MyOverlayMsgDialog gI() {
         if (instance == null) {
@@ -40,6 +51,7 @@ public class MyOverlayMsgDialog {
         if (overlayMessages.isEmpty()) {
             return;
         }
+        this.mContext = context;
         OverlayMessage overlayMessage = overlayMessages.get(0);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -89,27 +101,213 @@ public class MyOverlayMsgDialog {
             tvStatusImg.setVisibility(View.VISIBLE);
             imgMessage.setImageResource(R.drawable.lover_taylor);
         }
+        imgMessage.setTag("image overlay");
+//        imgMessage.setOnLongClickListener(onLongClickListenerImage);
+//        imgMessage.setOnDragListener(onDragListenerImage);
         tvTitleImg.setText(overlayMessage.getTitle_image());
         tvContentImg.setText(overlayMessage.getContent_image());
         tvTitle.setText(overlayMessage.getTitle());
         tvContent.setText(overlayMessage.getContent());
         btnAction.setText(overlayMessage.getText_action());
 
+        View layoutOverlay = view.findViewById(R.id.layout_overlay);
+        layoutOverlay.setOnLongClickListener(onLongClickListener);
+        layoutOverlay.setOnDragListener(onDragListener);
 
-        final AlertDialog dialog = builder.create();
+
+        mDialog = builder.create();
         //btnAction.setOnClickListener(overlayMessage.getAction());
-        btnAction.setOnClickListener(v -> {
-            dialog.dismiss();
-        });
+        btnAction.setOnClickListener(v -> mDialog.dismiss());
         closeButton.setOnClickListener(v -> {
             // TODO update status overlay message
-            basePresenter.updateStatusOverlayMessage(overlayMessage.get_id());
-            dialog.dismiss();
+            if (basePresenter != null) {
+                basePresenter.updateStatusOverlayMessage(overlayMessage.get_id());
+            }
+            mDialog.dismiss();
         });
 
-        dialog.setView(view);
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
-        dialog.setCancelable(false);
-        dialog.show();
+        mDialog.setView(view);
+        Objects.requireNonNull(mDialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
+        mDialog.setCancelable(false);
+        mDialog.show();
     }
+
+    public String getStringResource(@NonNull Context context, int id) {
+        return context.getString(id);
+    }
+
+    public List<OverlayMessage> getDefaultOverlayMessage(Context context) {
+        String notification = getStringResource(context, R.string.new_release);
+        String urlImage = "https://stech-993p.onrender.com/images/lover_taylor.jpg";
+        String titleImage = getStringResource(context, R.string.lover_taylor);
+        String contentImage = getStringResource(context, R.string.content_image);
+        String title = getStringResource(context, R.string.lover);
+        String content = getStringResource(context, R.string.content);
+        String textAction = getStringResource(context, R.string.stream_now);
+        List<OverlayMessage> list = new ArrayList<>();
+        list.add(new OverlayMessage("", -1, notification, urlImage, titleImage,
+                contentImage, title, content, textAction, v1 -> {
+            String id = Math.random() + "";
+            switch (id) {
+                case "0":
+                    MyDialog.gI().startDlgOK(context, getStringResource(context, R.string.app_name), id, null, null);
+                    break;
+                case "1":
+                    MyDialog.gI().startDlgOK(context, getStringResource(context, R.string.app_name), id, null, null);
+                default:
+                    MyDialog.gI().startDlgOK(context, getStringResource(context, R.string.app_name), id, null, null);
+                    break;
+            }
+        }));
+        return list;
+    }
+
+    View.OnLongClickListener onLongClickListener = v -> {
+        ClipData.Item item = new ClipData.Item((CharSequence) v.getTag());
+        ClipData dragData = new ClipData((CharSequence) v.getTag(),
+                new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+                item);
+        MyDragShadowBuilder myShadow = new MyDragShadowBuilder(v);
+        v.startDragAndDrop(dragData, myShadow, null, 0);
+        return true;
+    };
+    View.OnDragListener onDragListener = (v, event) -> {
+        int dragEvent = event.getAction();
+        switch (dragEvent) {
+            case DragEvent.ACTION_DRAG_STARTED:
+                if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+//                    Log.d("ACTION_DRAG_STARTED1", event.toString());
+                    return true;
+                }
+                Log.d("ACTION_DRAG_STARTED2", event.toString());
+                return false;
+            case DragEvent.ACTION_DRAG_ENTERED:
+//                Log.d("ACTION_DRAG_ENTERED", event.toString());
+                return true;
+            case DragEvent.ACTION_DRAG_LOCATION:
+//                Log.d("ACTION_DRAG_LOCATION", event.toString());
+                return true;
+            case DragEvent.ACTION_DRAG_EXITED:
+//                Log.d("ACTION_DRAG_EXITED", event.toString());
+                return true;
+            case DragEvent.ACTION_DROP:
+                Log.d("ACTION_DROP", event.toString());
+                return true;
+
+            case DragEvent.ACTION_DRAG_ENDED:
+                if (!event.getResult()) {
+                    mDialog.dismiss();
+                }
+                Log.d("ACTION_DROP", event.toString());
+                return true;
+
+            default:
+                Log.e("DragDrop Example", "Unknown action type received by View.OnDragListener.");
+                break;
+        }
+        return false;
+    };
+
+    View.OnLongClickListener onLongClickListenerImage = v -> {
+        // https://developer.android.com/develop/ui/views/touch-and-input/drag-drop
+        ClipData.Item item = new ClipData.Item((CharSequence) v.getTag());
+        ClipData dragData = new ClipData((CharSequence) v.getTag(),
+                new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN},
+                item);
+
+        // Instantiate the drag shadow builder.
+        MyDragShadowBuilder myShadow = new MyDragShadowBuilder(v);
+
+        // Start the drag.
+        v.startDragAndDrop(dragData,   // The data to be dragged.
+                myShadow,              // The drag shadow builder.
+                null,                  // No need to use local data.
+                0                      // Flags. Not currently used, set to 0.
+        );
+
+        // Indicate that the long-click is handled.
+        return true;
+    };
+
+    View.OnDragListener onDragListenerImage = (v, event) -> {
+        // https://developer.android.com/develop/ui/views/touch-and-input/drag-drop
+        // Handle each of the expected events.
+        switch (event.getAction()) {
+            case DragEvent.ACTION_DRAG_STARTED:
+                // Determine whether this View can accept the dragged data.
+                if (event.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                    // As an example, apply a blue color tint to the View to indicate that it can accept data.
+                    ((ImageView) v).setColorFilter(Color.BLUE);
+                    // Invalidate the view to force a redraw in the new tint.
+                    v.invalidate();
+                    Log.d("ACTION_DRAG_STARTED1", event.toString());
+                    // Return true to indicate that the View can accept the dragged data.
+                    return true;
+                }
+                // Return false to indicate that, during the current drag and drop
+                // operation, this View doesn't receive events again until
+                // ACTION_DRAG_ENDED is sent.
+                Log.d("ACTION_DRAG_STARTED2", event.toString());
+                return false;
+            case DragEvent.ACTION_DRAG_ENTERED:
+                // Apply a green tint to the View.
+                ((ImageView) v).setColorFilter(Color.GREEN);
+                // Invalidate the view to force a redraw in the new tint.
+                v.invalidate();
+                // Return true. The value is ignored.
+                Log.d("ACTION_DRAG_ENTERED", event.toString());
+//                    if (((View) event.getLocalState()).getId() == R.id.btn_action) {
+//                        Toast.makeText(context, "OKE", Toast.LENGTH_SHORT).show();
+//                    }
+
+                return true;
+            case DragEvent.ACTION_DRAG_LOCATION:
+                // Ignore the event.
+                Log.d("ACTION_DRAG_LOCATION", event.toString());
+                return true;
+            case DragEvent.ACTION_DRAG_EXITED:
+                // Reset the color tint to blue.
+                ((ImageView) v).setColorFilter(Color.RED);
+                // Invalidate the view to force a redraw in the new tint.
+                v.invalidate();
+                // Return true. The value is ignored.
+                Log.d("ACTION_DRAG_EXITED", event.toString());
+                return true;
+            case DragEvent.ACTION_DROP:
+                // Get the item containing the dragged data.
+                ClipData.Item item = event.getClipData().getItemAt(0);
+                // Get the text data from the item.
+                CharSequence dragData = item.getText();
+                // Display a message containing the dragged data.
+                Toast.makeText(mContext, "Dragged data is " + dragData, Toast.LENGTH_LONG).show();
+                // Turn off color tints.
+                ((ImageView) v).clearColorFilter();
+                // Invalidate the view to force a redraw.
+                v.invalidate();
+                // Return true. DragEvent.getResult() returns true.
+                Log.d("ACTION_DROP", event.toString());
+                return true;
+
+            case DragEvent.ACTION_DRAG_ENDED:
+                // Turn off color tinting.
+                ((ImageView) v).clearColorFilter();
+                // Invalidate the view to force a redraw.
+                v.invalidate();
+                // Do a getResult() and displays what happens.
+                if (event.getResult()) {
+                    Toast.makeText(mContext, "The drop was handled.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(mContext, "The drop didn't work.", Toast.LENGTH_SHORT).show();
+                }
+                // Return true. The value is ignored.
+                Log.d("ACTION_DROP", event.toString());
+                return true;
+
+            // An unknown action type is received.
+            default:
+                Log.e("DragDrop Example", "Unknown action type received by View.OnDragListener.");
+                break;
+        }
+        return false;
+    };
 }

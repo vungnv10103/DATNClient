@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.datn.client.R;
+import com.datn.client.activity.TestActivity;
 import com.datn.client.databinding.FragmentDashboardBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
@@ -135,41 +136,11 @@ public class DashboardFragment extends Fragment implements IDashboardView {
     private void initEventClick() {
         btnLogout.setOnClickListener(v -> doLogout());
         binding.btnDemo.setOnClickListener(v -> {
-            MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), getDefaultOverlayMessage(requireActivity()), dashboardPresenter);
+            MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), MyOverlayMsgDialog.gI().getDefaultOverlayMessage(requireActivity()), dashboardPresenter);
         });
+        binding.btnTest.setOnClickListener(v -> startActivity(new Intent(requireActivity(), TestActivity.class)));
     }
 
-
-    @NonNull
-    private String getStringResource(@NonNull Context context, int id) {
-        return context.getString(id);
-    }
-
-    public List<OverlayMessage> getDefaultOverlayMessage(Context context) {
-        String notification = getStringResource(context, R.string.new_release);
-        String urlImage = "https://stech-993p.onrender.com/images/lover_taylor.jpg";
-        String titleImage = getStringResource(context, R.string.lover_taylor);
-        String contentImage = getStringResource(context, R.string.content_image);
-        String title = getStringResource(context, R.string.lover);
-        String content = getStringResource(context, R.string.content);
-        String textAction = getStringResource(context, R.string.stream_now);
-        List<OverlayMessage> list = new ArrayList<>();
-        list.add(new OverlayMessage("", -1, notification, urlImage, titleImage,
-                contentImage, title, content, textAction, v1 -> {
-            String id = Math.random() + "";
-            switch (id) {
-                case "0":
-                    MyDialog.gI().startDlgOK(context, getStringResource(context, R.string.app_name), id, null, null);
-                    break;
-                case "1":
-                    MyDialog.gI().startDlgOK(context, getStringResource(context, R.string.app_name), id, null, null);
-                default:
-                    MyDialog.gI().startDlgOK(context, getStringResource(context, R.string.app_name), id, null, null);
-                    break;
-            }
-        }));
-        return list;
-    }
 
     private void initUI() {
         btnLogout = binding.btnLogout;
