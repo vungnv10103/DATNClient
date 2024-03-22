@@ -82,5 +82,8 @@
     <string name="stream_now">Phát ngay</string>
     <string name="illustrations">Hình ảnh minh hoạ</string>
     <string name="select_to_pay">Vui lòng chọn sản phẩm để thanh toán!</string>
+    <string name="on_sale">Đang bán</string>
+    <string name="temporarily_out_of_stock">Tạm hết hàng</string>
+    <string name="sold"><i>Đã bán: </i></string>
 
 </resources>

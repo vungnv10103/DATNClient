@@ -32,6 +32,7 @@ public class HomePresenter extends BasePresenter {
     private Call<BannerResponse> getBanner;
     private Call<CategoryResponse> getCategory;
     private Call<ProductResponse> getSellingProduct;
+    private Call<ProductResponse> searchProduct;
 
     public HomePresenter(FragmentActivity context, IHomeView iHomeView, ApiService apiService, String token, String customerID) {
         super(context, iHomeView, apiService, token, customerID);
@@ -51,6 +52,9 @@ public class HomePresenter extends BasePresenter {
         }
         if (getSellingProduct != null) {
             getSellingProduct.cancel();
+        }
+        if (searchProduct != null) {
+            searchProduct.cancel();
         }
     }
 
@@ -167,6 +171,46 @@ public class HomePresenter extends BasePresenter {
                 });
             } catch (Exception e) {
                 iHomeView.onThrowLog("getListSellingProduct", e.getMessage());
+            }
+        });
+    }
+
+    public void searchProduct(String keyword) {
+        context.runOnUiThread(() -> {
+            try {
+                searchProduct = apiService.searchProduct(token, customerID, keyword);
+                searchProduct.enqueue(new Callback<ProductResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<ProductResponse> call, @NonNull Response<ProductResponse> response) {
+                        if (response.body() != null) {
+                            int statusCode = response.body().getStatusCode();
+                            String code = response.body().getCode();
+                            MessageResponse message = response.body().getMessage();
+                            if (statusCode == 200) {
+                                iHomeView.onThrowLog("searchProduct200", code);
+                                List<Product> data = response.body().getProducts();
+//                                Log.w("searchProduct", "onResponse: " + data.toString());
+                                iHomeView.onSearchProduct(data);
+                            } else if (statusCode == 400) {
+                                if (code.equals("auth/wrong-token")) {
+                                    iHomeView.onFinish();
+                                } else {
+                                    iHomeView.onThrowLog("searchProduct400", code);
+                                    iHomeView.onThrowMessage(message);
+                                }
+                            }
+                        } else {
+                            iHomeView.onThrowLog("searchProduct: onResponse", response.message());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
+                        iHomeView.onThrowLog("searchProduct: onFailure", t.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                iHomeView.onThrowLog("searchProduct", e.getMessage());
             }
         });
     }

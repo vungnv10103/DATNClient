@@ -41,6 +41,7 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.ViewHolder
         Banner banner = banners.get(position);
         Glide.with(context)
                 .load(banner.getUrl())
+                .error(R.drawable.logo_app_gradient)
                 .into(holder.imgBanner);
 
         holder.itemView.setOnClickListener(v -> iActionBanner.onClick(banner));
@@ -61,7 +62,6 @@ public class BannerAdapter extends RecyclerView.Adapter<BannerAdapter.ViewHolder
             super(itemView);
             imgBanner = itemView.findViewById(R.id.img_banner);
             itemView.setOnClickListener(view -> {
-                // làm màu tý :)
 //                String action = list.get(getAdapterPosition()).getAction();
 //                Intent browse = new Intent(Intent.ACTION_VIEW, Uri.parse(action));
 //                context.startActivity(browse);

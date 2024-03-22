@@ -41,7 +41,10 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.catego
     public void onBindViewHolder(@NonNull categoriesViewHolder holder, int position) {
         Category category = listCate.get(position);
         holder.tvName.setText(category.getName());
-        Glide.with(context).load(category.getImage()).into(holder.img);
+        Glide.with(context)
+                .load(category.getImage())
+                .error(R.drawable.logo_app_gradient)
+                .into(holder.img);
         if (category.get_id().equals("-1")) {
             int paddingImage = 40;
             holder.img.setPadding(paddingImage, paddingImage, paddingImage, paddingImage);

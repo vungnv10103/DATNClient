@@ -59,7 +59,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ProductCart productCart = productCarts.get(position);
         holder.tvName.setText(productCart.getName());
-        Glide.with(context).load(productCart.getImage()).into(holder.imgProduct);
+        Glide.with(context)
+                .load(productCart.getImage())
+                .error(R.drawable.logo_app_gradient)
+                .into(holder.imgProduct);
         int quantityCart = Integer.parseInt(productCart.getQuantity_cart());
         int quantityProduct = Integer.parseInt(productCart.getQuantity_product());
         int priceOne = Integer.parseInt(productCart.getPrice());

@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -14,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
@@ -40,9 +43,12 @@ import com.datn.client.ui.product.ListProductActivity;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.search.SearchBar;
+import com.google.android.material.search.SearchView;
 import com.google.gson.Gson;
 
 import java.util.List;
+import java.util.Objects;
 
 import me.relex.circleindicator.CircleIndicator3;
 
@@ -53,7 +59,8 @@ public class HomeFragment extends Fragment implements IHomeView {
     private HomePresenter homePresenter;
     private PreferenceManager preferenceManager;
 
-    private CircularProgressIndicator progressBarBanner, progressBarCate, progressBarSellingProduct;
+    private CircularProgressIndicator progressBarLoading, progressBarBanner, progressBarCate, progressBarSellingProduct;
+    private LinearLayout layoutHome;
     private RelativeLayout layoutBanner;
     private ViewPager2 vpgBanner;
     private CircleIndicator3 indicatorBanner;
@@ -65,9 +72,12 @@ public class HomeFragment extends Fragment implements IHomeView {
     public static long delayBanner = 3000;
 
     public static boolean isDisableItemCate = true;
-    private RecyclerView rcvCategory, rcvSellingProduct;
+    private RecyclerView rcvCategory, rcvSellingProduct, rcvSearchProduct;
     private List<Category> mCategoryList;
-    private List<Product> mProductList;
+    private List<Product> mProductList, mProductSearch;
+
+    private SearchBar searchBarProduct;
+    private SearchView searchViewProduct;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -83,6 +93,7 @@ public class HomeFragment extends Fragment implements IHomeView {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        initEventClick();
         initService();
     }
 
@@ -146,14 +157,35 @@ public class HomeFragment extends Fragment implements IHomeView {
             return;
         }
         requireActivity().runOnUiThread(() -> {
-            ProductAdapter productAdapter = new ProductAdapter(getActivity(), mProductList, product -> {
+            ProductAdapter productSellingAdapter = new ProductAdapter(getActivity(), mProductList,
+                    R.layout.item_product, product -> {
                 Intent intent = new Intent(requireActivity(), DetailProductActivity.class);
                 intent.putExtra("productID", product.get_id());
                 startActivity(intent);
             });
-            GridLayoutManager llm = new GridLayoutManager(getActivity(), 2);
-            rcvSellingProduct.setLayoutManager(llm);
-            rcvSellingProduct.setAdapter(productAdapter);
+            GridLayoutManager glm = new GridLayoutManager(getActivity(), 2);
+            rcvSellingProduct.setLayoutManager(glm);
+            rcvSellingProduct.setAdapter(productSellingAdapter);
+        });
+    }
+
+    private void displaySearchProduct(boolean isAutoShowKeyBoard) {
+        if (mProductSearch.isEmpty()) {
+            showToast("No product");
+            return;
+        }
+        requireActivity().runOnUiThread(() -> {
+            ProductAdapter productSearchAdapter = new ProductAdapter(getActivity(), mProductSearch,
+                    R.layout.item_product_search, product -> {
+                Intent intent = new Intent(requireActivity(), DetailProductActivity.class);
+                intent.putExtra("productID", product.get_id());
+                startActivity(intent);
+            });
+            LinearLayoutManager llm = new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false);
+            rcvSearchProduct.setLayoutManager(llm);
+            rcvSearchProduct.setAdapter(productSearchAdapter);
+            setLoading(false);
+            searchViewProduct.setAutoShowKeyboard(isAutoShowKeyBoard);
         });
     }
 
@@ -191,7 +223,16 @@ public class HomeFragment extends Fragment implements IHomeView {
     @Override
     public void onListSellingProduct(List<Product> productList) {
         this.mProductList = productList;
+        this.mProductSearch = productList;
         onSellingProductLoaded();
+        displaySearchProduct(true);
+    }
+
+    @Override
+    public void onSearchProduct(List<Product> productList) {
+        this.mProductSearch = productList;
+        displaySearchProduct(false);
+        searchViewProduct.show();
     }
 
     @Override
@@ -258,15 +299,64 @@ public class HomeFragment extends Fragment implements IHomeView {
         homePresenter = new HomePresenter(requireActivity(), this, apiService, mToken, mCustomer.get_id());
     }
 
+    private void initEventClick() {
+        searchBarProduct.inflateMenu(R.menu.searchbar_menu);
+        searchBarProduct.setOnMenuItemClickListener(
+                menuItem -> {
+                    // Handle menuItem click.
+                    int idItem = menuItem.getItemId();
+                    if (idItem == R.id.menu_options) {
+                        MyDialog.gI().startDlgOK(requireActivity(), Objects.requireNonNull(menuItem.getTitle()).toString());
+                    } else if (idItem == R.id.menu_trend) {
+                        MyDialog.gI().startDlgOK(requireActivity(), Objects.requireNonNull(menuItem.getTitle()).toString());
+                    }
+                    return true;
+                });
+        searchViewProduct
+                .getEditText()
+                .setOnEditorActionListener(
+                        (v, actionId, event) -> {
+                            if (event != null) {
+                                System.out.println(event);
+                                switch (event.getKeyCode()) {
+                                    case KeyEvent.KEYCODE_ENTER:
+                                        String keyword = searchViewProduct.getText().toString();
+                                        Log.d(TAG, "KEYCODE_ENTER: " + keyword);
+                                        break;
+                                    case KeyEvent.KEYCODE_BACKSLASH:
+                                        Log.d(TAG, "KEYCODE_BACKSLASH: " + searchViewProduct.getText());
+                                        break;
+                                }
+                            }
+                            String keyword = searchViewProduct.getText().toString();
+                            setLoading(true);
+                            homePresenter.searchProduct(keyword);
+                            searchBarProduct.setText(keyword);
+                            searchViewProduct.hide();
+                            return false;
+                        });
+        searchViewProduct.setupWithSearchBar(searchBarProduct);
+    }
+
+    private void setLoading(boolean isLoading) {
+        layoutHome.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
+        progressBarLoading.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+    }
+
     private void initUI() {
+        layoutHome = binding.layoutHome;
         layoutBanner = binding.layoutBanner;
         vpgBanner = binding.vpgSlideshow;
         indicatorBanner = binding.indicator;
         rcvCategory = binding.rcvCategories;
         rcvSellingProduct = binding.rcvProduct;
+        rcvSearchProduct = binding.rcvProductSearch;
+        progressBarLoading = binding.progressbarLoading;
         progressBarBanner = binding.progressbarBanner;
         progressBarCate = binding.progressbarCategory;
         progressBarSellingProduct = binding.progressbarProduct;
+        searchBarProduct = binding.searchBar;
+        searchViewProduct = binding.searchViewProduct;
     }
 
     private final Runnable runnable = new Runnable() {

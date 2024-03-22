@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menu_sort"
+        android:icon="@drawable/flag_united_states_circle"
+        android:title="@string/language_en"
+        app:showAsAction="collapseActionView" />
+    <item
+        android:id="@+id/menu_trend"
+        android:icon="@drawable/flag_vietnam_circle"
+        android:title="@string/language_vi"
+        app:showAsAction="collapseActionView" />
+    <item
+        android:id="@+id/menu_options"
+        android:icon="@drawable/lover_taylor_rounded"
+        android:title="@string/lover_taylor"
+        app:showAsAction="ifRoom" />
+</menu>

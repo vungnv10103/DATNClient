@@ -128,7 +128,8 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
             return;
         }
         runOnUiThread(() -> {
-            ProductAdapter productAdapter = new ProductAdapter(this, mProductList, product -> {
+            ProductAdapter productAdapter = new ProductAdapter(this, mProductList,
+                    R.layout.item_product, product -> {
                 Intent intent = new Intent(this, DetailProductActivity.class);
                 intent.putExtra("productID", product.get_id());
                 startActivity(intent);

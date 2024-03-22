@@ -21,6 +21,4 @@
         android:icon="@drawable/ic_user_black_24dp"
         android:title="@string/title_dashboard" />
 
-
-
 </menu>

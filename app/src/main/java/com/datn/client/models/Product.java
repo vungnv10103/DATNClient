@@ -1,5 +1,7 @@
 package com.datn.client.models;
 
+import androidx.annotation.NonNull;
+
 public class Product extends _BaseModel {
     private String category_id;
     private String name;
@@ -117,5 +119,25 @@ public class Product extends _BaseModel {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "Product{" +
+                "category_id='" + category_id + '\'' +
+                ", name='" + name + '\'' +
+                ", ram='" + ram + '\'' +
+                ", rom='" + rom + '\'' +
+                ", color='" + color + '\'' +
+                ", quantity='" + quantity + '\'' +
+                ", description='" + description + '\'' +
+                ", sold='" + sold + '\'' +
+                ", status='" + status + '\'' +
+                ", color_code='" + color_code + '\'' +
+                ", img_cover='" + img_cover + '\'' +
+                ", video='" + video + '\'' +
+                ", price='" + price + '\'' +
+                '}';
     }
 }

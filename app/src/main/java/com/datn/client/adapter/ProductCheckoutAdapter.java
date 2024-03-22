@@ -2,6 +2,7 @@ package com.datn.client.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,14 +41,17 @@ public class ProductCheckoutAdapter extends RecyclerView.Adapter<ProductCheckout
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ProductCart productCart = productCarts.get(position);
         holder.tvName.setText(productCart.getName());
-        Glide.with(context).load(productCart.getImage()).into(holder.imgProduct);
+        Glide.with(context)
+                .load(productCart.getImage())
+                .error(R.drawable.logo_app_gradient)
+                .into(holder.imgProduct);
         int quantityCart = Integer.parseInt(productCart.getQuantity_cart());
         int quantityProduct = Integer.parseInt(productCart.getQuantity_product());
+        Log.d("ProductCheckoutAdapter", "quantityProduct: " + quantityProduct);
         int priceOne = Integer.parseInt(productCart.getPrice());
         holder.tvPrice.setText(Currency.formatCurrency(String.valueOf(priceOne * quantityCart)));
         holder.tvQuantity.setText("Số lượng: " + quantityCart);
         holder.tvOptions.setText(productCart.getCreated_at());
-
     }
 
 
@@ -69,6 +73,5 @@ public class ProductCheckoutAdapter extends RecyclerView.Adapter<ProductCheckout
             tvOptions = itemView.findViewById(R.id.tv_options);
         }
     }
-
 
 }

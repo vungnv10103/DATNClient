@@ -1,6 +1,5 @@
 package com.datn.client.ui.components;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -14,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,9 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class MyOverlayMsgDialog {
-    @SuppressLint("StaticFieldLeak")
     private static MyOverlayMsgDialog instance;
-    private Context mContext;
     private AlertDialog mDialog;
 
     public static MyOverlayMsgDialog gI() {
@@ -51,7 +47,6 @@ public class MyOverlayMsgDialog {
         if (overlayMessages.isEmpty()) {
             return;
         }
-        this.mContext = context;
         OverlayMessage overlayMessage = overlayMessages.get(0);
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -116,6 +111,7 @@ public class MyOverlayMsgDialog {
 
 
         mDialog = builder.create();
+
         //btnAction.setOnClickListener(overlayMessage.getAction());
         btnAction.setOnClickListener(v -> mDialog.dismiss());
         closeButton.setOnClickListener(v -> {
@@ -138,7 +134,7 @@ public class MyOverlayMsgDialog {
 
     public List<OverlayMessage> getDefaultOverlayMessage(Context context) {
         String notification = getStringResource(context, R.string.new_release);
-        String urlImage = "https://stech-993p.onrender.com/images/lover_taylor.jpg";
+        String urlImage = "https://stech-993p.onrender.com/images/lover_taylor.png";
         String titleImage = getStringResource(context, R.string.lover_taylor);
         String contentImage = getStringResource(context, R.string.content_image);
         String title = getStringResource(context, R.string.lover);
@@ -279,7 +275,8 @@ public class MyOverlayMsgDialog {
                 // Get the text data from the item.
                 CharSequence dragData = item.getText();
                 // Display a message containing the dragged data.
-                Toast.makeText(mContext, "Dragged data is " + dragData, Toast.LENGTH_LONG).show();
+                Log.w("ACTION_DROP", dragData.toString());
+//                Toast.makeText(mContext, "Dragged data is " + dragData, Toast.LENGTH_LONG).show();
                 // Turn off color tints.
                 ((ImageView) v).clearColorFilter();
                 // Invalidate the view to force a redraw.
@@ -295,9 +292,9 @@ public class MyOverlayMsgDialog {
                 v.invalidate();
                 // Do a getResult() and displays what happens.
                 if (event.getResult()) {
-                    Toast.makeText(mContext, "The drop was handled.", Toast.LENGTH_SHORT).show();
+                    Log.w("ACTION_DRAG_ENDED", "The drop was handled.");
                 } else {
-                    Toast.makeText(mContext, "The drop didn't work.", Toast.LENGTH_SHORT).show();
+                    Log.w("ACTION_DRAG_ENDED", "The drop didn't work.");
                 }
                 // Return true. The value is ignored.
                 Log.d("ACTION_DROP", event.toString());

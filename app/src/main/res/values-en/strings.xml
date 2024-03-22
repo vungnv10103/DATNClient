@@ -72,4 +72,7 @@
     <string name="stream_now">Stream now</string>
     <string name="illustrations">Illustrations</string>
     <string name="select_to_pay">Please select product to pay!</string>
+    <string name="on_sale">On sale</string>
+    <string name="temporarily_out_of_stock">Temporarily out of stock</string>
+    <string name="sold"><i>Sold: </i></string>
 </resources>

@@ -14,5 +14,6 @@ public interface IHomeView extends IBaseView {
     void onListCategory(List<Category> categoryList);
 
     void onListSellingProduct(List<Product> productList);
+    void onSearchProduct(List<Product> productList);
 
 }

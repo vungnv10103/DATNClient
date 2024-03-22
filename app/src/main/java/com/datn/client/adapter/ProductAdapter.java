@@ -1,6 +1,5 @@
 package com.datn.client.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,45 +19,38 @@ import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
+public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private final List<Product> products;
     private final Context context;
-    private final IAction iActionProduct;
+    private final List<Product> products;
+    private final int layoutItem;
+    private static IAction iActionProduct;
 
-    public ProductAdapter(Context context, List<Product> dataList, IAction iActionProduct) {
-        this.products = dataList;
+    public ProductAdapter(Context context, List<Product> dataList, int layoutItem, IAction iActionProduct) {
         this.context = context;
-        this.iActionProduct = iActionProduct;
+        this.products = dataList;
+        this.layoutItem = layoutItem;
+        ProductAdapter.iActionProduct = iActionProduct;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
-        return new ViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(layoutItem, parent, false);
+        if (layoutItem == R.layout.item_product) {
+            return new ViewHolderDefault(view);
+        } else {
+            return new ViewHolderSearch(view);
+        }
     }
 
-    @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Product product = products.get(position);
-        if (product != null) {
-            Glide.with(context).load(product.getImg_cover()).into(holder.imgProduct);
-            holder.tvName.setText(product.getName());
-            String price = product.getPrice();
-            String formattedAmount = Currency.formatCurrency(price);
-            holder.tvPrice.setText(formattedAmount);
-            String status = "";
-            if (Integer.parseInt(product.getStatus()) == STATUS_PRODUCT.STOCKING.getValue()) {
-                status = "Đang bán";
-            } else if (Integer.parseInt(product.getStatus()) == STATUS_PRODUCT.OUT_OF_STOCK.getValue()) {
-                status = "Tạm hết hàng";
-            }
-            holder.tvStatus.setText(status);
-            holder.tvSold.setText("Đã bán: " + product.getSold());
-
-            holder.itemView.setOnClickListener(v -> iActionProduct.onClick(product));
+        if (layoutItem == R.layout.item_product) {
+            ((ViewHolderDefault) holder).setData(context, product);
+        } else {
+            ((ViewHolderSearch) holder).setData(context, product);
         }
     }
 
@@ -68,18 +60,69 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolderDefault extends RecyclerView.ViewHolder {
         private final TextView tvName, tvStatus, tvSold, tvPrice;
         private final ShapeableImageView imgProduct;
 
-
-        public ViewHolder(@NonNull View itemView) {
+        public ViewHolderDefault(@NonNull View itemView) {
             super(itemView);
+            imgProduct = itemView.findViewById(R.id.img_product);
             tvName = itemView.findViewById(R.id.tv_name);
             tvSold = itemView.findViewById(R.id.tv_sold);
             tvPrice = itemView.findViewById(R.id.tv_price);
             tvStatus = itemView.findViewById(R.id.tv_status);
+        }
+
+        void setData(Context context, Product product) {
+            if (product != null) {
+                Glide.with(context)
+                        .load(product.getImg_cover())
+                        .error(R.drawable.logo_app_gradient)
+                        .into(imgProduct);
+                tvName.setText(product.getName());
+                String price = product.getPrice();
+                String formattedAmount = Currency.formatCurrency(price);
+                tvPrice.setText(formattedAmount);
+                String status = "";
+                if (Integer.parseInt(product.getStatus()) == STATUS_PRODUCT.STOCKING.getValue()) {
+                    status = context.getString(R.string.on_sale);
+                } else if (Integer.parseInt(product.getStatus()) == STATUS_PRODUCT.OUT_OF_STOCK.getValue()) {
+                    status = context.getString(R.string.temporarily_out_of_stock);
+                }
+                tvStatus.setText(status);
+                tvSold.setText(String.format(context.getString(R.string.sold) + product.getSold()));
+
+                itemView.setOnClickListener(v -> iActionProduct.onClick(product));
+            }
+        }
+    }
+
+    public static class ViewHolderSearch extends RecyclerView.ViewHolder {
+        private final TextView tvName, tvPrice, tvSold;
+        private final ShapeableImageView imgProduct;
+
+        public ViewHolderSearch(@NonNull View itemView) {
+            super(itemView);
             imgProduct = itemView.findViewById(R.id.img_product);
+            tvName = itemView.findViewById(R.id.tv_name);
+            tvPrice = itemView.findViewById(R.id.tv_price);
+            tvSold = itemView.findViewById(R.id.tv_sold);
+        }
+
+        void setData(Context context, Product product) {
+            if (product != null) {
+                Glide.with(context)
+                        .load(product.getImg_cover())
+                        .error(R.drawable.logo_app_gradient)
+                        .into(imgProduct);
+                tvName.setText(product.getName());
+                String price = product.getPrice();
+                String formattedAmount = Currency.formatCurrency(price);
+                tvPrice.setText(formattedAmount);
+                tvSold.setText(String.format(context.getString(R.string.sold) + product.getSold()));
+
+                itemView.setOnClickListener(v -> iActionProduct.onClick(product));
+            }
         }
     }
 }

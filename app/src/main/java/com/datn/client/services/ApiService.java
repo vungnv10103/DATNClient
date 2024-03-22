@@ -65,6 +65,11 @@ public interface ApiService {
     Call<ProductResponse> getDetailProduct(@Header("Authorization") String token,
                                            @Field("customerID") String customerID,
                                            @Field("productID") String productID);
+    @FormUrlEncoded
+    @POST("/v1/api/product/search")
+    Call<ProductResponse> searchProduct(@Header("Authorization") String token,
+                                        @Field("customerID") String customerID,
+                                        @Field("keyword") String keyword);
 
     @FormUrlEncoded
     @POST("/v1/api/cart/get/customer")
@@ -149,7 +154,7 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("/v1/api/overlay/message/update")
     Call<_BaseResponse> updateStatusOverlayMessage(@Header("Authorization") String token,
-                                                            @Field("customerID") String customerID,
-                                                            @Field("overlayMessageID") String overlayMessageID);
+                                                   @Field("customerID") String customerID,
+                                                   @Field("overlayMessageID") String overlayMessageID);
 
 }
