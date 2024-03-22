@@ -1,15 +1,13 @@
 package com.datn.client.ui.dashboard;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,15 +18,18 @@ import com.datn.client.R;
 import com.datn.client.databinding.FragmentDashboardBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
+import com.datn.client.models.OverlayMessage;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
+import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.google.gson.Gson;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DashboardFragment extends Fragment implements IDashboardView {
 
@@ -57,8 +58,7 @@ public class DashboardFragment extends Fragment implements IDashboardView {
 
         initEventClick();
         initService();
-        showCustomDialog();
-        //MyDialog.gI().startDlgOK(requireActivity(), getString(R.string.app_name), getString(R.string.app_name), null, null);
+//        MyDialog.gI().startDlgOK(requireActivity(), getString(R.string.app_name), getString(R.string.app_name), null, null);
     }
 
     private void doLogout() {
@@ -67,12 +67,22 @@ public class DashboardFragment extends Fragment implements IDashboardView {
 
     @Override
     public void onThrowMessage(MessageResponse message) {
-
+        MyDialog.gI().startDlgOK(requireActivity(), message.getContent());
     }
 
     @Override
-    public void onThrowMessage(String message) {
-        MyDialog.gI().startDlgOK(requireActivity(), message);
+    public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
+        MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, dashboardPresenter);
+    }
+
+    @Override
+    public void onThrowLog(String key, String message) {
+        Log.w(key, "onThrowLog: " + message);
+    }
+
+    @Override
+    public void onFinish() {
+        MyDialog.gI().startDlgOK(requireActivity(), "onFinish");
     }
 
     @Override
@@ -83,7 +93,7 @@ public class DashboardFragment extends Fragment implements IDashboardView {
 
     private void initService() {
         ApiService apiService = RetrofitConnection.getApiService();
-        dashboardPresenter = new DashboardPresenter(this, apiService, mToken, mCustomer.get_id());
+        dashboardPresenter = new DashboardPresenter(requireActivity(), this, apiService, mToken, mCustomer.get_id());
     }
 
     private Customer getLogin() {
@@ -121,28 +131,44 @@ public class DashboardFragment extends Fragment implements IDashboardView {
         requireActivity().finishAffinity();
     }
 
-    private void showCustomDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
-        LayoutInflater inflater = (LayoutInflater) requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.layout_overlay_msg, null);
-        Button closeButton = view.findViewById(R.id.btn_close);
-        final AlertDialog dialog = builder.create();
-        closeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        dialog.setView(view);
-        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
-        dialog.setCancelable(false);
-        dialog.show();
-    }
 
     private void initEventClick() {
         btnLogout.setOnClickListener(v -> doLogout());
-        binding.btnDemo.setOnClickListener(v -> showCustomDialog());
+        binding.btnDemo.setOnClickListener(v -> {
+            MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), getDefaultOverlayMessage(requireActivity()), dashboardPresenter);
+        });
+    }
+
+
+    @NonNull
+    private String getStringResource(@NonNull Context context, int id) {
+        return context.getString(id);
+    }
+
+    public List<OverlayMessage> getDefaultOverlayMessage(Context context) {
+        String notification = getStringResource(context, R.string.new_release);
+        String urlImage = "https://stech-993p.onrender.com/images/lover_taylor.jpg";
+        String titleImage = getStringResource(context, R.string.lover_taylor);
+        String contentImage = getStringResource(context, R.string.content_image);
+        String title = getStringResource(context, R.string.lover);
+        String content = getStringResource(context, R.string.content);
+        String textAction = getStringResource(context, R.string.stream_now);
+        List<OverlayMessage> list = new ArrayList<>();
+        list.add(new OverlayMessage("", -1, notification, urlImage, titleImage,
+                contentImage, title, content, textAction, v1 -> {
+            String id = Math.random() + "";
+            switch (id) {
+                case "0":
+                    MyDialog.gI().startDlgOK(context, getStringResource(context, R.string.app_name), id, null, null);
+                    break;
+                case "1":
+                    MyDialog.gI().startDlgOK(context, getStringResource(context, R.string.app_name), id, null, null);
+                default:
+                    MyDialog.gI().startDlgOK(context, getStringResource(context, R.string.app_name), id, null, null);
+                    break;
+            }
+        }));
+        return list;
     }
 
     private void initUI() {

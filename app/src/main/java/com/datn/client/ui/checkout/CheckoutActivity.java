@@ -26,13 +26,15 @@ import com.datn.client.adapter.ProductCheckoutAdapter;
 import com.datn.client.databinding.ActivityCheckoutBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
+import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.PaymentMethod;
 import com.datn.client.models.ProductCart;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.services.zalo.CreateOrder;
-import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.checkout.CheckoutPresenter.PAYMENT_METHOD;
+import com.datn.client.ui.components.MyDialog;
+import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.product.DetailProductActivity.TYPE_BUY;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
@@ -58,7 +60,6 @@ import vn.zalopay.sdk.listeners.PayOrderListener;
 public class CheckoutActivity extends AppCompatActivity implements ICheckoutView {
     private static final String TAG = CheckoutActivity.class.getSimpleName();
     private ActivityCheckoutBinding binding;
-
     private CheckoutPresenter checkoutPresenter;
     private PreferenceManager preferenceManager;
 
@@ -185,6 +186,11 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     }
 
     @Override
+    public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
+        MyOverlayMsgDialog.gI().showOverlayMsgDialog(this, overlayMessages, checkoutPresenter);
+    }
+
+    @Override
     public void onThrowMessage(@NonNull MessageResponse message) {
         switch (message.getStatusCode()) {
             case 200:
@@ -198,9 +204,13 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     }
 
     @Override
-    public void onThrowMessage(@NonNull String message) {
-        setLoading(false);
-        MyDialog.gI().startDlgOK(this, message);
+    public void onThrowLog(String key, String message) {
+        Log.w(key, "onThrowLog: " + message);
+    }
+
+    @Override
+    public void onFinish() {
+        MyDialog.gI().startDlgOK(this, "onFinish");
     }
 
     private Customer getLogin() {
@@ -227,7 +237,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
 
     private void initService() {
         ApiService apiService = RetrofitConnection.getApiService();
-        checkoutPresenter = new CheckoutPresenter(this, apiService, mToken, mCustomer.get_id());
+        checkoutPresenter = new CheckoutPresenter(CheckoutActivity.this, this, apiService, mToken, mCustomer.get_id());
     }
 
     private void initZaloPay() {

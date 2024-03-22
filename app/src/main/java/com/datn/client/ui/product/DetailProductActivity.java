@@ -2,6 +2,7 @@ package com.datn.client.ui.product;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -27,10 +28,13 @@ import androidx.media3.ui.PlayerView;
 import com.datn.client.R;
 import com.datn.client.databinding.ActivityDetailProductBinding;
 import com.datn.client.models.Customer;
+import com.datn.client.models.MessageResponse;
+import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.components.MyDialog;
+import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.datn.client.utils.PreferenceManager;
@@ -141,10 +145,24 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
         onProductLoaded();
     }
 
+    @Override
+    public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
+        MyOverlayMsgDialog.gI().showOverlayMsgDialog(this, overlayMessages, productPresenter);
+    }
 
     @Override
-    public void onThrowMessage(String message) {
-        MyDialog.gI().startDlgOK(this, message);
+    public void onThrowMessage(MessageResponse message) {
+        MyDialog.gI().startDlgOK(this, message.getContent());
+    }
+
+    @Override
+    public void onThrowLog(String key, String message) {
+        Log.w(key, "onThrowLog: " + message);
+    }
+
+    @Override
+    public void onFinish() {
+        MyDialog.gI().startDlgOK(this, "onFinish");
     }
 
     private Customer getLogin() {
@@ -177,7 +195,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
 
     private void initService() {
         apiService = RetrofitConnection.getApiService();
-        productPresenter = new ProductPresenter(this, apiService, mToken, mCustomer.get_id());
+        productPresenter = new ProductPresenter(DetailProductActivity.this, this, apiService, mToken, mCustomer.get_id());
     }
 
     private void initEventClick() {
@@ -258,6 +276,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     public static Product getProduct() {
         return mProduct;
     }
+
 
     public enum TYPE_BUY {
         BUY_NOW(0),

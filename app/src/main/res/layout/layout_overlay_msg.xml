@@ -50,8 +50,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
+                <com.google.android.material.progressindicator.CircularProgressIndicator
+                    android:id="@+id/progressbar_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:indeterminate="true"
+                    android:visibility="visible" />
+
                 <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/img_product"
+                    android:id="@+id/img_msg"
                     android:layout_width="260dp"
                     android:layout_height="260dp"
                     android:layout_gravity="center"
@@ -61,6 +69,17 @@
                     app:shapeAppearance="?attr/shapeAppearanceMediumComponent"
                     tools:ignore="ContentDescription" />
 
+                <TextView
+                    android:id="@+id/tv_status_img"
+                    style="@style/Widget.App.TextView.Overlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="@string/illustrations"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
                 <RelativeLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -69,25 +88,27 @@
                     android:layout_marginBottom="15dp">
 
                     <TextView
-                        android:id="@+id/tv_title_2"
+                        android:id="@+id/tv_title_img"
                         style="@style/Widget.App.TextView.Overlay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/rock_salt"
-                        android:text="Lover, Taylor"
+                        android:text="@string/lover_taylor"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tv_content_2"
+                        android:id="@+id/tv_content_img"
                         style="@style/Widget.App.TextView.Overlay"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/tv_title_2"
+                        android:layout_below="@+id/tv_title_img"
                         android:fontFamily="@font/rock_salt"
-                        android:text="The Lover Enhanced Album "
+                        android:text="@string/content_image"
                         android:textSize="11sp" />
                 </RelativeLayout>
+
+
             </FrameLayout>
 
 
@@ -99,7 +120,7 @@
                 android:layout_marginVertical="16dp"
                 android:fontFamily="@font/roboto_mono_bold"
                 android:gravity="center"
-                android:text="Lover"
+                android:text="@string/lover"
                 android:textSize="28sp" />
 
             <TextView
@@ -111,7 +132,7 @@
                 android:fontFamily="@font/roboto_mono_medium"
                 android:gravity="center"
                 android:lineSpacingExtra="3dp"
-                android:text="The Lover Enhanced Album is here! \nHandcrafted by Taylor, just for you."
+                android:text="@string/content"
                 android:textSize="14sp" />
 
             <Button
@@ -121,7 +142,7 @@
                 android:layout_marginTop="10dp"
                 android:backgroundTint="#f67acb"
                 android:fontFamily="@font/inter_bold"
-                android:text="Stream now"
+                android:text="@string/stream_now"
                 android:textAllCaps="true" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

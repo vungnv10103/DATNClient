@@ -2,6 +2,7 @@ package com.datn.client.ui.product;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -17,10 +18,13 @@ import com.datn.client.R;
 import com.datn.client.adapter.ProductAdapter;
 import com.datn.client.databinding.ActivityListProductBinding;
 import com.datn.client.models.Customer;
+import com.datn.client.models.MessageResponse;
+import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.components.MyDialog;
+import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.google.gson.Gson;
@@ -30,7 +34,6 @@ import java.util.Objects;
 
 public class ListProductActivity extends AppCompatActivity implements IProductView {
     private ActivityListProductBinding binding;
-
     private ProductPresenter productPresenter;
     private PreferenceManager preferenceManager;
 
@@ -78,7 +81,7 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
 
     private void initService() {
         ApiService apiService = RetrofitConnection.getApiService();
-        productPresenter = new ProductPresenter(this, apiService, mToken, mCustomer.get_id());
+        productPresenter = new ProductPresenter(ListProductActivity.this, this, apiService, mToken, mCustomer.get_id());
     }
 
     private Customer getLogin() {
@@ -136,8 +139,23 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
     }
 
     @Override
-    public void onThrowMessage(String message) {
-        MyDialog.gI().startDlgOK(this, message);
+    public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
+        MyOverlayMsgDialog.gI().showOverlayMsgDialog(this, overlayMessages, productPresenter);
+    }
+
+    @Override
+    public void onThrowMessage(MessageResponse message) {
+        MyDialog.gI().startDlgOK(this, message.getContent());
+    }
+
+    @Override
+    public void onThrowLog(String key, String message) {
+        Log.w(key, "onThrowLog: " + message);
+    }
+
+    @Override
+    public void onFinish() {
+        MyDialog.gI().startDlgOK(this, "onFinish");
     }
 
     private void switchToLogin() {
@@ -150,4 +168,6 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
         super.onDestroy();
         productPresenter.cancelAPI();
     }
+
+
 }

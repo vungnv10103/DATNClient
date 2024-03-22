@@ -1,26 +1,19 @@
 package com.datn.client.ui.dashboard;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 
-import com.datn.client.models.Banner;
 import com.datn.client.models.MessageResponse;
-import com.datn.client.response.BannerResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.ui.home.HomePresenter;
-import com.datn.client.ui.home.IHomeView;
-
-import java.util.List;
+import com.datn.client.ui.BasePresenter;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DashboardPresenter {
-    private static final String TAG = DashboardPresenter.class.getSimpleName();
-
+public class DashboardPresenter extends BasePresenter {
+    private final FragmentActivity context;
     private final IDashboardView iDashboardView;
     private final ApiService apiService;
     private final String token;
@@ -28,7 +21,9 @@ public class DashboardPresenter {
 
     private Call<_BaseResponse> logout;
 
-    public DashboardPresenter(IDashboardView iDashboardView, ApiService apiService, String token, String customerID) {
+    public DashboardPresenter(FragmentActivity context, IDashboardView iDashboardView, ApiService apiService, String token, String customerID) {
+        super(context, iDashboardView, apiService, token, customerID);
+        this.context = context;
         this.iDashboardView = iDashboardView;
         this.apiService = apiService;
         this.token = token;
@@ -43,40 +38,40 @@ public class DashboardPresenter {
     }
 
     public void logout() {
-        try {
-            logout = apiService.logout(token, customerID);
-            logout.enqueue(new Callback<_BaseResponse>() {
-                @Override
-                public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
-                    if (response.body() != null) {
-                        int statusCode = response.body().getStatusCode();
-                        String code = response.body().getCode();
-                        MessageResponse message = response.body().getMessage();
-                        if (statusCode == 200) {
-                            Log.w(TAG, "onResponse200: " + code);
-                            iDashboardView.onLogout();
-                        } else if (statusCode == 400) {
-                            if (code.equals("auth/wrong-token")) {
+        context.runOnUiThread(() -> {
+            try {
+                logout = apiService.logout(token, customerID);
+                logout.enqueue(new Callback<_BaseResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
+                        if (response.body() != null) {
+                            int statusCode = response.body().getStatusCode();
+                            String code = response.body().getCode();
+                            MessageResponse message = response.body().getMessage();
+                            if (statusCode == 200) {
+                                iDashboardView.onThrowLog("logout: onResponse200", code);
                                 iDashboardView.onLogout();
-                            } else {
-                                Log.w(TAG, "onResponse400: " + code);
-                                iDashboardView.onThrowMessage(message);
+                            } else if (statusCode == 400) {
+                                iDashboardView.onThrowLog("logout: onResponse400", code);
+                                if (code.equals("auth/wrong-token")) {
+                                    iDashboardView.onLogout();
+                                } else {
+                                    iDashboardView.onThrowMessage(message);
+                                }
                             }
+                        } else {
+                            iDashboardView.onThrowLog("logout", response.toString());
                         }
-                    } else {
-                        Log.w(TAG, "onResponse: " + response.message());
-                        iDashboardView.onThrowMessage(response.toString());
                     }
-                }
 
-                @Override
-                public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
-                    iDashboardView.onThrowMessage("logout: " + t.getMessage());
-                }
-            });
-        } catch (Exception e) {
-            Log.w(TAG, "logout: " + e.getMessage());
-            iDashboardView.onThrowMessage(e.getMessage());
-        }
+                    @Override
+                    public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
+                        iDashboardView.onThrowLog("logout", t.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                iDashboardView.onThrowLog("logout", e.getMessage());
+            }
+        });
     }
 }

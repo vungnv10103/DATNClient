@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +24,14 @@ import com.datn.client.adapter.CartAdapter;
 import com.datn.client.databinding.FragmentCartBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
+import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.ProductCart;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyNavController;
 import com.datn.client.ui.checkout.CheckoutActivity;
+import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
@@ -145,16 +148,35 @@ public class CartFragment extends Fragment implements ICartView {
     }
 
     @Override
-    public void onThrowMessage(@NonNull MessageResponse message) {
-        setLoading(false);
-        MyDialog.gI().startDlgOK(requireActivity(), message.getTitle(), message.getContent());
+    public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
+        MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, cartPresenter);
     }
 
     @Override
-    public void onThrowMessage(@NonNull String message) {
+    public void onThrowMessage(@NonNull MessageResponse message) {
         setLoading(false);
-        MyDialog.gI().startDlgOK(requireActivity(), message);
+        switch (message.getCode()) {
+            case "cart/plus-not-change":
+                MyDialog.gI().startDlgOK(requireActivity(), message.getContent());
+            case "cart/minus-not-change":
+                MyDialog.gI().startDlgOK(requireActivity(), message.getContent());
+                break;
+            default:
+                MyDialog.gI().startDlgOK(requireActivity(), message.getTitle(), message.getContent());
+                break;
+        }
     }
+
+    @Override
+    public void onThrowLog(String key, String message) {
+        Log.w(key, message);
+    }
+
+    @Override
+    public void onFinish() {
+        MyDialog.gI().startDlgOK(requireActivity(), "onFinish");
+    }
+
 
     @Override
     public void onUpdateQuantity(String cartID, int position, String type, int value) {
@@ -174,7 +196,7 @@ public class CartFragment extends Fragment implements ICartView {
 
     @Override
     public void onBuyNow(String cartID) {
-        cartPresenter.buyNowCart(requireActivity(), cartID);
+        cartPresenter.buyNowCart(cartID);
     }
 
     private Customer getLogin() {
@@ -197,7 +219,7 @@ public class CartFragment extends Fragment implements ICartView {
 
     private void initService() {
         ApiService apiService = RetrofitConnection.getApiService();
-        cartPresenter = new CartPresenter(this, apiService, mToken, mCustomer.get_id());
+        cartPresenter = new CartPresenter(requireActivity(), this, apiService, mToken, mCustomer.get_id());
     }
 
     private void setLayoutEmpty(boolean isEmpty) {
@@ -230,7 +252,7 @@ public class CartFragment extends Fragment implements ICartView {
         btnCheckout.setOnClickListener(v -> requireActivity().runOnUiThread(() -> {
             if (!isLoading) {
                 if (countCartSelected == 0) {
-                    showToast("Vui lòng chọn sản phẩm để thanh toán!");
+                    showToast(getString(R.string.select_to_pay));
                 } else {
                     startActivity(new Intent(requireActivity(), CheckoutActivity.class));
                 }

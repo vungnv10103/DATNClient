@@ -13,6 +13,7 @@ import com.datn.client.response.BannerResponse;
 import com.datn.client.response.CategoryResponse;
 import com.datn.client.response.ProductResponse;
 import com.datn.client.services.ApiService;
+import com.datn.client.ui.BasePresenter;
 
 import java.util.List;
 
@@ -20,7 +21,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class HomePresenter {
+public class HomePresenter extends BasePresenter {
     private final FragmentActivity context;
 
     private final IHomeView iHomeView;
@@ -33,6 +34,7 @@ public class HomePresenter {
     private Call<ProductResponse> getSellingProduct;
 
     public HomePresenter(FragmentActivity context, IHomeView iHomeView, ApiService apiService, String token, String customerID) {
+        super(context, iHomeView, apiService, token, customerID);
         this.context = context;
         this.iHomeView = iHomeView;
         this.apiService = apiService;

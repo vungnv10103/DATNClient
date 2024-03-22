@@ -8,6 +8,7 @@ import com.datn.client.response.CategoryResponse;
 import com.datn.client.response.CreateOrderResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.response.EBankingResponse;
+import com.datn.client.response.OverlayMessageResponse;
 import com.datn.client.response.PaymentMethodResponse;
 import com.datn.client.response.ProductCartResponse;
 import com.datn.client.response.ProductResponse;
@@ -139,5 +140,16 @@ public interface ApiService {
                                             @Field("customerID") String customerID,
                                             @Field("bankCode") String bankCode,
                                             @Field("language") String language);
+
+    @FormUrlEncoded
+    @POST("/v1/api/overlay/message/get")
+    Call<OverlayMessageResponse> getOverlayMessage(@Header("Authorization") String token,
+                                                   @Field("customerID") String customerID);
+
+    @FormUrlEncoded
+    @POST("/v1/api/overlay/message/update")
+    Call<_BaseResponse> updateStatusOverlayMessage(@Header("Authorization") String token,
+                                                            @Field("customerID") String customerID,
+                                                            @Field("overlayMessageID") String overlayMessageID);
 
 }

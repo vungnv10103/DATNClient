@@ -15,9 +15,12 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.datn.client.R;
 import com.datn.client.databinding.BottomsheetAddToCartBinding;
+import com.datn.client.models.MessageResponse;
+import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.ui.components.MyDialog;
+import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
@@ -94,7 +97,7 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
     }
 
     private void initService() {
-        productPresenter = new ProductPresenter(this, apiService, token, customerID);
+        productPresenter = new ProductPresenter(requireActivity(), this, apiService, token, customerID);
     }
 
     private void initEventClick() {
@@ -104,7 +107,7 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
             if (mType == DetailProductActivity.TYPE_BUY.ADD_TO_CART.getValue()) {
                 productPresenter.addToCart(mProduct.get_id(), quantity, notes);
             } else if (mType == DetailProductActivity.TYPE_BUY.BUY_NOW.getValue()) {
-                productPresenter.buyNow(requireActivity(), mProduct.get_id(), quantity, notes);
+                productPresenter.buyNow(mProduct.get_id(), quantity, notes);
             }
 
         });
@@ -169,8 +172,13 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
     }
 
     @Override
-    public void onThrowMessage(@NonNull String code) {
-        switch (code) {
+    public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
+        MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, productPresenter);
+    }
+
+    @Override
+    public void onThrowMessage(MessageResponse message) {
+        switch (message.getCode()) {
             case "cart/add-success":
                 showToast(getString(R.string.added_to_cart));
                 this.dismiss();
@@ -188,8 +196,18 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
                 this.dismiss();
                 break;
             default:
-                MyDialog.gI().startDlgOK(requireActivity(), code);
+                MyDialog.gI().startDlgOK(requireActivity(), message.getCode());
                 break;
         }
+    }
+
+    @Override
+    public void onThrowLog(String key, String message) {
+        Log.w(key, message);
+    }
+
+    @Override
+    public void onFinish() {
+        MyDialog.gI().startDlgOK(requireActivity(), "onFinish");
     }
 }

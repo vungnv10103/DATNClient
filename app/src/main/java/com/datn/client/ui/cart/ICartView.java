@@ -5,15 +5,13 @@ import com.datn.client.models.Cart;
 import com.datn.client.models.MessageResponse;
 import com.datn.client.models.Product;
 import com.datn.client.models.ProductCart;
+import com.datn.client.ui.IBaseView;
 
 import java.util.List;
 
-public interface ICartView {
+public interface ICartView extends IBaseView {
     void onListCart(List<ProductCart> productCartList);
 
-    void onThrowMessage(MessageResponse message);
-
-    void onThrowMessage(String message);
 
     void onUpdateQuantity(String cartID, int position, String type, int value);
 

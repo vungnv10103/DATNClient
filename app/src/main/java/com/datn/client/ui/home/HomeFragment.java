@@ -28,11 +28,13 @@ import com.datn.client.models.Banner;
 import com.datn.client.models.Category;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
+import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
+import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.ui.product.ListProductActivity;
 import com.datn.client.utils.Constants;
@@ -46,12 +48,10 @@ import me.relex.circleindicator.CircleIndicator3;
 
 public class HomeFragment extends Fragment implements IHomeView {
     private static final String TAG = HomeFragment.class.getSimpleName();
-
     private FragmentHomeBinding binding;
     private final Handler handler = new Handler();
     private HomePresenter homePresenter;
     private PreferenceManager preferenceManager;
-
 
     private CircularProgressIndicator progressBarBanner, progressBarCate, progressBarSellingProduct;
     private RelativeLayout layoutBanner;
@@ -93,6 +93,7 @@ public class HomeFragment extends Fragment implements IHomeView {
         homePresenter.getListBanner();
         homePresenter.getListCategory();
         homePresenter.getListSellingProduct();
+        homePresenter.getOverlayMessage();
     }
 
     private void displayBanner() {
@@ -194,8 +195,21 @@ public class HomeFragment extends Fragment implements IHomeView {
     }
 
     @Override
+    public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
+        MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, homePresenter);
+    }
+
+    @Override
     public void onThrowMessage(@NonNull MessageResponse message) {
-        MyDialog.gI().startDlgOK(requireActivity(), message.getContent());
+        switch (message.getCode()) {
+            case "overlay/update-status-success":
+                showLogW(message.getTitle(), message.getContent());
+                break;
+            case "":
+            default:
+                MyDialog.gI().startDlgOK(requireActivity(), message.getContent());
+                break;
+        }
     }
 
     @Override

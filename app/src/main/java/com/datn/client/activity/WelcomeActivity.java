@@ -1,17 +1,11 @@
-package com.datn.client.ui;
+package com.datn.client.activity;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.activity.EdgeToEdge;
