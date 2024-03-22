@@ -74,5 +74,6 @@
     <string name="product_is_temporarily_out_of_stock">Sản phẩm tạm hết hàng, không thể đặt</string>
     <string name="language_vi">VI</string>
     <string name="language_en">EN</string>
+    <string name="new_release">NEW RELEASE</string>
 
 </resources>

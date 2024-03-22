@@ -100,9 +100,12 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         });
 
-
+        binding.imgApp.setOnLongClickListener(v -> {
+            startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
+            finishAffinity();
+            return true;
+        });
         startCountDown(2000, 1000);
-
 //        Window window = getWindow();
 //        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 //        window.setStatusBarColor(Constants.isNightMode ? getColor(R.color.big_stone) : getColor(R.color.tutu));

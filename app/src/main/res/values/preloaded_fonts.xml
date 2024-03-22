@@ -3,5 +3,8 @@
     <array name="preloaded_fonts" translatable="false">
         <item>@font/inter_bold</item>
         <item>@font/inter_medium</item>
+        <item>@font/roboto_mono_bold</item>
+        <item>@font/roboto_mono_medium</item>
+        <item>@font/rock_salt</item>
     </array>
 </resources>

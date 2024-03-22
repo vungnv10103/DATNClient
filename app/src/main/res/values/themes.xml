@@ -53,4 +53,13 @@
         <item name="backgroundTint">?attr/colorPrimary</item>
     </style>
 
+    <style name="Widget.App.TextView.Overlay" parent="">
+        <item name="android:textColor">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="Widget.App.Button.IconButton" parent="Widget.Material3.Button.IconButton">
+        <item name="iconTint">?attr/colorOnPrimary</item>
+    </style>
+
+
 </resources>

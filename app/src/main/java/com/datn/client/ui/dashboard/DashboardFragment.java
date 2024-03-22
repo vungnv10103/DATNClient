@@ -1,11 +1,15 @@
 package com.datn.client.ui.dashboard;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +27,8 @@ import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.google.gson.Gson;
+
+import java.util.Objects;
 
 public class DashboardFragment extends Fragment implements IDashboardView {
 
@@ -51,7 +57,8 @@ public class DashboardFragment extends Fragment implements IDashboardView {
 
         initEventClick();
         initService();
-        MyDialog.gI().startDlgOK(requireActivity(), getString(R.string.app_name), getString(R.string.app_name), null, null);
+        showCustomDialog();
+        //MyDialog.gI().startDlgOK(requireActivity(), getString(R.string.app_name), getString(R.string.app_name), null, null);
     }
 
     private void doLogout() {
@@ -114,8 +121,28 @@ public class DashboardFragment extends Fragment implements IDashboardView {
         requireActivity().finishAffinity();
     }
 
+    private void showCustomDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+        LayoutInflater inflater = (LayoutInflater) requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.layout_overlay_msg, null);
+        Button closeButton = view.findViewById(R.id.btn_close);
+        final AlertDialog dialog = builder.create();
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.setView(view);
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.setCancelable(false);
+        dialog.show();
+    }
+
     private void initEventClick() {
         btnLogout.setOnClickListener(v -> doLogout());
+        binding.btnDemo.setOnClickListener(v -> showCustomDialog());
     }
 
     private void initUI() {
