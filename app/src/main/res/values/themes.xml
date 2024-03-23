@@ -31,7 +31,7 @@
 
     <style name="ThemeOverlay.App.Card" parent="">
         <item name="colorPrimary">@color/big_stone</item>
-        <item name="colorSecondary">@color/blue_400</item>
+        <item name="colorSecondary">@color/big_stone</item>
         <item name="colorSurface">@color/teal_200</item>
         <item name="colorOnSurfaceVariant">?attr/colorPrimary</item>
     </style>
@@ -59,6 +59,10 @@
 
     <style name="Widget.App.Button.IconButton" parent="Widget.Material3.Button.IconButton">
         <item name="iconTint">?attr/colorOnPrimary</item>
+    </style>
+
+    <style name="Widget.App.CircularProgressIndicator" parent="Widget.Material3.CircularProgressIndicator">
+        <item name="indicatorColor">?attr/colorPrimary</item>
     </style>
 
 

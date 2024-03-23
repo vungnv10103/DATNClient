@@ -1,5 +1,7 @@
 package com.datn.client.ui.components;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -9,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -33,8 +36,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class MyOverlayMsgDialog {
+    private BasePresenter basePresenter;
+    private OverlayMessage mOverlayMessage;
     private static MyOverlayMsgDialog instance;
     private AlertDialog mDialog;
+    private static final int MEASUREMENT_ERROR = 100;
 
     public static MyOverlayMsgDialog gI() {
         if (instance == null) {
@@ -43,11 +49,13 @@ public class MyOverlayMsgDialog {
         return instance;
     }
 
-    public void showOverlayMsgDialog(Context context, @NonNull List<OverlayMessage> overlayMessages, BasePresenter basePresenter) {
+    public void showOverlayMsgDialog(Activity context, @NonNull List<OverlayMessage> overlayMessages, BasePresenter basePresenter) {
         if (overlayMessages.isEmpty()) {
             return;
         }
+        this.basePresenter = basePresenter;
         OverlayMessage overlayMessage = overlayMessages.get(0);
+        this.mOverlayMessage = overlayMessage;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         // init view
@@ -68,7 +76,7 @@ public class MyOverlayMsgDialog {
 
         tvNotification.setText(overlayMessage.getNotification());
         if (!overlayMessage.getImage().isEmpty()) {
-            Glide.with(context)
+            Glide.with(context.getBaseContext())
                     .load(overlayMessage.getImage())
                     .error(R.drawable.lover_taylor)
                     .listener(new RequestListener<Drawable>() {
@@ -90,7 +98,7 @@ public class MyOverlayMsgDialog {
                     })
                     .into(imgMessage);
         } else {
-            Glide.with(context).clear(imgMessage);
+            Glide.with(context.getBaseContext()).clear(imgMessage);
             progressLoading.setVisibility(View.GONE);
             imgMessage.setVisibility(View.VISIBLE);
             tvStatusImg.setVisibility(View.VISIBLE);
@@ -105,10 +113,12 @@ public class MyOverlayMsgDialog {
         tvContent.setText(overlayMessage.getContent());
         btnAction.setText(overlayMessage.getText_action());
 
-        View layoutOverlay = view.findViewById(R.id.layout_overlay);
-        layoutOverlay.setOnLongClickListener(onLongClickListener);
-        layoutOverlay.setOnDragListener(onDragListener);
 
+
+        View layoutOverlay = view.findViewById(R.id.layout_overlay);
+//        layoutOverlay.setOnLongClickListener(onLongClickListener);
+//        layoutOverlay.setOnDragListener(onDragListener);
+        layoutOverlay.setOnTouchListener(onTouchListener);
 
         mDialog = builder.create();
 
@@ -116,10 +126,7 @@ public class MyOverlayMsgDialog {
         btnAction.setOnClickListener(v -> mDialog.dismiss());
         closeButton.setOnClickListener(v -> {
             // TODO update status overlay message
-            if (basePresenter != null) {
-                basePresenter.updateStatusOverlayMessage(overlayMessage.get_id());
-            }
-            mDialog.dismiss();
+            dismissOverlay(overlayMessage.get_id());
         });
 
         mDialog.setView(view);
@@ -130,6 +137,13 @@ public class MyOverlayMsgDialog {
 
     public String getStringResource(@NonNull Context context, int id) {
         return context.getString(id);
+    }
+
+    private void dismissOverlay(String idOverlay) {
+        if (basePresenter != null) {
+            basePresenter.updateStatusOverlayMessage(idOverlay);
+        }
+        mDialog.dismiss();
     }
 
     public List<OverlayMessage> getDefaultOverlayMessage(Context context) {
@@ -157,6 +171,101 @@ public class MyOverlayMsgDialog {
         }));
         return list;
     }
+
+    View.OnTouchListener onTouchListener = new View.OnTouchListener() {
+        private int lastX;
+        private int lastY;
+        private int LIMIT_LEFT = 0;
+        private int LIMIT_RIGHT = 0;
+        private int LIMIT_BOTTOM = 0;
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, @NonNull MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN: {
+                    lastX = (int) event.getRawX();
+                    lastY = (int) event.getRawY();
+                    Context context = v.getContext();
+                    int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+//                    int screenHeight = context.getResources().getDisplayMetrics().heightPixels;
+                    LIMIT_LEFT = (screenWidth / 2) * -1 + MEASUREMENT_ERROR / 10;
+                    LIMIT_RIGHT = (int) Math.floor((double) screenWidth * 1.5) - MEASUREMENT_ERROR + 10;
+                    LIMIT_BOTTOM = 2550;
+                    break;
+                }
+                case MotionEvent.ACTION_MOVE: {
+                    int dx = (int) event.getRawX() - lastX;
+                    int dy = (int) event.getRawY() - lastY;
+                    int left = v.getLeft() + dx;
+                    int top = v.getTop() + dy;
+                    int right = v.getRight() + dx;
+                    int bottom = v.getBottom() + dy;
+
+                    if (top < 0) {
+                        top = 0;
+                        bottom = top + v.getHeight();
+                    }
+                    Log.w("ACTION_MOVE", left + "+" + right);
+                    Log.w("ACTION_MOVE", bottom + "");
+                    if (left <= LIMIT_LEFT || bottom >= LIMIT_BOTTOM) {
+                        dismissOverlay(mOverlayMessage.get_id());
+                    }
+                    if (right >= LIMIT_RIGHT || bottom >= LIMIT_BOTTOM) {
+                        dismissOverlay(mOverlayMessage.get_id());
+                    }
+                    v.layout(left, top, right, bottom);
+                    lastX = (int) event.getRawX();
+                    lastY = (int) event.getRawY();
+                    break;
+                }
+                case MotionEvent.ACTION_UP: {
+                    break;
+                }
+            }
+            return true;
+        }
+    };
+
+    View.OnTouchListener onTouchListenerDefault = new View.OnTouchListener() {
+        private int lastX = 0;
+        private int lastY = 0;
+
+        @SuppressLint("ClickableViewAccessibility")
+        @Override
+        public boolean onTouch(View v, @NonNull MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN: {
+                    lastX = (int) event.getRawX();
+                    lastY = (int) event.getRawY();
+                    Log.w("ACTION_DOWN:(lastX-lastY)", lastX + "-" + lastY);
+                    break;
+                }
+                case MotionEvent.ACTION_MOVE: {
+                    int dx = (int) event.getRawX() - lastX;
+                    int dy = (int) event.getRawY() - lastY;
+                    Log.w("ACTION_MOVE:(dx-dy)", dx + "-" + dy);
+                    int left = v.getLeft() + dx;
+                    int top = v.getTop() + dy;
+                    int right = v.getRight() + dx;
+                    int bottom = v.getBottom() + dy;
+                    Log.w("ACTION_MOVE:(left-top-right-bottom)", left + "-" + top + "-" + right + "-" + bottom);
+                    v.layout(left, top, right, bottom);
+                    lastX = (int) event.getRawX();
+                    lastY = (int) event.getRawY();
+                    Log.w("ACTION_MOVE:(lastX-lastY)", lastX + "-" + lastY);
+                    break;
+                }
+                case MotionEvent.ACTION_UP: {
+                    int dx = (int) event.getRawX() - lastX;
+                    int dy = (int) event.getRawY() - lastY;
+                    Log.w("ACTION_UP:(dx-dy)", dx + "-" + dy);
+                    break;
+                }
+            }
+            return true;
+        }
+    };
 
     View.OnLongClickListener onLongClickListener = v -> {
         ClipData.Item item = new ClipData.Item((CharSequence) v.getTag());

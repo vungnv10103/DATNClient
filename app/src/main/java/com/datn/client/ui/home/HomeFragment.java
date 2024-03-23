@@ -3,6 +3,7 @@ package com.datn.client.ui.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -23,10 +24,12 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.datn.client.R;
+import com.datn.client.activity.TestActivity;
 import com.datn.client.adapter.BannerAdapter;
 import com.datn.client.adapter.CategoryAdapter;
 import com.datn.client.adapter.ProductAdapter;
 import com.datn.client.databinding.FragmentHomeBinding;
+import com.datn.client.helper.MyNavigationBar;
 import com.datn.client.models.Banner;
 import com.datn.client.models.Category;
 import com.datn.client.models.Customer;
@@ -305,9 +308,9 @@ public class HomeFragment extends Fragment implements IHomeView {
                 menuItem -> {
                     // Handle menuItem click.
                     int idItem = menuItem.getItemId();
-                    if (idItem == R.id.menu_options) {
+                    if (idItem == R.id.menu_account) {
                         MyDialog.gI().startDlgOK(requireActivity(), Objects.requireNonNull(menuItem.getTitle()).toString());
-                    } else if (idItem == R.id.menu_trend) {
+                    } else if (idItem == R.id.menu_cast) {
                         MyDialog.gI().startDlgOK(requireActivity(), Objects.requireNonNull(menuItem.getTitle()).toString());
                     }
                     return true;

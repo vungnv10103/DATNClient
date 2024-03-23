@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
-        android:id="@+id/menu_sort"
-        android:icon="@drawable/flag_united_states_circle"
-        android:title="@string/language_en"
-        app:showAsAction="collapseActionView" />
+        android:id="@+id/menu_cast"
+        android:icon="@drawable/ic_cast_24dp"
+        android:title="@string/app_name"
+        app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/menu_trend"
-        android:icon="@drawable/flag_vietnam_circle"
-        android:title="@string/language_vi"
-        app:showAsAction="collapseActionView" />
-    <item
-        android:id="@+id/menu_options"
+        android:id="@+id/menu_account"
         android:icon="@drawable/lover_taylor_rounded"
         android:title="@string/lover_taylor"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/menu_test"
+        android:icon="@drawable/ic_home_24dp"
+        android:title="@string/title_home"
+        app:showAsAction="never" />
+
 </menu>
