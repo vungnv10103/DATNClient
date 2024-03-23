@@ -1,14 +1,11 @@
 package com.datn.client.activity;
 
 import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,20 +19,14 @@ import androidx.core.view.WindowInsetsCompat;
 import com.datn.client.R;
 import com.datn.client.databinding.ActivityTestBinding;
 import com.datn.client.helper.MyNavigationBar;
-import com.datn.client.ui.components.MyOverlayMsgDialog;
 
 public class TestActivity extends AppCompatActivity {
     private final static String TAG = TestActivity.class.getSimpleName();
     private ActivityTestBinding binding;
-
-    TextView _view;
-    ViewGroup _root;
-    private int _xDelta;
-    private int _yDelta;
     int height;
     int width;
+    TextView btnDemo;
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +46,8 @@ public class TestActivity extends AppCompatActivity {
         height = displayMetrics.heightPixels + MyNavigationBar.gI().getNavigationBarHeight(TestActivity.this);
         width = displayMetrics.widthPixels;
 
-        binding.btnDemo.setOnTouchListener(touchListener);
+        initUI();
+
 
     }
 
@@ -64,6 +56,7 @@ public class TestActivity extends AppCompatActivity {
         super.onStart();
         showToast("onStart");
         // Code that maintains the UI, start async tasks (get data from API or database), register listeners
+        initEventClick();
     }
 
     @Override
@@ -71,37 +64,8 @@ public class TestActivity extends AppCompatActivity {
         super.onResume();
         showToast("onResume");
         // Starts animations
-        MyOverlayMsgDialog.gI().showOverlayMsgDialog(this, MyOverlayMsgDialog.gI().getDefaultOverlayMessage(this), null);
+//        MyOverlayMsgDialog.gI().showOverlayMsgDialog(this, MyOverlayMsgDialog.gI().getDefaultOverlayMessage(this), null);
 
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    public boolean onTouch(View view, @NonNull MotionEvent event) {
-        final int X = (int) event.getRawX();
-        final int Y = (int) event.getRawY();
-        switch (event.getAction() & MotionEvent.ACTION_MASK) {
-            case MotionEvent.ACTION_DOWN:
-                RelativeLayout.LayoutParams lParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-                _xDelta = X - lParams.leftMargin;
-                _yDelta = Y - lParams.topMargin;
-                break;
-            case MotionEvent.ACTION_UP:
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                break;
-            case MotionEvent.ACTION_POINTER_UP:
-                break;
-            case MotionEvent.ACTION_MOVE:
-                RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) view.getLayoutParams();
-                layoutParams.leftMargin = X - _xDelta;
-                layoutParams.topMargin = Y - _yDelta;
-                layoutParams.rightMargin = -250;
-                layoutParams.bottomMargin = -250;
-                view.setLayoutParams(layoutParams);
-                break;
-        }
-        _root.invalidate();
-        return true;
     }
 
     View.OnTouchListener touchListener = new View.OnTouchListener() {
@@ -182,5 +146,14 @@ public class TestActivity extends AppCompatActivity {
     private void showToast(String message) {
         Log.d(TAG, message);
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void initEventClick() {
+        btnDemo.setOnTouchListener(touchListener);
+    }
+
+    private void initUI() {
+        btnDemo = binding.btnDemo;
     }
 }

@@ -41,9 +41,9 @@
         android:layout_below="@+id/layout_notification">
 
         <LinearLayout
+            android:id="@+id/layout_overlay_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_gradient_overlay"
             android:gravity="center"
             android:orientation="vertical"
             android:paddingVertical="20dp">

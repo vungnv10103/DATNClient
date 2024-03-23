@@ -8,6 +8,7 @@ import android.content.ClipDescription;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -114,15 +116,17 @@ public class MyOverlayMsgDialog {
         btnAction.setText(overlayMessage.getText_action());
 
 
-
         View layoutOverlay = view.findViewById(R.id.layout_overlay);
 //        layoutOverlay.setOnLongClickListener(onLongClickListener);
 //        layoutOverlay.setOnDragListener(onDragListener);
         layoutOverlay.setOnTouchListener(onTouchListener);
+        LinearLayout layoutOverlayContent = view.findViewById(R.id.layout_overlay_content);
+        layoutOverlayContent.setBackground(customBgGradient(overlayMessage.getColors_gradient()));
 
         mDialog = builder.create();
 
         //btnAction.setOnClickListener(overlayMessage.getAction());
+        btnAction.setBackgroundColor(Color.parseColor("#" + overlayMessage.getColor_action()));
         btnAction.setOnClickListener(v -> mDialog.dismiss());
         closeButton.setOnClickListener(v -> {
             // TODO update status overlay message
@@ -146,6 +150,51 @@ public class MyOverlayMsgDialog {
         mDialog.dismiss();
     }
 
+    @NonNull
+    private GradientDrawable customBgGradient(List<String> colorGradientCode) {
+        int startColor;
+        int midColor;
+        int endColor;
+        GradientDrawable gradientDrawable = null;
+
+        if (colorGradientCode == null) {
+            startColor = Color.parseColor(String.valueOf("#c4c2e1"));
+            endColor = Color.parseColor(String.valueOf("#fdb5df"));
+            gradientDrawable = new GradientDrawable(
+                    GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{startColor, endColor});
+        } else if (colorGradientCode.size() == 1) {
+            gradientDrawable = new GradientDrawable(
+                    GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{Color.parseColor(String.valueOf("#" + colorGradientCode.get(0)))});
+        } else if (colorGradientCode.size() == 2) {
+            startColor = Color.parseColor(String.valueOf("#" + colorGradientCode.get(0)));
+            endColor = Color.parseColor(String.valueOf("#" + colorGradientCode.get(1)));
+            gradientDrawable = new GradientDrawable(
+                    GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{startColor, endColor});
+        } else if (colorGradientCode.size() > 2) {
+            int indexMid = (int) Math.floor((double) colorGradientCode.size() / 2);
+            startColor = Color.parseColor(String.valueOf("#" + colorGradientCode.get(0)));
+            midColor = Color.parseColor(String.valueOf("#" + colorGradientCode.get(indexMid)));
+            endColor = Color.parseColor(String.valueOf("#" + colorGradientCode.get(colorGradientCode.size() - 1)));
+            Log.w("customBgGradient", "===========: " + indexMid);
+            gradientDrawable = new GradientDrawable(
+                    GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{startColor, midColor, endColor});
+        } else {
+            startColor = Color.parseColor(String.valueOf("#c4c2e1"));
+            endColor = Color.parseColor(String.valueOf("#fdb5df"));
+            gradientDrawable = new GradientDrawable(
+                    GradientDrawable.Orientation.TOP_BOTTOM,
+                    new int[]{startColor, endColor});
+        }
+        gradientDrawable.setShape(GradientDrawable.RECTANGLE);
+        // Đặt góc của gradient (90 độ trong trường hợp này)
+        gradientDrawable.setOrientation(GradientDrawable.Orientation.TOP_BOTTOM);
+        return gradientDrawable;
+    }
+
     public List<OverlayMessage> getDefaultOverlayMessage(Context context) {
         String notification = getStringResource(context, R.string.new_release);
         String urlImage = "https://stech-993p.onrender.com/images/lover_taylor.png";
@@ -155,8 +204,11 @@ public class MyOverlayMsgDialog {
         String content = getStringResource(context, R.string.content);
         String textAction = getStringResource(context, R.string.stream_now);
         List<OverlayMessage> list = new ArrayList<>();
-        list.add(new OverlayMessage("", -1, notification, urlImage, titleImage,
-                contentImage, title, content, textAction, v1 -> {
+        List<String> colorGradient = new ArrayList<>();
+        colorGradient.add("c4c2e1");
+        colorGradient.add("fdb5df");
+        list.add(new OverlayMessage("", -1, notification, colorGradient, urlImage, titleImage,
+                contentImage, title, content, textAction, "f67acb", v1 -> {
             String id = Math.random() + "";
             switch (id) {
                 case "0":

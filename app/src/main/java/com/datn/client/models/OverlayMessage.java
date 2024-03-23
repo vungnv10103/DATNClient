@@ -2,10 +2,13 @@ package com.datn.client.models;
 
 import android.view.View;
 
+import java.util.List;
+
 public class OverlayMessage extends _BaseModel {
     private String customer_id;
     private int status;
     private String notification;
+    private List<String> colors_gradient;
     private String image;
     private String title_image;
     private String content_image;
@@ -13,18 +16,23 @@ public class OverlayMessage extends _BaseModel {
     private String content;
 
     private String text_action;
+    private String color_action;
     private View.OnClickListener action;
 
-    public OverlayMessage(String customer_id, int status, String notification, String image, String title_image, String content_image, String title, String content, String text_action, View.OnClickListener action) {
+    public OverlayMessage(String customer_id, int status, String notification, List<String> colors_gradient,
+                          String image, String title_image, String content_image, String title,
+                          String content, String text_action, String color_action, View.OnClickListener action) {
         this.customer_id = customer_id;
         this.status = status;
         this.notification = notification;
+        this.colors_gradient = colors_gradient;
         this.image = image;
         this.title_image = title_image;
         this.content_image = content_image;
         this.title = title;
         this.content = content;
         this.text_action = text_action;
+        this.color_action = color_action;
         this.action = action;
     }
 
@@ -50,6 +58,14 @@ public class OverlayMessage extends _BaseModel {
 
     public void setNotification(String notification) {
         this.notification = notification;
+    }
+
+    public List<String> getColors_gradient() {
+        return colors_gradient;
+    }
+
+    public void setColors_gradient(List<String> colors_gradient) {
+        this.colors_gradient = colors_gradient;
     }
 
     public String getImage() {
@@ -98,6 +114,14 @@ public class OverlayMessage extends _BaseModel {
 
     public void setText_action(String text_action) {
         this.text_action = text_action;
+    }
+
+    public String getColor_action() {
+        return color_action;
+    }
+
+    public void setColor_action(String color_action) {
+        this.color_action = color_action;
     }
 
     public View.OnClickListener getAction() {
