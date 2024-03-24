@@ -18,9 +18,11 @@ import android.widget.RemoteViews;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.datn.client.R;
 import com.datn.client.ui.auth.LoginActivity;
+import com.datn.client.ui.checkout.CheckoutPresenter;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -28,6 +30,7 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -39,8 +42,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             String title = message.getData().get("title");
             String body = message.getData().get("body");
             String imageURL = message.getData().get("imageURL");
+            String mType = message.getData().get("type");
             Log.w("onMessageReceived", title + "-" + body + "-" + imageURL);
             sendNotification(title, body, imageURL);
+
+            if (mType != null) {
+                if (Integer.parseInt(mType) == CheckoutPresenter.PAYMENT_METHOD.E_BANKING.getValue()) {
+                    // Gửi Broadcast với nội dung thông báo
+                    Intent intent = new Intent("com.datn.client.NOTIFICATION_RECEIVED");
+                    intent.putExtra("message", title);
+                    LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
+                }
+            }
         }
     }
 

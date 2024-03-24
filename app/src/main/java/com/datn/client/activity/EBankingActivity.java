@@ -1,7 +1,11 @@
 package com.datn.client.activity;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.datn.client.R;
 import com.datn.client.databinding.ActivityEbankingBinding;
@@ -76,6 +81,34 @@ public class EBankingActivity extends AppCompatActivity {
         checkLogin();
         initService();
 
+    }
+
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, @NonNull Intent intent) {
+            // Nhận dữ liệu từ Broadcast
+            String messageContent = intent.getStringExtra("message");
+            MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, messageContent, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    showToast("312");
+                }
+            });
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Đăng ký BroadcastReceiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter("com.datn.client.NOTIFICATION_RECEIVED"));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Hủy đăng ký BroadcastReceiver
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
     }
 
     @Override
