@@ -85,5 +85,8 @@
     <string name="on_sale">Đang bán</string>
     <string name="temporarily_out_of_stock">Tạm hết hàng</string>
     <string name="sold"><i>Đã bán: </i></string>
+    <string name="error"><i>Error: </i></string>
+    <string name="setting">Setting</string>
+    <string name="minimum_quantity_is_one">Số lượng tối thiểu là 1</string>
 
 </resources>

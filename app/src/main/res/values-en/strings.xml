@@ -75,4 +75,7 @@
     <string name="on_sale">On sale</string>
     <string name="temporarily_out_of_stock">Temporarily out of stock</string>
     <string name="sold"><i>Sold: </i></string>
+    <string name="error"><i>Error: </i></string>
+    <string name="setting">Setting</string>
+    <string name="minimum_quantity_is_one">Minimum quantity is 1</string>
 </resources>

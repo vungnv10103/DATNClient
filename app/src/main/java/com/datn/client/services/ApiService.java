@@ -18,10 +18,15 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public interface ApiService {
+
+    @GET("/v1/api/global/ping")
+    Call<_BaseResponse> pingServer();
+
     @POST("/v1/api/customer/register")
     Call<CustomerResponse> registerCustomer(@Body Customer customer);
 
@@ -65,6 +70,7 @@ public interface ApiService {
     Call<ProductResponse> getDetailProduct(@Header("Authorization") String token,
                                            @Field("customerID") String customerID,
                                            @Field("productID") String productID);
+
     @FormUrlEncoded
     @POST("/v1/api/product/search")
     Call<ProductResponse> searchProduct(@Header("Authorization") String token,
@@ -145,6 +151,15 @@ public interface ApiService {
                                             @Field("customerID") String customerID,
                                             @Field("bankCode") String bankCode,
                                             @Field("language") String language);
+
+    @FormUrlEncoded
+    @POST("/v1/api/order/create_payment_url_now")
+    Call<EBankingResponse> createPaymentURLNow(@Header("Authorization") String token,
+                                               @Field("customerID") String customerID,
+                                               @Field("productID") String productID,
+                                               @Field("quantityProduct") int quantityProduct,
+                                               @Field("bankCode") String bankCode,
+                                               @Field("language") String language);
 
     @FormUrlEncoded
     @POST("/v1/api/overlay/message/get")

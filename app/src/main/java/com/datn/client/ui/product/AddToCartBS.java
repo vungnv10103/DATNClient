@@ -177,7 +177,7 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
     }
 
     @Override
-    public void onThrowMessage(MessageResponse message) {
+    public void onThrowMessage(@NonNull MessageResponse message) {
         switch (message.getCode()) {
             case "cart/add-success":
                 showToast(getString(R.string.added_to_cart));

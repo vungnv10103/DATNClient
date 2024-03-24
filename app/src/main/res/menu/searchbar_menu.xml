@@ -11,12 +11,12 @@
         android:id="@+id/menu_account"
         android:icon="@drawable/lover_taylor_rounded"
         android:title="@string/lover_taylor"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/menu_test"
-        android:icon="@drawable/ic_home_24dp"
-        android:title="@string/title_home"
+        android:icon="@drawable/ic_settings_24"
+        android:title="@string/setting"
         app:showAsAction="never" />
 
 </menu>

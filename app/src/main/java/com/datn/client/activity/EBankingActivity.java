@@ -1,6 +1,7 @@
 package com.datn.client.activity;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -82,65 +83,117 @@ public class EBankingActivity extends AppCompatActivity {
         super.onStart();
 
         setLoading(true);
-
         ApiService apiService = RetrofitConnection.getApiService();
+        String mProductID = getIntent().getStringExtra("productID");
+        String mQuantity = getIntent().getStringExtra("quantity");
+        if (mProductID == null || mQuantity == null) {
+            createPaymentURL(apiService);
+        } else {
+            int quantity = Integer.parseInt(mQuantity);
+            if (quantity <= 0) {
+                MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, getString(R.string.minimum_quantity_is_one), (dialog, which) -> finish());
+                return;
+            }
+            createPaymentURLNow(apiService, mProductID, quantity);
+        }
+    }
+
+    private void displayWebView(String paymentURL) {
+        webViewPay.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                String url = request.getUrl().toString();
+                Log.w(TAG, "shouldOverrideUrlLoading: " + url);
+                if (url.contains("/paySuccess")) {
+                    MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, "paySuccess", (dialog, which) -> finish());
+                    return true;
+                }
+                if (url.contains("/payFail")) {
+                    MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, "payFail", (dialog, which) -> finish());
+                    return true;
+                }
+                return super.shouldOverrideUrlLoading(view, request);
+            }
+        });
+        webViewPay.loadUrl(paymentURL);
+        setLoading(false);
+    }
+
+    private void handleResponseCreateURL(@NonNull Response<EBankingResponse> response) {
+        if (response.body() != null) {
+            runOnUiThread(() -> {
+                String code = response.body().getCode();
+                int statusCode = response.body().getStatusCode();
+                if (statusCode == 200) {
+                    Log.w(TAG, "onResponse200: createPaymentURL: " + code);
+                    String paymentURL = response.body().getPaymentURL();
+                    displayWebView(paymentURL);
+                } else if (statusCode == 400) {
+                    Log.w(TAG, "onResponse400: createPaymentURL: " + code);
+                    MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, code, (dialog, which) -> finish());
+                    setLoading(false);
+                } else {
+                    Log.w(TAG, "onResponse: " + code);
+                    MyDialog.gI().startDlgOK(EBankingActivity.this, code);
+                    setLoading(false);
+                }
+            });
+        } else {
+            Log.w(TAG, "onResponse: " + response);
+            MyDialog.gI().startDlgOK(EBankingActivity.this, "body null");
+            setLoading(false);
+        }
+    }
+
+    private void createPaymentURLNow(@NonNull ApiService apiService, String productID, int quantity) {
+        try {
+            Call<EBankingResponse> createPaymentURLNow = apiService.createPaymentURLNow(mToken, mCustomer.get_id(), productID, quantity, "", "vi");
+            createPaymentURLNow.enqueue(new Callback<EBankingResponse>() {
+                @Override
+                public void onResponse(@NonNull Call<EBankingResponse> call, @NonNull Response<EBankingResponse> response) {
+                    handleResponseCreateURL(response);
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<EBankingResponse> call, @NonNull Throwable t) {
+                    runOnUiThread(() -> {
+                        MyDialog.gI().startDlgOK(EBankingActivity.this, t.getMessage());
+                        setLoading(false);
+                    });
+                }
+            });
+        } catch (Exception e) {
+            runOnUiThread(() -> {
+                Log.w(TAG, "createPaymentURLNow: " + e.getMessage());
+                MyDialog.gI().startDlgOK(EBankingActivity.this, e.getMessage());
+                setLoading(false);
+            });
+        }
+    }
+
+    private void createPaymentURL(ApiService apiService) {
         try {
             Call<EBankingResponse> createPaymentURL = apiService.createPaymentURL(mToken, mCustomer.get_id(), "", "vi");
             createPaymentURL.enqueue(new Callback<EBankingResponse>() {
                 @Override
                 public void onResponse(@NonNull Call<EBankingResponse> call, @NonNull Response<EBankingResponse> response) {
-                    if (response.body() != null) {
-                        runOnUiThread(() -> {
-                            String code = response.body().getCode();
-                            int statusCode = response.body().getStatusCode();
-                            if (statusCode == 200) {
-                                Log.w(TAG, "onResponse200: createPaymentURL: " + code);
-                                String paymentURL = response.body().getPaymentURL();
-                                webViewPay.setWebViewClient(new WebViewClient() {
-                                    @Override
-                                    public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                                        String url = request.getUrl().toString();
-                                        Log.w(TAG, "shouldOverrideUrlLoading: " + url);
-                                        if (url.contains("/paySuccess")) {
-                                            MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, "paySuccess", (dialog, which) -> finish());
-                                            return true;
-                                        }
-                                        if (url.contains("/payFail")) {
-                                            MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, "payFail", (dialog, which) -> finish());
-                                            return true;
-                                        }
-                                        return super.shouldOverrideUrlLoading(view, request);
-                                    }
-                                });
-                                webViewPay.loadUrl(paymentURL);
-                                setLoading(false);
-                            } else if (statusCode == 400) {
-                                Log.w(TAG, "onResponse400: createPaymentURL: " + code);
-                                MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, code, (dialog, which) -> finish());
-                                setLoading(false);
-                            } else {
-                                Log.w(TAG, "onResponse: " + code);
-                                MyDialog.gI().startDlgOK(EBankingActivity.this, code);
-                                setLoading(false);
-                            }
-                        });
-                    } else {
-                        Log.w(TAG, "onResponse: " + response);
-                        MyDialog.gI().startDlgOK(EBankingActivity.this, "body null");
-                        setLoading(false);
-                    }
+                    handleResponseCreateURL(response);
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<EBankingResponse> call, @NonNull Throwable t) {
-                    MyDialog.gI().startDlgOK(EBankingActivity.this, t.getMessage());
-                    setLoading(false);
+                    runOnUiThread(() -> {
+                        MyDialog.gI().startDlgOK(EBankingActivity.this, t.getMessage());
+                        setLoading(false);
+                    });
                 }
             });
         } catch (Exception e) {
-            Log.w(TAG, "createPaymentURL: " + e.getMessage());
-            MyDialog.gI().startDlgOK(EBankingActivity.this, e.getMessage());
-            setLoading(false);
+            runOnUiThread(() -> {
+                Log.w(TAG, "createPaymentURL: " + e.getMessage());
+                MyDialog.gI().startDlgOK(EBankingActivity.this, e.getMessage());
+                setLoading(false);
+            });
         }
     }
 

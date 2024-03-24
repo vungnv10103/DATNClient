@@ -169,7 +169,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     }
 
     @Override
-    public void onListPaymentMethod(HashMap<Integer, String> paymentMethod) {
+    public void onListPaymentMethod(@NonNull HashMap<Integer, String> paymentMethod) {
         this.mPaymentMethod = paymentMethod;
         paymentMethodList = new ArrayList<>();
         for (Map.Entry<Integer, String> entry : paymentMethod.entrySet()) {
@@ -324,11 +324,12 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
                     }
 
                 } else if (isEBanking) {
-                    if (mTypeBuy == TYPE_BUY.ADD_TO_CART.getValue()) {
-                        startActivity(new Intent(CheckoutActivity.this, EBankingActivity.class));
-                    } else if (mTypeBuy == TYPE_BUY.BUY_NOW.getValue()) {
-                        MyDialog.gI().startDlgOK(this, "Updating...");
+                    Intent intent = new Intent(CheckoutActivity.this, EBankingActivity.class);
+                    if (mTypeBuy == TYPE_BUY.BUY_NOW.getValue()) {
+                        intent.putExtra("productID", mProductCart.get(0).getProduct_id());
+                        intent.putExtra("quantity", mProductCart.get(0).getQuantity_cart());
                     }
+                    startActivity(intent);
                 } else if (isDelivery) {
                     MyDialog.gI().startDlgOK(this, "Updating...");
                 }
