@@ -143,10 +143,10 @@ public class CheckoutPresenter extends BasePresenter {
     }
 
 
-    public void getAmountZaloPay(int type) {
+    public void getAmountZaloPay() {
         context.runOnUiThread(() -> {
             try {
-                createOrder = apiService.getAmountZaloPay(token, customerID, type);
+                createOrder = apiService.getAmountZaloPay(token, customerID, PAYMENT_METHOD.ZALO_PAY.getValue());
                 createOrder.enqueue(new Callback<CreateOrderResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<CreateOrderResponse> call, @NonNull Response<CreateOrderResponse> response) {
@@ -181,12 +181,12 @@ public class CheckoutPresenter extends BasePresenter {
         });
     }
 
-    public void getAmountZaloPay(int type, List<ProductCart> productCartList) {
+    public void getAmountZaloPay(List<ProductCart> productCartList) {
         context.runOnUiThread(() -> {
             try {
                 CartBuyNow cartBuyNow = new CartBuyNow();
                 cartBuyNow.setCustomerID(customerID);
-                cartBuyNow.setType(type);
+                cartBuyNow.setType(PAYMENT_METHOD.ZALO_PAY.getValue());
                 cartBuyNow.setProductCarts(productCartList);
                 getAmountZaloPay = apiService.getAmountZaloPayNow(token, cartBuyNow);
                 getAmountZaloPay.enqueue(new Callback<CreateOrderResponse>() {

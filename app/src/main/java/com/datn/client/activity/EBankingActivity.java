@@ -3,7 +3,6 @@ package com.datn.client.activity;
 import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -86,21 +85,28 @@ public class EBankingActivity extends AppCompatActivity {
     private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, @NonNull Intent intent) {
-            // Nhận dữ liệu từ Broadcast
-            String messageContent = intent.getStringExtra("message");
-            MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, messageContent, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    showToast("312");
-                }
+            // get data from Broadcast
+            String title = intent.getStringExtra("title");
+            String body = intent.getStringExtra("body");
+            String imageURL = intent.getStringExtra("imageURL");
+            String mType = intent.getStringExtra("mType");
+            MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, title, body, (dialog, which) -> {
+                handleResult(title);
             });
         }
     };
 
+    private void handleResult(String title) {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("title", title);
+        setResult(RESULT_OK, resultIntent);
+        finish();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        // Đăng ký BroadcastReceiver
+        // init  BroadcastReceiver
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, new IntentFilter("com.datn.client.NOTIFICATION_RECEIVED"));
     }
 
@@ -138,7 +144,7 @@ public class EBankingActivity extends AppCompatActivity {
                 String url = request.getUrl().toString();
                 Log.w(TAG, "shouldOverrideUrlLoading: " + url);
                 if (url.contains("/paySuccess")) {
-                    MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, "paySuccess", (dialog, which) -> finish());
+//                    MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, "paySuccess", (dialog, which) -> finish());
                     return true;
                 }
                 if (url.contains("/payFail")) {

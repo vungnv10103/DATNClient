@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -23,14 +22,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.datn.client.R;
 import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.checkout.CheckoutPresenter;
-import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Objects;
 
 @SuppressLint("MissingFirebaseInstanceTokenRefresh")
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -50,7 +47,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 if (Integer.parseInt(mType) == CheckoutPresenter.PAYMENT_METHOD.E_BANKING.getValue()) {
                     // Gửi Broadcast với nội dung thông báo
                     Intent intent = new Intent("com.datn.client.NOTIFICATION_RECEIVED");
-                    intent.putExtra("message", title);
+                    intent.putExtra("title", title);
+                    intent.putExtra("body", body);
+                    intent.putExtra("imageURL", imageURL);
+                    intent.putExtra("mType", mType);
                     LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
                 }
             }
@@ -70,8 +70,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
-                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
+//                PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
         // Get the layouts to use in the custom notification
         RemoteViews notificationLayout = createNotificationView(R.layout.layout_notification_small, title, messageBody);
@@ -88,20 +88,19 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //
 //        notificationManager.notify(0, notificationBuilder.build());
         // Apply the layouts to the notification.
-        boolean isNightMode = Constants.isNightMode;
-        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo_app_gradient);
-        Bitmap mBitmap2 = null;
+//        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo_app_gradient);
+        Bitmap bitmapIcon = null;
         if (!imageURL.trim().isEmpty()) {
             try {
                 URL url = new URL(imageURL);
-                mBitmap2 = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                bitmapIcon = BitmapFactory.decodeStream(url.openConnection().getInputStream());
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
         }
         Notification customNotification = new NotificationCompat.Builder(this, "Stech")
                 .setSmallIcon(R.drawable.logo_app_black)
-                .setLargeIcon(mBitmap2)
+                .setLargeIcon(bitmapIcon)
                 .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setCustomContentView(notificationLayout)
                 .setCustomBigContentView(notificationLayoutExpanded)

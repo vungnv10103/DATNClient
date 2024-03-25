@@ -1,6 +1,8 @@
 package com.datn.client.ui.checkout;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -11,11 +13,16 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.media3.common.C;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,6 +42,7 @@ import com.datn.client.services.zalo.CreateOrder;
 import com.datn.client.ui.checkout.CheckoutPresenter.PAYMENT_METHOD;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
+import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.ui.product.DetailProductActivity.TYPE_BUY;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
@@ -89,6 +97,24 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         }
     };
 
+    ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
+            new ActivityResultCallback<Uri>() {
+                @Override
+                public void onActivityResult(Uri uri) {
+                    // Handle the returned Uri
+                    MyDialog.gI().startDlgOK(CheckoutActivity.this, uri.toString());
+                }
+            });
+
+    ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    MyDialog.gI().startDlgOK(CheckoutActivity.this, result.getResultCode() + "");
+                }
+            }
+    );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +135,11 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         checkLogin();
         initService();
         initZaloPay();
+
+        binding.layoutAddress.setOnLongClickListener(v -> {
+            mGetContent.launch("image/*");
+            return true;
+        });
     }
 
     @Override
@@ -318,18 +349,17 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
                 if (isZaloPay) {
                     setLoading(true);
                     if (mTypeBuy == TYPE_BUY.ADD_TO_CART.getValue()) {
-                        checkoutPresenter.getAmountZaloPay(PAYMENT_METHOD.ZALO_PAY.getValue());
+                        checkoutPresenter.getAmountZaloPay();
                     } else if (mTypeBuy == TYPE_BUY.BUY_NOW.getValue()) {
-                        checkoutPresenter.getAmountZaloPay(PAYMENT_METHOD.ZALO_PAY.getValue(), mProductCart);
+                        checkoutPresenter.getAmountZaloPay(mProductCart);
                     }
-
                 } else if (isEBanking) {
                     Intent intent = new Intent(CheckoutActivity.this, EBankingActivity.class);
                     if (mTypeBuy == TYPE_BUY.BUY_NOW.getValue()) {
                         intent.putExtra("productID", mProductCart.get(0).getProduct_id());
                         intent.putExtra("quantity", mProductCart.get(0).getQuantity_cart());
                     }
-                    startActivity(intent);
+                    activityLauncher.launch(intent);
                 } else if (isDelivery) {
                     MyDialog.gI().startDlgOK(this, "Updating...");
                 }
@@ -417,6 +447,21 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     private void switchToLogin() {
         showToast(getString(R.string.please_log_in_again));
         finishAffinity();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (data != null) {
+                String resultValue = data.getStringExtra("title");
+                if (resultValue != null) {
+                    setResult(Activity.RESULT_OK);
+                    finish();
+                }
+            }
+        }
     }
 
     @Override

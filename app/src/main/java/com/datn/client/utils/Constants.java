@@ -2,7 +2,7 @@ package com.datn.client.utils;
 
 public class Constants {
 
-    public static final String URL_API2 = "http://192.168.1.11:3000";
+    public static final String URL_API2 = "http://192.168.1.3:3000";
     public static final String URL_API = "https://stech-993p.onrender.com";
     public static final String URL_API3 = "http://192.168.0.106:3000";
 
