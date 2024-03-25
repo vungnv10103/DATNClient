@@ -48,6 +48,7 @@ public class ProductPresenter extends BasePresenter {
     }
 
     public void cancelAPI() {
+        super.cancelAPI();
         if (detailProduct != null) {
             detailProduct.cancel();
         }

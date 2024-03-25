@@ -25,6 +25,8 @@
     <string name="default_review" translatable="false">0 Review</string>
     <string name="quantity">Số lượng</string>
     <string name="default_quantity" translatable="false">1</string>
+    <string name="default_fee" translatable="false">0</string>
+    <string name="default_discount" translatable="false">0</string>
     <string name="delete">Xoá</string>
     <string name="go_shop">Tới shop</string>
     <string name="cb_all">Tất cả</string>
@@ -88,5 +90,10 @@
     <string name="error"><i>Error: </i></string>
     <string name="setting">Setting</string>
     <string name="minimum_quantity_is_one">Số lượng tối thiểu là 1</string>
+    <string name="des_second_time">giây trước</string>
+    <string name="des_minute_time">p trước</string>
+    <string name="des_hour_time">h trước</string>
+    <string name="default_status_notification">●</string>
+    <string name="seen_notification">Đã xem</string>
 
 </resources>

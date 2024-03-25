@@ -30,6 +30,7 @@ import com.datn.client.adapter.ProductCheckoutAdapter;
 import com.datn.client.databinding.ActivityCheckoutBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
+import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.PaymentMethod;
 import com.datn.client.models.ProductCart;
@@ -40,7 +41,7 @@ import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.product.DetailProductActivity.TYPE_BUY;
 import com.datn.client.utils.Constants;
-import com.datn.client.utils.Currency;
+import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
@@ -169,8 +170,8 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
             price += Integer.parseInt(productCart.getPrice()) * quantityCart;
         }
         binding.tvQuantity.setText(String.valueOf(count));
-        binding.tvTotalPrice.setText(Currency.formatCurrency(String.valueOf(price)));
-        binding.tvPricePayment.setText(Currency.formatCurrency(String.valueOf(price)));
+        binding.tvTotalPrice.setText(MyFormat.formatCurrency(String.valueOf(price)));
+        binding.tvPricePayment.setText(MyFormat.formatCurrency(String.valueOf(price)));
     }
 
     private void displayProductCart() {
@@ -209,6 +210,11 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     @Override
     public void onCreateOrder(String amount) {
         createOrderZaloPay(amount);
+    }
+
+    @Override
+    public void onListNotification(List<Notification> notificationList) {
+
     }
 
     @Override

@@ -306,6 +306,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:text="@string/default_fee"
                     android:fontFamily="@font/inter_bold" />
             </LinearLayout>
 
@@ -329,6 +330,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:text="@string/default_discount"
                     android:fontFamily="@font/inter_bold" />
             </LinearLayout>
         </LinearLayout>

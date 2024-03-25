@@ -28,7 +28,7 @@ import com.datn.client.ui.cart.ICartView;
 import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 import com.datn.client.utils.Constants;
-import com.datn.client.utils.Currency;
+import com.datn.client.utils.MyFormat;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
@@ -66,7 +66,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         int quantityCart = Integer.parseInt(productCart.getQuantity_cart());
         int quantityProduct = Integer.parseInt(productCart.getQuantity_product());
         int priceOne = Integer.parseInt(productCart.getPrice());
-        holder.tvPrice.setText(Currency.formatCurrency(String.valueOf(priceOne * quantityCart)));
+        holder.tvPrice.setText(MyFormat.formatCurrency(String.valueOf(priceOne * quantityCart)));
         holder.tvQuantity.setText(String.valueOf(quantityCart));
         holder.tvOptions.setText(productCart.getCreated_at());
         holder.cbSelected.setChecked(productCart.getStatus_cart() == STATUS_CART.SELECTED.getValue());

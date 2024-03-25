@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -26,15 +27,37 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.datn.client.databinding.ActivityMainBinding;
+import com.datn.client.models.Customer;
+import com.datn.client.models.MessageResponse;
+import com.datn.client.models.Notification;
+import com.datn.client.models.OverlayMessage;
+import com.datn.client.services.ApiService;
+import com.datn.client.services.RetrofitConnection;
+import com.datn.client.ui.BasePresenter;
+import com.datn.client.ui.IBaseView;
+import com.datn.client.ui.components.MyDialog;
+import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.home.HomeFragment;
+import com.datn.client.utils.Constants;
+import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.gson.Gson;
 
+import java.util.List;
 import java.util.Objects;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IBaseView {
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    private BasePresenter basePresenter;
+    private PreferenceManager preferenceManager;
+    private Customer mCustomer;
+    private String mToken;
+
     private NavController navController;
+    private TextView cartBadgeTextView;
     private boolean isExit = false;
     private static final long DELAY = 3000;
 
@@ -46,14 +69,11 @@ public class MainActivity extends AppCompatActivity {
                 Fragment currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
                 if (currentFragment instanceof HomeFragment) {
                     if (isExit) {
-                        Intent intent = new Intent(Intent.ACTION_MAIN);
-                        intent.addCategory(Intent.CATEGORY_HOME);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
+                        doExit();
                         return;
                     }
                     isExit = true;
-                    Toast.makeText(MainActivity.this, getString(R.string.press_back_again_to_exit), Toast.LENGTH_SHORT).show();
+                    showToast(getString(R.string.press_back_again_to_exit));
                     new Handler().postDelayed(() -> isExit = false, DELAY);
                 } else {
                     navController.popBackStack();
@@ -61,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +94,9 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        preferenceManager = new PreferenceManager(MainActivity.this, Constants.KEY_PREFERENCE_ACC);
+        checkLogin();
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -93,9 +117,9 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationItemView itemView = (BottomNavigationItemView) view;
         View cart_badge = LayoutInflater.from(this).inflate(R.layout.badge_layout, mBottomNavigationMenuView, false);
         itemView.addView(cart_badge);
-        final TextView cartBadgeTextView = cart_badge.findViewById(R.id.cart_badge);
+        cartBadgeTextView = cart_badge.findViewById(R.id.cart_badge);
         cartBadgeTextView.setVisibility(View.VISIBLE);
-        cartBadgeTextView.setText("2");
+        cartBadgeTextView.setText("0");
 
         FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) cartBadgeTextView.getLayoutParams();
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
@@ -113,5 +137,90 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("FragmentName", "Label null");
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        initService();
+        basePresenter.getNotification();
+
+    }
+
+    @Override
+    public void onListNotification(List<Notification> notificationList) {
+        cartBadgeTextView.setText(String.valueOf(notificationList.size()));
+    }
+
+    @Override
+    public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
+        MyOverlayMsgDialog.gI().showOverlayMsgDialog(MainActivity.this, overlayMessages, basePresenter);
+    }
+
+    @Override
+    public void onThrowMessage(@NonNull MessageResponse message) {
+        switch (message.getCode()) {
+            case "overlay/update-status-success":
+            case "notification/update-status-success":
+                showLogW(message.getTitle(), message.getContent());
+                break;
+            default:
+                MyDialog.gI().startDlgOK(MainActivity.this, message.getContent());
+                break;
+        }
+    }
+
+    @Override
+    public void onThrowLog(String key, String message) {
+        showLogW(key, message);
+    }
+
+    private void doExit() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
+    private void showLogW(String key, String message) {
+        Log.w(TAG, key + ": " + message);
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void reLogin() {
+        showToast(getString(R.string.please_log_in_again));
+        finishAffinity();
+    }
+
+    private Customer getLogin() {
+        Gson gson = new Gson();
+        String json = preferenceManager.getString("user");
+        return gson.fromJson(json, Customer.class);
+    }
+
+    private void checkLogin() {
+        mCustomer = getLogin();
+        if (mCustomer == null) {
+            reLogin();
+            return;
+        }
+        mToken = preferenceManager.getString("token");
+        if (mToken == null || mToken.isEmpty()) {
+            reLogin();
+        }
+    }
+
+    private void initService() {
+        ApiService apiService = RetrofitConnection.getApiService();
+        basePresenter = new BasePresenter(MainActivity.this, this, apiService, mToken, mCustomer.get_id());
+    }
+
+    @Override
+    public void onFinish() {
+        doExit();
     }
 }

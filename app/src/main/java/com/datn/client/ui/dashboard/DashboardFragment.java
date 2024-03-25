@@ -19,6 +19,7 @@ import com.datn.client.activity.TestActivity;
 import com.datn.client.databinding.FragmentDashboardBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
+import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
@@ -69,6 +70,11 @@ public class DashboardFragment extends Fragment implements IDashboardView {
     @Override
     public void onThrowMessage(MessageResponse message) {
         MyDialog.gI().startDlgOK(requireActivity(), message.getContent());
+    }
+
+    @Override
+    public void onListNotification(List<Notification> notificationList) {
+
     }
 
     @Override

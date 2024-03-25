@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Chronometer;
-import android.widget.CompoundButton;
 import android.widget.ToggleButton;
 
 import androidx.activity.EdgeToEdge;
@@ -17,7 +16,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.datn.client.MainActivity;
 import com.datn.client.R;
 import com.datn.client.databinding.ActivityWelcomeBinding;
 import com.datn.client.models.MessageResponse;
@@ -25,7 +23,6 @@ import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.auth.LoginActivity;
-import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 

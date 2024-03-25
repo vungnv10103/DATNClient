@@ -14,7 +14,7 @@ import com.datn.client.R;
 import com.datn.client.action.IAction;
 import com.datn.client.models.Product;
 import com.datn.client.ui.product.ProductPresenter.STATUS_PRODUCT;
-import com.datn.client.utils.Currency;
+import com.datn.client.utils.MyFormat;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
@@ -81,7 +81,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         .into(imgProduct);
                 tvName.setText(product.getName());
                 String price = product.getPrice();
-                String formattedAmount = Currency.formatCurrency(price);
+                String formattedAmount = MyFormat.formatCurrency(price);
                 tvPrice.setText(formattedAmount);
                 String status = "";
                 if (Integer.parseInt(product.getStatus()) == STATUS_PRODUCT.STOCKING.getValue()) {
@@ -117,7 +117,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         .into(imgProduct);
                 tvName.setText(product.getName());
                 String price = product.getPrice();
-                String formattedAmount = Currency.formatCurrency(price);
+                String formattedAmount = MyFormat.formatCurrency(price);
                 tvPrice.setText(formattedAmount);
                 tvSold.setText(String.format(context.getString(R.string.sold) + product.getSold()));
 

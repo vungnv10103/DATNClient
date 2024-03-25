@@ -24,6 +24,7 @@ import com.datn.client.adapter.CartAdapter;
 import com.datn.client.databinding.FragmentCartBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
+import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.ProductCart;
 import com.datn.client.services.ApiService;
@@ -34,7 +35,7 @@ import com.datn.client.ui.checkout.CheckoutActivity;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 import com.datn.client.utils.Constants;
-import com.datn.client.utils.Currency;
+import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
@@ -136,7 +137,7 @@ public class CartFragment extends Fragment implements ICartView {
             setLayoutEmpty(false);
             cbAllCart.setText("Tất cả(" + mProductCart.size() + ")");
             cbAllCart.setChecked(countCartSelected == mProductCart.size());
-            tvTotal.setText(Currency.formatCurrency(String.valueOf(priceCartSelected)));
+            tvTotal.setText(MyFormat.formatCurrency(String.valueOf(priceCartSelected)));
             setLoading(false);
         });
     }
@@ -145,6 +146,11 @@ public class CartFragment extends Fragment implements ICartView {
     public void onListCart(List<ProductCart> productCartList) {
         this.mProductCart = productCartList;
         displayCart();
+    }
+
+    @Override
+    public void onListNotification(List<Notification> notificationList) {
+
     }
 
     @Override

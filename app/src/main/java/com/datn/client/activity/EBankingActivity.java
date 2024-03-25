@@ -88,11 +88,7 @@ public class EBankingActivity extends AppCompatActivity {
             // get data from Broadcast
             String title = intent.getStringExtra("title");
             String body = intent.getStringExtra("body");
-            String imageURL = intent.getStringExtra("imageURL");
-            String mType = intent.getStringExtra("mType");
-            MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, title, body, (dialog, which) -> {
-                handleResult(title);
-            });
+            MyDialog.gI().startDlgOKWithAction(EBankingActivity.this, title, body, (dialog, which) -> handleResult(title));
         }
     };
 

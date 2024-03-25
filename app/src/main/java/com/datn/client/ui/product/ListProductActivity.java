@@ -19,6 +19,7 @@ import com.datn.client.adapter.ProductAdapter;
 import com.datn.client.databinding.ActivityListProductBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
+import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
@@ -137,6 +138,11 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
             rcvListProduct.setLayoutManager(new GridLayoutManager(this, 2));
             rcvListProduct.setAdapter(productAdapter);
         });
+    }
+
+    @Override
+    public void onListNotification(List<Notification> notificationList) {
+
     }
 
     @Override

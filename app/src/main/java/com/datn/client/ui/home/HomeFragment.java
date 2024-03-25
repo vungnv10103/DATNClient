@@ -3,7 +3,6 @@ package com.datn.client.ui.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -24,16 +23,15 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.datn.client.R;
-import com.datn.client.activity.TestActivity;
 import com.datn.client.adapter.BannerAdapter;
 import com.datn.client.adapter.CategoryAdapter;
 import com.datn.client.adapter.ProductAdapter;
 import com.datn.client.databinding.FragmentHomeBinding;
-import com.datn.client.helper.MyNavigationBar;
 import com.datn.client.models.Banner;
 import com.datn.client.models.Category;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
+import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
@@ -239,6 +237,11 @@ public class HomeFragment extends Fragment implements IHomeView {
     }
 
     @Override
+    public void onListNotification(List<Notification> notificationList) {
+
+    }
+
+    @Override
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, homePresenter);
     }
@@ -247,9 +250,9 @@ public class HomeFragment extends Fragment implements IHomeView {
     public void onThrowMessage(@NonNull MessageResponse message) {
         switch (message.getCode()) {
             case "overlay/update-status-success":
+            case "notification/update-status-success":
                 showLogW(message.getTitle(), message.getContent());
                 break;
-            case "":
             default:
                 MyDialog.gI().startDlgOK(requireActivity(), message.getContent());
                 break;

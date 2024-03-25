@@ -1,7 +1,5 @@
 package com.datn.client.ui.home;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
@@ -44,6 +42,7 @@ public class HomePresenter extends BasePresenter {
     }
 
     public void cancelAPI() {
+        super.cancelAPI();
         if (getBanner != null) {
             getBanner.cancel();
         }

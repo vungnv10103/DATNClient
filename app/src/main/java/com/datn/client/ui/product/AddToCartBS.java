@@ -1,7 +1,6 @@
 package com.datn.client.ui.product;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -18,13 +16,14 @@ import com.bumptech.glide.Glide;
 import com.datn.client.R;
 import com.datn.client.databinding.BottomsheetAddToCartBinding;
 import com.datn.client.models.MessageResponse;
+import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
-import com.datn.client.utils.Currency;
+import com.datn.client.utils.MyFormat;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -72,7 +71,7 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
         if (mProduct != null) {
             Glide.with(this).load(mProduct.getImg_cover()).into(imgProduct);
             tvName.setText(mProduct.getName());
-            tvPrice.setText(getString(R.string.price) + Currency.formatCurrency(mProduct.getPrice()));
+            tvPrice.setText(getString(R.string.price) + MyFormat.formatCurrency(mProduct.getPrice()));
             int quantityProduct = Integer.parseInt(mProduct.getQuantity());
             tvQuantityStock.setText(getString(R.string.stock) + quantityProduct);
             boolean isNightMode = Constants.isNightMode;
@@ -84,10 +83,10 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
 //                btnPlus.setIconTintResource(R.color.gray_400);
                 btnMinus.setEnabled(false);
                 btnPlus.setEnabled(false);
-                tvPriceTemp.setText(getString(R.string.provisional) + Currency.formatCurrency("0"));
+                tvPriceTemp.setText(getString(R.string.provisional) + MyFormat.formatCurrency("0"));
                 btnAddToCart.setEnabled(false);
             } else {
-                tvPriceTemp.setText(getString(R.string.provisional) + Currency.formatCurrency(mProduct.getPrice()));
+                tvPriceTemp.setText(getString(R.string.provisional) + MyFormat.formatCurrency(mProduct.getPrice()));
             }
             if (mType == 0) {
                 btnAddToCart.setText(getString(R.string.buy_now));
@@ -128,7 +127,7 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
             }
             btnPlus.setIconTintResource(R.color.big_stone);
             tvQuantity.setText(String.valueOf(quantity));
-            tvPriceTemp.setText(getString(R.string.provisional) + Currency.formatCurrency(String.valueOf(Integer.parseInt(mProduct.getPrice()) * quantity)));
+            tvPriceTemp.setText(getString(R.string.provisional) + MyFormat.formatCurrency(String.valueOf(Integer.parseInt(mProduct.getPrice()) * quantity)));
         } catch (NumberFormatException e) {
             Log.w(TAG, "minus: " + e.getMessage());
         }
@@ -146,7 +145,7 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
             }
             btnMinus.setIconTintResource(R.color.big_stone);
             tvQuantity.setText(String.valueOf(quantity));
-            tvPriceTemp.setText(getString(R.string.provisional) + Currency.formatCurrency(String.valueOf(Integer.parseInt(mProduct.getPrice()) * quantity)));
+            tvPriceTemp.setText(getString(R.string.provisional) + MyFormat.formatCurrency(String.valueOf(Integer.parseInt(mProduct.getPrice()) * quantity)));
         } catch (NumberFormatException e) {
             Log.w(TAG, "plus: " + e.getMessage());
         }
@@ -170,6 +169,11 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
 
     @Override
     public void onLoadProduct(List<Product> productList) {
+
+    }
+
+    @Override
+    public void onListNotification(List<Notification> notificationList) {
 
     }
 

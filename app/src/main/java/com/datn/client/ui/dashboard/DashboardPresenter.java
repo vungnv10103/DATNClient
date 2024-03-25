@@ -31,6 +31,7 @@ public class DashboardPresenter extends BasePresenter {
     }
 
     public void cancelAPI() {
+        super.cancelAPI();
         if (logout != null) {
             logout.cancel();
         }

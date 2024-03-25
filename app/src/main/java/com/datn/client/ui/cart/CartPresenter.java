@@ -42,6 +42,7 @@ public class CartPresenter extends BasePresenter {
     }
 
     public void cancelAPI() {
+        super.cancelAPI();
         if (getCart != null) {
             getCart.cancel();
         }

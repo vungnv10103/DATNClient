@@ -1,8 +1,6 @@
 package com.datn.client.ui.product;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,8 +11,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,6 +29,7 @@ import com.datn.client.R;
 import com.datn.client.databinding.ActivityDetailProductBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
+import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
@@ -40,7 +37,7 @@ import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
-import com.datn.client.utils.Currency;
+import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
@@ -131,7 +128,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     @SuppressLint("SetTextI18n")
     private void displayProduct() {
         tvName.setText(mProduct.getName());
-        tvPrice.setText("Giá: " + Currency.formatCurrency(mProduct.getPrice()));
+        tvPrice.setText("Giá: " + MyFormat.formatCurrency(mProduct.getPrice()));
         setPlayer();
     }
 
@@ -147,6 +144,11 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     public void onLoadProduct(@NonNull List<Product> productList) {
         mProduct = productList.get(0);
         onProductLoaded();
+    }
+
+    @Override
+    public void onListNotification(List<Notification> notificationList) {
+
     }
 
     @Override

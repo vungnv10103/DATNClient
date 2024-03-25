@@ -78,4 +78,9 @@
     <string name="error"><i>Error: </i></string>
     <string name="setting">Setting</string>
     <string name="minimum_quantity_is_one">Minimum quantity is 1</string>
+    <string name="des_second_time">s ago</string>
+    <string name="des_minute_time">m ago</string>
+    <string name="des_hour_time">h ago</string>
+    <string name="default_status_notification">●</string>
+    <string name="seen_notification">Seen</string>
 </resources>

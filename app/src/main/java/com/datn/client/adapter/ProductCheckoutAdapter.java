@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.datn.client.R;
 import com.datn.client.models.ProductCart;
-import com.datn.client.utils.Currency;
+import com.datn.client.utils.MyFormat;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class ProductCheckoutAdapter extends RecyclerView.Adapter<ProductCheckout
         int quantityProduct = Integer.parseInt(productCart.getQuantity_product());
         Log.d("ProductCheckoutAdapter", "quantityProduct: " + quantityProduct);
         int priceOne = Integer.parseInt(productCart.getPrice());
-        holder.tvPrice.setText(Currency.formatCurrency(String.valueOf(priceOne * quantityCart)));
+        holder.tvPrice.setText(MyFormat.formatCurrency(String.valueOf(priceOne * quantityCart)));
         holder.tvQuantity.setText("Số lượng: " + quantityCart);
         holder.tvOptions.setText(productCart.getCreated_at());
     }

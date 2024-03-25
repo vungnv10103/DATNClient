@@ -45,6 +45,7 @@ public class CheckoutPresenter extends BasePresenter {
     }
 
     public void cancelAPI() {
+        super.cancelAPI();
         if (getProductCheckout != null) {
             getProductCheckout.cancel();
         }
