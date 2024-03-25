@@ -2,7 +2,6 @@ package com.datn.client.ui.checkout;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -13,7 +12,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -22,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.media3.common.C;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,10 +36,8 @@ import com.datn.client.models.ProductCart;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.services.zalo.CreateOrder;
-import com.datn.client.ui.checkout.CheckoutPresenter.PAYMENT_METHOD;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
-import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.ui.product.DetailProductActivity.TYPE_BUY;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.Currency;
@@ -98,12 +93,9 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     };
 
     ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
-            new ActivityResultCallback<Uri>() {
-                @Override
-                public void onActivityResult(Uri uri) {
-                    // Handle the returned Uri
-                    MyDialog.gI().startDlgOK(CheckoutActivity.this, uri.toString());
-                }
+            uri -> {
+                // Handle the returned Uri
+                MyDialog.gI().startDlgOK(CheckoutActivity.this, uri.toString());
             });
 
     ActivityResultLauncher<Intent> activityLauncher = registerForActivityResult(
@@ -145,12 +137,14 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     @Override
     protected void onStart() {
         super.onStart();
+
         setLoading(true);
         ArrayList<ProductCart> dataProductCarts = getIntent().getParcelableArrayListExtra("productCart");
         if (dataProductCarts != null) {
             this.mProductCart = dataProductCarts;
             mTypeBuy = TYPE_BUY.BUY_NOW.getValue();
             displayProductCart();
+            displayPrice();
         } else {
             checkoutPresenter.getProductCheckout();
         }
@@ -163,6 +157,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         linearLayoutManager.setSmoothScrollbarEnabled(true);
         rcvPaymentMethod.setLayoutManager(linearLayoutManager);
         rcvPaymentMethod.setAdapter(paymentMethodAdapter);
+        rcvPaymentMethod.setVisibility(View.VISIBLE);
     }
 
     private void displayPrice() {
@@ -346,8 +341,8 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         eventPaymentMethod();
         binding.btnPayment.setOnClickListener(v -> {
             if (!isLoading) {
+                setLoading(true);
                 if (isZaloPay) {
-                    setLoading(true);
                     if (mTypeBuy == TYPE_BUY.ADD_TO_CART.getValue()) {
                         checkoutPresenter.getAmountZaloPay();
                     } else if (mTypeBuy == TYPE_BUY.BUY_NOW.getValue()) {
@@ -361,7 +356,11 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
                     }
                     activityLauncher.launch(intent);
                 } else if (isDelivery) {
-                    MyDialog.gI().startDlgOK(this, "Updating...");
+                    if (mTypeBuy == TYPE_BUY.ADD_TO_CART.getValue()) {
+                        checkoutPresenter.createOrderDelivery();
+                    } else if (mTypeBuy == TYPE_BUY.BUY_NOW.getValue()) {
+                        MyDialog.gI().startDlgOKWithAction(this, "Updating...", (dialog, which) -> setLoading(false));
+                    }
                 }
             }
         });

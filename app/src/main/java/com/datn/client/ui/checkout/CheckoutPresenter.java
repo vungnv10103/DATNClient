@@ -1,7 +1,5 @@
 package com.datn.client.ui.checkout;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
@@ -29,6 +27,7 @@ public class CheckoutPresenter extends BasePresenter {
     private final String token;
     private final String customerID;
 
+    private Call<_BaseResponse> createOrderDelivery;
     private Call<ProductCartResponse> getProductCheckout;
     private Call<PaymentMethodResponse> getPaymentMethod;
     private Call<CreateOrderResponse> createOrder;
@@ -55,6 +54,9 @@ public class CheckoutPresenter extends BasePresenter {
         if (createOrder != null) {
             createOrder.cancel();
         }
+        if (createOrderDelivery != null) {
+            createOrderDelivery.cancel();
+        }
         if (getAmountZaloPay != null) {
             getAmountZaloPay.cancel();
         }
@@ -64,6 +66,44 @@ public class CheckoutPresenter extends BasePresenter {
         if (createOrderZaloPayNow != null) {
             createOrderZaloPayNow.cancel();
         }
+    }
+
+    public void createOrderDelivery() {
+        context.runOnUiThread(() -> {
+            try {
+                createOrderDelivery = apiService.createOrderDelivery(token, customerID);
+                createOrderDelivery.enqueue(new Callback<_BaseResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<_BaseResponse> call, @NonNull Response<_BaseResponse> response) {
+                        if (response.body() != null) {
+                            int statusCode = response.body().getStatusCode();
+                            String code = response.body().getCode();
+                            MessageResponse message = response.body().getMessage();
+                            if (statusCode == 200) {
+                                iCheckoutView.onThrowLog("createOrderDelivery: onResponse200", code);
+                                iCheckoutView.onThrowMessage(message);
+                            } else if (statusCode == 400) {
+                                iCheckoutView.onThrowLog("createOrderDelivery: onResponse400", code);
+                                iCheckoutView.onThrowMessage(message);
+                            } else {
+                                iCheckoutView.onThrowLog("createOrderDelivery: onResponse", code);
+                                iCheckoutView.onThrowMessage(message);
+                            }
+                        } else {
+                            iCheckoutView.onThrowLog("createOrderDelivery: onResponse", response.toString());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
+                        iCheckoutView.onThrowLog("createOrderDelivery", t.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                iCheckoutView.onThrowLog("createOrderDelivery", e.getMessage());
+            }
+
+        });
     }
 
     public void getProductCheckout() {
@@ -302,7 +342,7 @@ public class CheckoutPresenter extends BasePresenter {
     }
 
     public enum PAYMENT_METHOD {
-        ON_DELIVERY(0),
+        DELIVERY(0),
         E_BANKING(1),
         ZALO_PAY(2);
         private final int value;

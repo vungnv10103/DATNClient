@@ -126,6 +126,11 @@ public interface ApiService {
                                                  @Field("customerID") String customerID);
 
     @FormUrlEncoded
+    @POST("/v1/api/order/create/delivery")
+    Call<_BaseResponse> createOrderDelivery(@Header("Authorization") String token,
+                                            @Field("customerID") String customerID);
+
+    @FormUrlEncoded
     @POST("/v1/api/order/get/amount-zalopay")
     Call<CreateOrderResponse> getAmountZaloPay(@Header("Authorization") String token,
                                                @Field("customerID") String customerID,
