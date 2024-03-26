@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:layout_marginHorizontal="10dp"
-            app:icon="@drawable/close_circle_24"
+            app:icon="@drawable/ic_close_circle_24"
             tools:ignore="PrivateResource,SpeakableTextPresentCheck" />
     </FrameLayout>
 

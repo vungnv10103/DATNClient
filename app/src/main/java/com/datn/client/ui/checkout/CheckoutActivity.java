@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.datn.client.R;
+import com.datn.client.action.IAction;
 import com.datn.client.activity.EBankingActivity;
 import com.datn.client.adapter.PaymentMethodAdapter;
 import com.datn.client.adapter.ProductCheckoutAdapter;
@@ -34,6 +35,7 @@ import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.PaymentMethod;
 import com.datn.client.models.ProductCart;
+import com.datn.client.models._BaseModel;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.services.zalo.CreateOrder;
@@ -153,7 +155,23 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     }
 
     private void displayPaymentMethod() {
-        PaymentMethodAdapter paymentMethodAdapter = new PaymentMethodAdapter(this, mPaymentMethod, paymentMethodList, baseModel -> showToast(baseModel.toString()));
+        PaymentMethodAdapter paymentMethodAdapter = new PaymentMethodAdapter(this, mPaymentMethod,
+                paymentMethodList, new IAction() {
+            @Override
+            public void onClick(_BaseModel paymentMethod) {
+                showToast(paymentMethod.toString());
+            }
+
+            @Override
+            public void onLongClick(_BaseModel paymentMethod) {
+
+            }
+
+            @Override
+            public void onItemClick(_BaseModel paymentMethod) {
+
+            }
+        });
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         linearLayoutManager.setSmoothScrollbarEnabled(true);
         rcvPaymentMethod.setLayoutManager(linearLayoutManager);

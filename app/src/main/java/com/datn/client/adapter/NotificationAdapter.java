@@ -1,26 +1,32 @@
 package com.datn.client.adapter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.datn.client.R;
 import com.datn.client.action.IAction;
 import com.datn.client.models.Notification;
 import com.datn.client.ui.BasePresenter.STATUS_NOTIFICATION;
+import com.datn.client.utils.MyFormat;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +38,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     private final Context context;
     private final IAction iActionNotification;
     private final Date currentTime = Calendar.getInstance().getTime();
+    public static boolean isShowSelected = false;
+    public static boolean isChecked = false;
 
 
     public NotificationAdapter(Context context, List<Notification> notifications, IAction iActionNotification) {
@@ -39,7 +47,6 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         this.notifications = notifications;
         this.iActionNotification = iActionNotification;
     }
-
 
     @NonNull
     @Override
@@ -51,24 +58,52 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Notification notification = notifications.get(position);
+
         Glide.with(context)
                 .load(notification.getImage())
                 .error(R.drawable.logo_app_gradient)
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, @Nullable Object model, @NonNull Target<Drawable> target, boolean isFirstResource) {
+                        Log.w("NotificationAdapter", e != null ? e.getMessage() : "Error load image notification");
+                        holder.progressLoadingImage.setVisibility(View.GONE);
+                        holder.imgNotification.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(@NonNull Drawable resource, @NonNull Object model, Target<Drawable> target, @NonNull DataSource dataSource, boolean isFirstResource) {
+                        holder.progressLoadingImage.setVisibility(View.GONE);
+                        holder.imgNotification.setVisibility(View.VISIBLE);
+                        return false;
+                    }
+                })
                 .into(holder.imgNotification);
 
         String status = context.getString(R.string.default_status_notification);
         if (notification.getStatus() == STATUS_NOTIFICATION.SEEN.getValue()) {
-            status = context.getString(R.string.seen_notification);
+            status = "";
         }
-        holder.tvTitle.setText(String.format(notification.getTitle() + " " + status));
+        holder.tvTitle.setText(notification.getTitle());
+        holder.tvStatus.setText(status);
         holder.tvContent.setText(notification.getContent());
-        holder.tvTime.setText(compareTime(notification.getCreated_at(), currentTime));
+        holder.tvTime.setText(MyFormat.compareTime(context, notification.getCreated_at(), currentTime));
+        holder.cbSelected.setVisibility(isShowSelected ? View.VISIBLE : View.GONE);
+        holder.cbSelected.setChecked(notification.isChecked());
 
-//        holder.itemView.setOnClickListener(v -> iActionNotification.onClick(notification));
+        holder.itemView.setOnClickListener(v -> iActionNotification.onClick(notification));
         holder.itemView.setOnLongClickListener(v -> {
-            iActionNotification.onClick(notification);
+            isShowSelected = !isShowSelected;
+            iActionNotification.onLongClick(notification);
+            holder.cbSelected.setChecked(true);
+            notifyItemRangeChanged(0, getItemCount());
             return true;
         });
+        holder.cbSelected.setOnClickListener(v -> {
+            isChecked = holder.cbSelected.isChecked();
+            iActionNotification.onItemClick(notification);
+        });
+
     }
 
     @Override
@@ -80,41 +115,23 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        private final CircularProgressIndicator progressLoadingImage;
         private final ShapeableImageView imgNotification;
-        private final TextView tvTitle, tvContent, tvTime;
+        private final TextView tvTitle, tvContent, tvStatus, tvTime;
+        private final CheckBox cbSelected;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            progressLoadingImage = itemView.findViewById(R.id.progressbar_loading_image);
             imgNotification = itemView.findViewById(R.id.img_notification);
             tvTitle = itemView.findViewById(R.id.tv_title);
             tvContent = itemView.findViewById(R.id.tv_content);
+            tvStatus = itemView.findViewById(R.id.tv_status);
             tvTime = itemView.findViewById(R.id.tv_time);
+            cbSelected = itemView.findViewById(R.id.cb_selected);
         }
     }
 
-    public String compareTime(String timeReceive, Date currentTime) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-        try {
-            Date dateReceive = format.parse(timeReceive);
-            if (dateReceive != null && currentTime != null) {
-                long timeBetween = Math.abs(dateReceive.getTime() - currentTime.getTime());
-                long hour = timeBetween / (60 * 60 * 1000);
-                long minutes = timeBetween / (60 * 1000);
-                long second = timeBetween / 1000;
-                if (hour >= 1) {
-                    return hour + context.getString(R.string.des_hour_time);
-                } else if (minutes >= 1) {
-                    return minutes + context.getString(R.string.des_minute_time);
-                } else {
-                    return second + context.getString(R.string.des_second_time);
-                }
-            }
-            return timeReceive;
-        } catch (ParseException e) {
-            Log.d("NotificationAdapter", "compareTime: " + e.getMessage());
-            return timeReceive;
-        }
-    }
 
     public void updateList(List<Notification> newList) {
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new NotificationAdapter.CartDiffCallback(newList, notifications));

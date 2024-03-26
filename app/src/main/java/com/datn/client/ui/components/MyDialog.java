@@ -46,6 +46,20 @@ public class MyDialog {
 
     }
 
+    public void startDlgOKWithAction(Context context, String title, String message,
+                                     DialogInterface.OnClickListener positiveAction,
+                                     DialogInterface.OnClickListener negativeAction) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(iconID)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, positiveAction)
+                .setNegativeButton(android.R.string.no, negativeAction)
+                .setCancelable(false)
+                .show();
+
+    }
+
     public void startDlgOKWithAction(Context context, String message, DialogInterface.OnClickListener action) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(iconID)

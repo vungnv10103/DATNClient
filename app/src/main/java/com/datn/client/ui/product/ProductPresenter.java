@@ -2,7 +2,6 @@ package com.datn.client.ui.product;
 
 import android.content.Intent;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 

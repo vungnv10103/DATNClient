@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.datn.client.R;
+import com.datn.client.action.IAction;
 import com.datn.client.adapter.CartAdapter;
 import com.datn.client.databinding.FragmentCartBinding;
 import com.datn.client.models.Customer;
@@ -27,6 +28,7 @@ import com.datn.client.models.MessageResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.ProductCart;
+import com.datn.client.models._BaseModel;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.components.MyDialog;
@@ -111,8 +113,21 @@ public class CartFragment extends Fragment implements ICartView {
                 }
             }
             if (cartAdapter == null) {
-                cartAdapter = new CartAdapter(requireActivity(), mProductCart, cart -> {
+                cartAdapter = new CartAdapter(requireActivity(), mProductCart, new IAction() {
+                    @Override
+                    public void onClick(_BaseModel cart) {
+                        MyDialog.gI().startDlgOK(requireActivity(), cart.get_id());
+                    }
 
+                    @Override
+                    public void onLongClick(_BaseModel cart) {
+                        showToast(cart.get_id());
+                    }
+
+                    @Override
+                    public void onItemClick(_BaseModel cart) {
+
+                    }
                 }, this);
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
                 linearLayoutManager.setSmoothScrollbarEnabled(true);

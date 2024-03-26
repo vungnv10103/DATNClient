@@ -1,11 +1,21 @@
 package com.datn.client.models;
 
 public class Notification extends _BaseModel {
+    private boolean checked = false;
     private String customer_id;
     private String title;
     private String content;
     private int status;
     private String image;
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
+
 
     public String getCustomer_id() {
         return customer_id;

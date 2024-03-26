@@ -1,42 +1,61 @@
 package com.datn.client.ui.notifications;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.BackEventCompat;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.datn.client.R;
+import com.datn.client.action.IAction;
 import com.datn.client.adapter.NotificationAdapter;
 import com.datn.client.databinding.FragmentNotificationsBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
+import com.datn.client.models._BaseModel;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
+import com.datn.client.ui.BasePresenter.STATUS_NOTIFICATION;
 import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.PreferenceManager;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 
-import com.datn.client.ui.BasePresenter.STATUS_NOTIFICATION;
-
+import java.util.ArrayList;
 import java.util.List;
+
 
 public class NotificationsFragment extends Fragment implements INotificationView {
     private static final String TAG = NotificationsFragment.class.getSimpleName();
@@ -45,21 +64,61 @@ public class NotificationsFragment extends Fragment implements INotificationView
 
     private NotificationPresenter notificationPresenter;
     private PreferenceManager preferenceManager;
-
+    private SwipeRefreshLayout mySwipeRefreshLayout;
     private CircularProgressIndicator progressBarLoading;
     private RecyclerView rcvNotification;
+    private TextView tvQuantitySelected;
+    private CheckBox cbSelectedAllNotification;
+
+    private BottomNavigationView bottomNavigationView;
+    private NavController navController;
+    private Fragment currentFragment;
 
     private Customer mCustomer;
     private String mToken;
 
     private NotificationAdapter notificationAdapter;
     private List<Notification> mNotificationList;
+    private final List<String> mListNotificationID = new ArrayList<>();
+    private boolean isLayoutActionShow = false;
+
+    private final OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+        @Override
+        public void handleOnBackPressed() {
+            if (isLayoutActionShow) {
+                resetAction();
+            } else {
+                if (currentFragment instanceof NotificationsFragment) {
+                    navController.popBackStack();
+                }
+            }
+        }
+
+        @Override
+        public void handleOnBackCancelled() {
+            super.handleOnBackCancelled();
+            MyDialog.gI().startDlgOK(requireActivity(), "handleOnBackCancelled");
+        }
+
+        @Override
+        public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+            super.handleOnBackProgressed(backEvent);
+            MyDialog.gI().startDlgOK(requireActivity(), "handleOnBackProgressed");
+        }
+
+        @Override
+        public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+            super.handleOnBackStarted(backEvent);
+            MyDialog.gI().startDlgOK(requireActivity(), "handleOnBackStarted");
+        }
+    };
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
         initUI();
+        requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), callback);
         preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
         checkLogin();
         return binding.getRoot();
@@ -95,14 +154,51 @@ public class NotificationsFragment extends Fragment implements INotificationView
                 }
             }
             if (notificationAdapter == null) {
-                notificationAdapter = new NotificationAdapter(getActivity(), mNotificationList,
-                        notification -> notificationPresenter.updateStatusNotification(notification.get_id(), STATUS_NOTIFICATION.SEEN.getValue()));
+                notificationAdapter = new NotificationAdapter(getActivity(), mNotificationList, new IAction() {
+                    @Override
+                    public void onClick(_BaseModel notification) {
+                        MyDialog.gI().startDlgOKWithAction(requireActivity(), "Do you want update this!", notification.get_id(),
+                                (dialog, which) -> notificationPresenter.updateStatusNotification(notification.get_id(), STATUS_NOTIFICATION.SEEN.getValue()), (dialog, which) -> dialog.dismiss());
+                    }
+
+                    @Override
+                    public void onLongClick(_BaseModel notification) {
+                        if (NotificationAdapter.isShowSelected) {
+                            isLayoutActionShow = true;
+                            bottomNavigationView.setVisibility(View.GONE);
+                            binding.layoutActionTop.setVisibility(View.VISIBLE);
+                            tvQuantitySelected.setText(String.format(getString(R.string.selected) + 0));
+                            binding.layoutActionBottom.setVisibility(View.VISIBLE);
+                            setColorActionBottom(false);
+                        } else {
+                            isLayoutActionShow = false;
+                            binding.layoutActionTop.setVisibility(View.GONE);
+                            binding.layoutActionBottom.setVisibility(View.GONE);
+                            bottomNavigationView.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    @Override
+                    public void onItemClick(_BaseModel notification) {
+                        if (NotificationAdapter.isShowSelected) {
+                            if (NotificationAdapter.isChecked) {
+                                mListNotificationID.add(notification.get_id());
+                                NotificationAdapter.isChecked = false;
+                            } else {
+                                mListNotificationID.remove(notification.get_id());
+                            }
+                            cbSelectedAllNotification.setChecked(mListNotificationID.size() == mNotificationList.size());
+                            tvQuantitySelected.setText(String.format(getString(R.string.selected) + mListNotificationID.size()));
+                            setColorActionBottom(!mListNotificationID.isEmpty());
+                        }
+                    }
+                });
                 LinearLayoutManager llm = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
                 rcvNotification.setLayoutManager(llm);
                 rcvNotification.setAdapter(notificationAdapter);
                 MaterialDividerItemDecoration divider = new MaterialDividerItemDecoration(requireActivity(), MaterialDividerItemDecoration.VERTICAL);
                 rcvNotification.addItemDecoration(divider);
-                float dipStart = 72f; // width image + padding view
+                float dipStart = 72f + 8f; // width image + padding view
                 float dipEnd = 8f;
                 divider.setDividerInsetStart(MyFormat.convertDPtoPx(requireActivity(), dipStart));
                 divider.setDividerInsetEnd(MyFormat.convertDPtoPx(requireActivity(), dipEnd));
@@ -110,6 +206,7 @@ public class NotificationsFragment extends Fragment implements INotificationView
             } else {
                 notificationAdapter.updateList(mNotificationList);
             }
+            mySwipeRefreshLayout.setRefreshing(false);
             setLoading(false);
         });
     }
@@ -118,6 +215,18 @@ public class NotificationsFragment extends Fragment implements INotificationView
         displayNotification();
         progressBarLoading.setVisibility(View.GONE);
         rcvNotification.setVisibility(View.VISIBLE);
+    }
+
+    private void resetAction() {
+        isLayoutActionShow = false;
+        NotificationAdapter.isShowSelected = false;
+        NotificationAdapter.isChecked = false;
+        if (notificationAdapter != null) {
+            notificationAdapter.notifyItemRangeChanged(0, notificationAdapter.getItemCount());
+        }
+        binding.layoutActionTop.setVisibility(View.GONE);
+        binding.layoutActionBottom.setVisibility(View.GONE);
+        bottomNavigationView.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -160,7 +269,48 @@ public class NotificationsFragment extends Fragment implements INotificationView
     }
 
     private void initEventClick() {
+        mySwipeRefreshLayout.setOnRefreshListener(() -> notificationPresenter.getNotification());
+        binding.btnClose.setOnClickListener(v -> resetAction());
+        cbSelectedAllNotification.setOnClickListener(v -> {
+            boolean isChecked = cbSelectedAllNotification.isChecked();
+            mListNotificationID.clear();
+            for (int i = 0; i < mNotificationList.size(); i++) {
+                Notification notification = mNotificationList.get(i);
+                notification.setChecked(isChecked);
+                notificationAdapter.notifyItemChanged(i);
+                if (isChecked) {
+                    mListNotificationID.add(notification.get_id());
+                } else {
+                    mListNotificationID.remove(notification.get_id());
+                }
+            }
+            tvQuantitySelected.setText(String.format(getString(R.string.selected) + mListNotificationID.size()));
+            setColorActionBottom(!mListNotificationID.isEmpty());
+        });
 
+        binding.layoutSeenAll.setOnClickListener(v -> doSeenAll());
+        binding.btnSeen.setOnClickListener(v -> doSeenAll());
+
+        binding.layoutDelete.setOnClickListener(v -> doDeleteAll());
+        binding.btnDelete.setOnClickListener(v -> doDeleteAll());
+    }
+
+    private void doSeenAll() {
+        if (NotificationAdapter.isShowSelected) {
+            if (mListNotificationID.isEmpty()) {
+                return;
+            }
+            MyDialog.gI().startDlgOK(requireActivity(), mListNotificationID.size() + "");
+        }
+    }
+
+    private void doDeleteAll() {
+        if (NotificationAdapter.isShowSelected) {
+            if (mListNotificationID.isEmpty()) {
+                return;
+            }
+            MyDialog.gI().startDlgOK(requireActivity(), mListNotificationID.size() + "");
+        }
     }
 
     private void setLoading(boolean isLoading) {
@@ -168,9 +318,69 @@ public class NotificationsFragment extends Fragment implements INotificationView
         rcvNotification.setVisibility(isLoading ? View.GONE : View.VISIBLE);
     }
 
+    private void setColorActionBottom(boolean isEnable) {
+        ColorStateList colorGray = ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.gray_500));
+        int primaryColor = getColorPrimary();
+        ColorStateList colorStatePrimary = getColorStateList(primaryColor);
+        if (isEnable) {
+            binding.btnSeen.setIconTint(colorStatePrimary);
+            binding.tvSeen.setTextColor(primaryColor);
+            binding.btnDelete.setIconTint(colorStatePrimary);
+            binding.tvDelete.setTextColor(primaryColor);
+            binding.btnMore.setIconTint(colorStatePrimary);
+            binding.tvMore.setTextColor(primaryColor);
+        } else {
+            binding.btnSeen.setIconTint(colorGray);
+            binding.tvSeen.setTextColor(colorGray);
+            binding.btnDelete.setIconTint(colorGray);
+            binding.tvDelete.setTextColor(colorGray);
+            binding.btnMore.setIconTint(colorGray);
+            binding.tvMore.setTextColor(colorGray);
+        }
+    }
+
+    @NonNull
+    private static ColorStateList getColorStateList(int primaryColor) {
+        int[][] states = new int[][]{
+                new int[]{android.R.attr.state_enabled}, // enabled
+                new int[]{-android.R.attr.state_enabled}, // disabled
+                new int[]{-android.R.attr.state_checked}, // unchecked
+                new int[]{android.R.attr.state_pressed}  // pressed
+        };
+
+        int[] colors = new int[]{
+                primaryColor,
+                Color.RED,
+                Color.GREEN,
+                Color.BLUE
+        };
+        return new ColorStateList(states, colors);
+    }
+
+
+    private int getColorPrimary() {
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = requireActivity().getTheme();
+        theme.resolveAttribute(android.R.attr.textColorPrimary, typedValue, true);
+        @SuppressLint("Recycle") TypedArray arr =
+                requireActivity().obtainStyledAttributes(typedValue.data, new int[]{
+                        android.R.attr.textColorPrimary});
+        return arr.getColor(0, -1);
+    }
+
     private void initUI() {
+        mySwipeRefreshLayout = binding.swipeRefreshNotification;
+        //        mySwipeRefreshLayout.setColorSchemeColors(Color.BLUE, Color.YELLOW, Color.GREEN);
         progressBarLoading = binding.progressbarLoading;
         rcvNotification = binding.rcvNotification;
+        bottomNavigationView = requireActivity().findViewById(R.id.nav_view);
+        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main);
+        NavHostFragment navHostFragment = (NavHostFragment) requireActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
+        if (navHostFragment != null) {
+            currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
+        }
+        tvQuantitySelected = binding.tvQuantity;
+        cbSelectedAllNotification = binding.cbSelectedAll;
     }
 
     public void switchToLogin() {
@@ -212,8 +422,17 @@ public class NotificationsFragment extends Fragment implements INotificationView
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        resetAction();
+    }
+
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+        notificationPresenter.cancelAPI();
     }
 }

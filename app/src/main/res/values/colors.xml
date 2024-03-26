@@ -18,11 +18,14 @@
     <color name="burnt_orange">#d55200</color>
     <color name="tutu">#fff7ff</color>
     <color name="moon_raker">#e9def8</color>
+    <color name="mercury">#e1e1e1</color>
+    <color name="snuff">#dbd0e9</color>
 
-    <color name="gray_300">#d1d5db</color>
+    <color name="gray_300">#E0E0E0</color>
     <color name="gray_400">#9ca3af</color>
     <color name="gray_500">#747474</color>
     <color name="sirocco">#7d8a8b</color>
+    <color name="mine_shaft">#3B3B3B</color>
 
 
     <color name="blue_300">#93c5fd</color>

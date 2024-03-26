@@ -65,5 +65,9 @@
         <item name="indicatorColor">?attr/colorPrimary</item>
     </style>
 
+    <style name="Widget.App.Layout" parent="">
+        <item name="android:background">@color/snuff</item>
+    </style>
+
 
 </resources>

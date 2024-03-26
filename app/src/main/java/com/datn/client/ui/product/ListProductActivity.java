@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.datn.client.R;
+import com.datn.client.action.IAction;
 import com.datn.client.adapter.ProductAdapter;
 import com.datn.client.databinding.ActivityListProductBinding;
 import com.datn.client.models.Customer;
@@ -22,6 +23,7 @@ import com.datn.client.models.MessageResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
+import com.datn.client.models._BaseModel;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.components.MyDialog;
@@ -130,10 +132,23 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
         }
         runOnUiThread(() -> {
             ProductAdapter productAdapter = new ProductAdapter(this, mProductList,
-                    R.layout.item_product, product -> {
-                Intent intent = new Intent(this, DetailProductActivity.class);
-                intent.putExtra("productID", product.get_id());
-                startActivity(intent);
+                    R.layout.item_product, new IAction() {
+                @Override
+                public void onClick(_BaseModel product) {
+                    Intent intent = new Intent(ListProductActivity.this, DetailProductActivity.class);
+                    intent.putExtra("productID", product.get_id());
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onLongClick(_BaseModel product) {
+
+                }
+
+                @Override
+                public void onItemClick(_BaseModel product) {
+
+                }
             });
             rcvListProduct.setLayoutManager(new GridLayoutManager(this, 2));
             rcvListProduct.setAdapter(productAdapter);

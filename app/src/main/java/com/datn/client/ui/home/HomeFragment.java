@@ -23,6 +23,7 @@ import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.datn.client.R;
+import com.datn.client.action.IAction;
 import com.datn.client.adapter.BannerAdapter;
 import com.datn.client.adapter.CategoryAdapter;
 import com.datn.client.adapter.ProductAdapter;
@@ -34,6 +35,7 @@ import com.datn.client.models.MessageResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
+import com.datn.client.models._BaseModel;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.auth.LoginActivity;
@@ -114,8 +116,21 @@ public class HomeFragment extends Fragment implements IHomeView {
             return;
         }
         requireActivity().runOnUiThread(() -> {
-            BannerAdapter adapterSlideShow = new BannerAdapter(getContext(), mBannerList, banner -> {
+            BannerAdapter adapterSlideShow = new BannerAdapter(getContext(), mBannerList, new IAction() {
+                @Override
+                public void onClick(_BaseModel banner) {
 
+                }
+
+                @Override
+                public void onLongClick(_BaseModel banner) {
+
+                }
+
+                @Override
+                public void onItemClick(_BaseModel banner) {
+
+                }
             });
             vpgBanner.setAdapter(adapterSlideShow);
             animationSlideShow();
@@ -142,10 +157,23 @@ public class HomeFragment extends Fragment implements IHomeView {
                 }
             }
 
-            CategoryAdapter categoryAdapter = new CategoryAdapter(getActivity(), mCategoryList, category -> {
-                Intent intent = new Intent(requireActivity(), ListProductActivity.class);
-                intent.putExtra("categoryID", category.get_id());
-                startActivity(intent);
+            CategoryAdapter categoryAdapter = new CategoryAdapter(getActivity(), mCategoryList, new IAction() {
+                @Override
+                public void onClick(_BaseModel category) {
+                    Intent intent = new Intent(requireActivity(), ListProductActivity.class);
+                    intent.putExtra("categoryID", category.get_id());
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onLongClick(_BaseModel category) {
+
+                }
+
+                @Override
+                public void onItemClick(_BaseModel category) {
+
+                }
             });
             rcvCategory.setLayoutManager(new GridLayoutManager(getActivity(), 4));
             rcvCategory.setAdapter(categoryAdapter);
@@ -159,10 +187,23 @@ public class HomeFragment extends Fragment implements IHomeView {
         }
         requireActivity().runOnUiThread(() -> {
             ProductAdapter productSellingAdapter = new ProductAdapter(getActivity(), mProductList,
-                    R.layout.item_product, product -> {
-                Intent intent = new Intent(requireActivity(), DetailProductActivity.class);
-                intent.putExtra("productID", product.get_id());
-                startActivity(intent);
+                    R.layout.item_product, new IAction() {
+                @Override
+                public void onClick(_BaseModel product) {
+                    Intent intent = new Intent(requireActivity(), DetailProductActivity.class);
+                    intent.putExtra("productID", product.get_id());
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onLongClick(_BaseModel product) {
+
+                }
+
+                @Override
+                public void onItemClick(_BaseModel product) {
+
+                }
             });
             GridLayoutManager glm = new GridLayoutManager(getActivity(), 2);
             rcvSellingProduct.setLayoutManager(glm);
@@ -177,10 +218,23 @@ public class HomeFragment extends Fragment implements IHomeView {
         }
         requireActivity().runOnUiThread(() -> {
             ProductAdapter productSearchAdapter = new ProductAdapter(getActivity(), mProductSearch,
-                    R.layout.item_product_search, product -> {
-                Intent intent = new Intent(requireActivity(), DetailProductActivity.class);
-                intent.putExtra("productID", product.get_id());
-                startActivity(intent);
+                    R.layout.item_product_search, new IAction() {
+                @Override
+                public void onClick(_BaseModel product) {
+                    Intent intent = new Intent(requireActivity(), DetailProductActivity.class);
+                    intent.putExtra("productID", product.get_id());
+                    startActivity(intent);
+                }
+
+                @Override
+                public void onLongClick(_BaseModel product) {
+
+                }
+
+                @Override
+                public void onItemClick(_BaseModel product) {
+
+                }
             });
             LinearLayoutManager llm = new LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false);
             rcvSearchProduct.setLayoutManager(llm);

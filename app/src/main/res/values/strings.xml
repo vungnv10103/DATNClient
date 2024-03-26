@@ -93,7 +93,12 @@
     <string name="des_second_time">giây trước</string>
     <string name="des_minute_time">p trước</string>
     <string name="des_hour_time">h trước</string>
-    <string name="default_status_notification">●</string>
+    <string name="default_status_notification" translatable="false">•</string>
     <string name="seen_notification">Đã xem</string>
+    <string name="move">Di chuyển</string>
+    <string name="copy">Sao chép</string>
+    <string name="share">Chia sẻ</string>
+    <string name="options">Tuỳ chọn</string>
+    <string name="selected">"Đã chọn: "</string>
 
 </resources>
