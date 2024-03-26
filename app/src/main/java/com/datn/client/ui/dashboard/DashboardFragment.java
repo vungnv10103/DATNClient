@@ -14,7 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.datn.client.R;
+import com.datn.client.activity.SettingActivity;
 import com.datn.client.activity.TestActivity;
 import com.datn.client.databinding.FragmentDashboardBinding;
 import com.datn.client.models.Customer;
@@ -26,6 +28,7 @@ import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
+import com.datn.client.ui.order.OrderActivity;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PreferenceManager;
 import com.google.gson.Gson;
@@ -103,6 +106,15 @@ public class DashboardFragment extends Fragment implements IDashboardView {
         dashboardPresenter = new DashboardPresenter(requireActivity(), this, apiService, mToken, mCustomer.get_id());
     }
 
+    private void setDataUser() {
+        binding.tvEmail.setText(mCustomer.getEmail());
+        binding.tvName.setText(mCustomer.getFull_name());
+        Glide.with(requireActivity())
+                .load(mCustomer.getAvatar())
+                .error(R.drawable.logo_app_gradient)
+                .into(binding.imgAvatarUser);
+    }
+
     private Customer getLogin() {
         Gson gson = new Gson();
         String json = preferenceManager.getString("user");
@@ -119,6 +131,7 @@ public class DashboardFragment extends Fragment implements IDashboardView {
         if (mToken == null || mToken.isEmpty()) {
             reLogin();
         }
+        setDataUser();
     }
 
     private void showToast(String message) {
@@ -140,11 +153,8 @@ public class DashboardFragment extends Fragment implements IDashboardView {
 
 
     private void initEventClick() {
-        btnLogout.setOnClickListener(v -> doLogout());
-        binding.btnDemo.setOnClickListener(v -> {
-            MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), MyOverlayMsgDialog.gI().getDefaultOverlayMessage(requireActivity()), dashboardPresenter);
-        });
-        binding.btnTest.setOnClickListener(v -> startActivity(new Intent(requireActivity(), TestActivity.class)));
+        binding.layoutSetting.setOnClickListener(v -> startActivity(new Intent(requireActivity(), SettingActivity.class)));
+        binding.layoutOrder.setOnClickListener(v -> startActivity(new Intent(requireActivity(), OrderActivity.class)));
     }
 
 

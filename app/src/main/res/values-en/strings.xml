@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title_home">Home</string>
+    <string name="title_dashboard">Used</string>
     <string name="title_notifications">Notifications</string>
     <string name="notifications">Notifications</string>
     <string name="register">Register</string>
@@ -87,4 +88,11 @@
     <string name="share">Share</string>
     <string name="options">Options</string>
     <string name="selected">"Selected: "</string>
+    <string name="my_order">My orders</string>
+    <string name="logout">Logout</string>
+    <string name="order_paid">Paid</string>
+    <string name="order_cancel">Cancel</string>
+    <string name="prepare">Prepare</string>
+    <string name="order_in_transit">In transit</string>
+    <string name="order_waiting_confirm">Waiting confirm</string>
 </resources>

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">Stech</string>
-    <string name="title_dashboard" translatable="false">Dashboard</string>
+    <string name="title_dashboard">Người dùng</string>
     <string name="register">Đăng ký</string>
     <string name="register_account">Tạo tài khoản</string>
     <string name="email" translatable="false">Email</string>
@@ -100,5 +100,12 @@
     <string name="share">Chia sẻ</string>
     <string name="options">Tuỳ chọn</string>
     <string name="selected">"Đã chọn: "</string>
+    <string name="my_order">Đơn hàng của tôi</string>
+    <string name="logout">Đăng xuất</string>
+    <string name="prepare">Chờ lấy hàng</string>
+    <string name="order_in_transit">Đang giao</string>
+    <string name="order_paid">Đã thanh toán</string>
+    <string name="order_cancel">Đã hủy</string>
+    <string name="order_waiting_confirm">Chờ xác nhận</string>
 
 </resources>

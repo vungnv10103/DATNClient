@@ -2,6 +2,7 @@ package com.datn.client;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -146,6 +147,28 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
         initService();
         basePresenter.getNotification();
 
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        // Checks whether a keyboard is available
+        if (newConfig.keyboardHidden == Configuration.KEYBOARDHIDDEN_YES) {
+            MyDialog.gI().startDlgOK(this, "Keyboard available");
+        } else if (newConfig.keyboardHidden == Configuration.KEYBOARDHIDDEN_NO) {
+            MyDialog.gI().startDlgOK(this, "No keyboard");
+        }
+
+        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        switch (currentNightMode) {
+            case Configuration.UI_MODE_NIGHT_NO:
+                MyDialog.gI().startDlgOK(this, "Night mode is not active, we're using the light theme");
+                break;
+            case Configuration.UI_MODE_NIGHT_YES:
+                MyDialog.gI().startDlgOK(this, "Night mode is active, we're using dark theme");
+                break;
+        }
     }
 
     @Override
