@@ -1,20 +1,10 @@
 package com.datn.client.ui.notifications;
 
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
-import com.datn.client.models.MessageResponse;
-import com.datn.client.models.Notification;
-import com.datn.client.response.NotificationResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.ui.BasePresenter;
-
-import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class NotificationPresenter extends BasePresenter {
 
@@ -36,8 +26,8 @@ public class NotificationPresenter extends BasePresenter {
     }
 
     @Override
-    public void cancelAPI() {
-        super.cancelAPI();
+    public void onCancelAPI() {
+        super.onCancelAPI();
     }
 
 

@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
     }
 
     @Override
-    public void onListNotification(List<Notification> notificationList) {
+    public void onListNotification(@NonNull List<Notification> notificationList) {
         cartBadgeTextView.setText(String.valueOf(notificationList.size()));
     }
 

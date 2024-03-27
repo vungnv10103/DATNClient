@@ -188,7 +188,7 @@ public class ListProductActivity extends AppCompatActivity implements IProductVi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        productPresenter.cancelAPI();
+        productPresenter.onCancelAPI();
     }
 
 

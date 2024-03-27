@@ -46,8 +46,8 @@ public class ProductPresenter extends BasePresenter {
         this.customerID = customerID;
     }
 
-    public void cancelAPI() {
-        super.cancelAPI();
+    public void onCancelAPI() {
+        super.onCancelAPI();
         if (detailProduct != null) {
             detailProduct.cancel();
         }

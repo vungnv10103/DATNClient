@@ -39,7 +39,7 @@ public class BasePresenter {
         this.customerID = customerID;
     }
 
-    public void cancelAPI() {
+    public void onCancelAPI() {
         if (getNotification != null) {
             getNotification.cancel();
         }

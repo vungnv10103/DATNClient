@@ -44,8 +44,8 @@ public class CheckoutPresenter extends BasePresenter {
         this.customerID = customerID;
     }
 
-    public void cancelAPI() {
-        super.cancelAPI();
+    public void onCancelAPI() {
+        super.onCancelAPI();
         if (getProductCheckout != null) {
             getProductCheckout.cancel();
         }

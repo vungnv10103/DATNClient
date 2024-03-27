@@ -30,8 +30,8 @@ public class DashboardPresenter extends BasePresenter {
         this.customerID = customerID;
     }
 
-    public void cancelAPI() {
-        super.cancelAPI();
+    public void onCancelAPI() {
+        super.onCancelAPI();
         if (logout != null) {
             logout.cancel();
         }

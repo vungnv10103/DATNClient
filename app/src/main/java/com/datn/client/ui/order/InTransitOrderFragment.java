@@ -9,13 +9,17 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.datn.client.R;
+import com.datn.client.models.Order;
+import com.datn.client.models.ProductOrder;
+
+import java.util.List;
 
 public class InTransitOrderFragment extends Fragment {
-    public InTransitOrderFragment() {
-        // Required empty public constructor
-    }
+    private static List<ProductOrder> mInTransitOrders;
+
     @NonNull
-    public static InTransitOrderFragment newInstance() {
+    public static InTransitOrderFragment newInstance(List<ProductOrder> dataOrder) {
+        mInTransitOrders = dataOrder;
         return new InTransitOrderFragment();
     }
 
@@ -28,6 +32,6 @@ public class InTransitOrderFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_cancel_order, container, false);
+        return inflater.inflate(R.layout.fragment_order_in_transit, container, false);
     }
 }

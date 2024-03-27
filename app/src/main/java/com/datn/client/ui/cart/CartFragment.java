@@ -309,6 +309,6 @@ public class CartFragment extends Fragment implements ICartView {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-        cartPresenter.cancelAPI();
+        cartPresenter.onCancelAPI();
     }
 }

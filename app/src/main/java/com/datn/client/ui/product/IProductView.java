@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface IProductView extends IBaseView {
     void onLoadProduct(List<Product> productList);
-
 }

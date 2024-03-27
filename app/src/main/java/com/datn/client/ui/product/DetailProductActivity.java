@@ -269,14 +269,18 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     @Override
     protected void onStop() {
         super.onStop();
-        player.stop();
+        if (player != null) {
+            player.stop();
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        player.release();
-        productPresenter.cancelAPI();
+        if (player != null) {
+            player.release();
+        }
+        productPresenter.onCancelAPI();
     }
 
     public static Product getProduct() {

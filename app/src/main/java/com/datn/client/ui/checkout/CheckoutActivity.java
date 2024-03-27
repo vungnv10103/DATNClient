@@ -497,6 +497,6 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        checkoutPresenter.cancelAPI();
+        checkoutPresenter.onCancelAPI();
     }
 }

@@ -87,7 +87,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         holder.tvTitle.setText(notification.getTitle());
         holder.tvStatus.setText(status);
         holder.tvContent.setText(notification.getContent());
-        holder.tvTime.setText(MyFormat.compareTime(context, notification.getCreated_at(), currentTime));
+        holder.tvTime.setText(MyFormat.compareTime(context, notification.getCreated_at(), currentTime, isShowSelected));
         holder.cbSelected.setVisibility(isShowSelected ? View.VISIBLE : View.GONE);
         holder.cbSelected.setChecked(notification.isChecked());
 
@@ -141,6 +141,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         diffResult.dispatchUpdatesTo(this);
         int newSize = newList.size();
         System.out.println("oldSize: " + oldSize + " - newSize:" + newSize);
+        if (oldSize == newSize) {
+            // TODO: ONLY update time
+            notifyItemRangeChanged(0, newSize);
+        }
     }
 
     private static class CartDiffCallback extends DiffUtil.Callback {

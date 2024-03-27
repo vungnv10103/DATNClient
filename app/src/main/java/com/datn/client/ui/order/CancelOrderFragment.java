@@ -10,13 +10,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.datn.client.R;
+import com.datn.client.models.Order;
+import com.datn.client.models.ProductOrder;
+
+import java.util.List;
 
 public class CancelOrderFragment extends Fragment {
-    public CancelOrderFragment() {
-        // Required empty public constructor
-    }
+    private static List<ProductOrder> mCancelOrders;
+
     @NonNull
-    public static CancelOrderFragment newInstance() {
+    public static CancelOrderFragment newInstance(List<ProductOrder> dataOrder) {
+        mCancelOrders = dataOrder;
         return new CancelOrderFragment();
     }
 
@@ -29,6 +33,6 @@ public class CancelOrderFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_cancel_order, container, false);
+        return inflater.inflate(R.layout.fragment_order_cancel, container, false);
     }
 }

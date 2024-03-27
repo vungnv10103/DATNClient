@@ -471,7 +471,7 @@ public class HomeFragment extends Fragment implements IHomeView {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-        homePresenter.cancelAPI();
+        homePresenter.onCancelAPI();
     }
 
     @Override

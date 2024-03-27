@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -12,6 +14,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.ActionMode;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -19,6 +22,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.datn.client.R;
 import com.datn.client.databinding.ActivityTestBinding;
 import com.datn.client.helper.MyNavigationBar;
+import com.datn.client.ui.components.MyDialog;
 
 public class TestActivity extends AppCompatActivity {
     private final static String TAG = TestActivity.class.getSimpleName();
@@ -26,6 +30,41 @@ public class TestActivity extends AppCompatActivity {
     int height;
     int width;
     TextView btnDemo;
+
+    ActionMode.Callback callbackActionMode = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            getMenuInflater().inflate(R.menu.bottom_action_menu, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, @NonNull MenuItem item) {
+            int itemID = item.getItemId();
+            if (itemID == R.id.item_selected_all) {
+                MyDialog.gI().startDlgOK(TestActivity.this, item.getTitle() + "");
+                return true;
+            } else if (itemID == R.id.item_delete) {
+                MyDialog.gI().startDlgOK(TestActivity.this, item.getTitle() + "");
+                return true;
+            } else if (itemID == R.id.item_seen_all) {
+                MyDialog.gI().startDlgOK(TestActivity.this, item.getTitle() + "");
+                return true;
+            }
+            MyDialog.gI().startDlgOK(TestActivity.this, item.getTitle() + "123");
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +77,10 @@ public class TestActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        ActionMode actionMode = startSupportActionMode(callbackActionMode);
+        if (actionMode != null) {
+            actionMode.setTitle("1 selected");
+        }
         showToast("onCreate");
         // All the necessary UI elements should be initialized
 

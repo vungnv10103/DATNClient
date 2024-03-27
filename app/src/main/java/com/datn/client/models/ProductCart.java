@@ -9,13 +9,11 @@ import org.jetbrains.annotations.Contract;
 
 public class ProductCart extends _BaseModel implements Parcelable {
     private String product_id;
-
     private String name;
     private String image;
     private String price;
     private String quantity_product;
     private String quantity_cart;
-
     private String note;
     private String status_product;
     private int status_cart;

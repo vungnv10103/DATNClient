@@ -9,6 +9,7 @@ import com.datn.client.response.CreateOrderResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.response.EBankingResponse;
 import com.datn.client.response.NotificationResponse;
+import com.datn.client.response.OrderResponse;
 import com.datn.client.response.OverlayMessageResponse;
 import com.datn.client.response.PaymentMethodResponse;
 import com.datn.client.response.ProductCartResponse;
@@ -168,6 +169,11 @@ public interface ApiService {
                                                @Field("language") String language);
 
     @FormUrlEncoded
+    @POST("/v1/api/order/get/all")
+    Call<OrderResponse> getAllOrders(@Header("Authorization") String token,
+                                     @Field("customerID") String customerID);
+
+    @FormUrlEncoded
     @POST("/v1/api/overlay/message/get")
     Call<OverlayMessageResponse> getOverlayMessage(@Header("Authorization") String token,
                                                    @Field("customerID") String customerID);
@@ -186,8 +192,8 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("/v1/api/notification/update")
     Call<NotificationResponse> updateStatusNotification(@Header("Authorization") String token,
-                                                 @Field("customerID") String customerID,
-                                                 @Field("notificationID") String notificationID,
-                                                 @Field("status") int status);
+                                                        @Field("customerID") String customerID,
+                                                        @Field("notificationID") String notificationID,
+                                                        @Field("status") int status);
 
 }

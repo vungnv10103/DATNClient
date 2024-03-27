@@ -216,4 +216,10 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
     public void onFinish() {
         MyDialog.gI().startDlgOK(requireActivity(), "onFinish");
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        productPresenter.onCancelAPI();
+    }
 }

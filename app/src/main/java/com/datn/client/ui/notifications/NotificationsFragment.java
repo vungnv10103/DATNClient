@@ -2,6 +2,7 @@ package com.datn.client.ui.notifications;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -48,12 +49,14 @@ import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.PreferenceManager;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -65,6 +68,7 @@ public class NotificationsFragment extends Fragment implements INotificationView
     private NotificationPresenter notificationPresenter;
     private PreferenceManager preferenceManager;
     private SwipeRefreshLayout mySwipeRefreshLayout;
+    private MaterialToolbar topAppBar;
     private CircularProgressIndicator progressBarLoading;
     private RecyclerView rcvNotification;
     private TextView tvQuantitySelected;
@@ -81,6 +85,7 @@ public class NotificationsFragment extends Fragment implements INotificationView
     private List<Notification> mNotificationList;
     private final List<String> mListNotificationID = new ArrayList<>();
     private boolean isLayoutActionShow = false;
+    private boolean isSelectedAll = false;
 
     private final OnBackPressedCallback callback = new OnBackPressedCallback(true) {
         @Override
@@ -118,6 +123,7 @@ public class NotificationsFragment extends Fragment implements INotificationView
 
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
         initUI();
+
         requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), callback);
         preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
         checkLogin();
@@ -128,8 +134,8 @@ public class NotificationsFragment extends Fragment implements INotificationView
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        initEventClick();
         initService();
+        initEventClick();
 
     }
 
@@ -169,12 +175,14 @@ public class NotificationsFragment extends Fragment implements INotificationView
                             binding.layoutActionTop.setVisibility(View.VISIBLE);
                             tvQuantitySelected.setText(String.format(getString(R.string.selected) + 0));
                             binding.layoutActionBottom.setVisibility(View.VISIBLE);
+                            scalePaddingRcvNotification();
                             setColorActionBottom(false);
                         } else {
                             isLayoutActionShow = false;
                             binding.layoutActionTop.setVisibility(View.GONE);
                             binding.layoutActionBottom.setVisibility(View.GONE);
                             bottomNavigationView.setVisibility(View.VISIBLE);
+                            scalePaddingRcvNotification();
                         }
                     }
 
@@ -227,10 +235,12 @@ public class NotificationsFragment extends Fragment implements INotificationView
         binding.layoutActionTop.setVisibility(View.GONE);
         binding.layoutActionBottom.setVisibility(View.GONE);
         bottomNavigationView.setVisibility(View.VISIBLE);
+        scalePaddingRcvNotification();
     }
 
     @Override
     public void onListNotification(List<Notification> notificationList) {
+        Collections.reverse(notificationList);
         this.mNotificationList = notificationList;
         onNotificationLoaded();
     }
@@ -269,23 +279,30 @@ public class NotificationsFragment extends Fragment implements INotificationView
     }
 
     private void initEventClick() {
-        mySwipeRefreshLayout.setOnRefreshListener(() -> notificationPresenter.getNotification());
+        mySwipeRefreshLayout.setOnRefreshListener(() -> {
+            notificationAdapter = null;
+            notificationPresenter.getNotification();
+        });
         binding.btnClose.setOnClickListener(v -> resetAction());
-        cbSelectedAllNotification.setOnClickListener(v -> {
-            boolean isChecked = cbSelectedAllNotification.isChecked();
-            mListNotificationID.clear();
-            for (int i = 0; i < mNotificationList.size(); i++) {
-                Notification notification = mNotificationList.get(i);
-                notification.setChecked(isChecked);
-                notificationAdapter.notifyItemChanged(i);
-                if (isChecked) {
-                    mListNotificationID.add(notification.get_id());
-                } else {
-                    mListNotificationID.remove(notification.get_id());
-                }
+        topAppBar.setOnMenuItemClickListener(item -> {
+            int itemID = item.getItemId();
+            if (itemID == R.id.item_selected_all) {
+                isSelectedAll = !isSelectedAll;
+                doDeleteAll();
+                return true;
+            } else if (itemID == R.id.item_delete) {
+                MyDialog.gI().startDlgOK(requireActivity(), item.getTitle() + "");
+                return true;
+            } else if (itemID == R.id.item_seen_all) {
+                MyDialog.gI().startDlgOK(requireActivity(), item.getTitle() + "");
+                return true;
             }
-            tvQuantitySelected.setText(String.format(getString(R.string.selected) + mListNotificationID.size()));
-            setColorActionBottom(!mListNotificationID.isEmpty());
+            MyDialog.gI().startDlgOK(requireActivity(), "Option: " + item.getTitle());
+            return false;
+        });
+        cbSelectedAllNotification.setOnClickListener(v -> {
+            isSelectedAll = cbSelectedAllNotification.isChecked();
+            doSelectedAll();
         });
 
         binding.layoutSeenAll.setOnClickListener(v -> doSeenAll());
@@ -311,6 +328,32 @@ public class NotificationsFragment extends Fragment implements INotificationView
             }
             MyDialog.gI().startDlgOK(requireActivity(), mListNotificationID.size() + "");
         }
+    }
+
+    private int getViewHeight(@NonNull View view) {
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        return view.getMeasuredHeight();
+    }
+
+
+    private void setMenuAction() {
+        topAppBar.inflateMenu(R.menu.bottom_action_menu);
+    }
+
+    private void doSelectedAll() {
+        mListNotificationID.clear();
+        for (int i = 0; i < mNotificationList.size(); i++) {
+            Notification notification = mNotificationList.get(i);
+            notification.setChecked(isSelectedAll);
+            notificationAdapter.notifyItemChanged(i);
+            if (isSelectedAll) {
+                mListNotificationID.add(notification.get_id());
+            } else {
+                mListNotificationID.remove(notification.get_id());
+            }
+        }
+        tvQuantitySelected.setText(String.format(getString(R.string.selected) + mListNotificationID.size()));
+        setColorActionBottom(!mListNotificationID.isEmpty());
     }
 
     private void setLoading(boolean isLoading) {
@@ -368,11 +411,25 @@ public class NotificationsFragment extends Fragment implements INotificationView
         return arr.getColor(0, -1);
     }
 
+    private void scalePaddingRcvNotification() {
+        int padding = 16 * 2;
+        int heightBottomAction = getViewHeight(binding.layoutActionBottom) + padding;
+        int bottom;
+        if (isLayoutActionShow) {
+            bottom = heightBottomAction + padding;
+        } else {
+            bottom = padding;
+        }
+        rcvNotification.setPadding(0, 0, 0, bottom);
+    }
+
     private void initUI() {
         mySwipeRefreshLayout = binding.swipeRefreshNotification;
         //        mySwipeRefreshLayout.setColorSchemeColors(Color.BLUE, Color.YELLOW, Color.GREEN);
+        topAppBar = binding.topAppBar;
         progressBarLoading = binding.progressbarLoading;
         rcvNotification = binding.rcvNotification;
+        scalePaddingRcvNotification();
         bottomNavigationView = requireActivity().findViewById(R.id.nav_view);
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main);
         NavHostFragment navHostFragment = (NavHostFragment) requireActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
@@ -433,6 +490,6 @@ public class NotificationsFragment extends Fragment implements INotificationView
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-        notificationPresenter.cancelAPI();
+        notificationPresenter.onCancelAPI();
     }
 }

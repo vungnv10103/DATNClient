@@ -90,9 +90,14 @@
     <string name="error"><i>Error: </i></string>
     <string name="setting">Setting</string>
     <string name="minimum_quantity_is_one">Số lượng tối thiểu là 1</string>
-    <string name="des_second_time">giây trước</string>
-    <string name="des_minute_time">p trước</string>
-    <string name="des_hour_time">h trước</string>
+    <string name="des_long_second_time">giây trước</string>
+    <string name="des_long_minute_time">phút trước</string>
+    <string name="des_long_hour_time">giờ trước</string>
+    <string name="des_long_day_time">ngày trước</string>
+    <string name="des_short_second_time">s trước</string>
+    <string name="des_short_minute_time">p trước</string>
+    <string name="des_short_hour_time">g trước</string>
+    <string name="des_short_day_time">d trước</string>
     <string name="default_status_notification" translatable="false">•</string>
     <string name="seen_notification">Đã xem</string>
     <string name="move">Di chuyển</string>
@@ -107,5 +112,6 @@
     <string name="order_paid">Đã thanh toán</string>
     <string name="order_cancel">Đã hủy</string>
     <string name="order_waiting_confirm">Chờ xác nhận</string>
+    <string name="selected_all">Chọn tất cả</string>
 
 </resources>

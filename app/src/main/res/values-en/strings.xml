@@ -79,9 +79,14 @@
     <string name="error"><i>Error: </i></string>
     <string name="setting">Setting</string>
     <string name="minimum_quantity_is_one">Minimum quantity is 1</string>
-    <string name="des_second_time">s ago</string>
-    <string name="des_minute_time">m ago</string>
-    <string name="des_hour_time">h ago</string>
+    <string name="des_short_second_time">s ago</string>
+    <string name="des_short_minute_time">m ago</string>
+    <string name="des_short_hour_time">h ago</string>
+    <string name="des_short_day_time">d ago</string>
+    <string name="des_long_second_time">s ago</string>
+    <string name="des_long_minute_time">m ago</string>
+    <string name="des_long_hour_time">h ago</string>
+    <string name="des_long_day_time">d ago</string>
     <string name="seen_notification">Seen</string>
     <string name="move">Move</string>
     <string name="copy">Copy</string>
@@ -95,4 +100,5 @@
     <string name="prepare">Prepare</string>
     <string name="order_in_transit">In transit</string>
     <string name="order_waiting_confirm">Waiting confirm</string>
+    <string name="selected_all">Select all</string>
 </resources>

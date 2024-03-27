@@ -1,6 +1,5 @@
 package com.datn.client.ui.cart;
 
-import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
@@ -41,8 +40,8 @@ public class CartPresenter extends BasePresenter {
         this.customerID = customerID;
     }
 
-    public void cancelAPI() {
-        super.cancelAPI();
+    public void onCancelAPI() {
+        super.onCancelAPI();
         if (getCart != null) {
             getCart.cancel();
         }
