@@ -25,6 +25,7 @@ import com.datn.client.R;
 import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.checkout.CheckoutPresenter;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.PAYMENT_METHOD;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -47,7 +48,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 //            sendNotification(title, body);
 
             if (mType != null) {
-                if (Integer.parseInt(mType) == CheckoutPresenter.PAYMENT_METHOD.E_BANKING.getValue()) {
+                if (Integer.parseInt(mType) == PAYMENT_METHOD.E_BANKING.getValue()) {
                     // Gửi Broadcast với nội dung thông báo
                     Intent intent = new Intent("com.datn.client.NOTIFICATION_RECEIVED");
                     intent.putExtra("title", title);

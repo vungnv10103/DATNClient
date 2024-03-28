@@ -80,7 +80,7 @@ public class WaitConfirmFragment extends Fragment {
 
     private void displayOrder(List<ProductOrderDetail> productOrdersDetail) {
         if (productOrdersDetail != null) {
-            OrderActivity.displayCustomBadge(OrderActivity.POSITION_WAITING_TAB, productOrdersDetail.size(), R.drawable.logo_app_gradient);
+            OrderActivity.displayCustomBadge(OrderActivity.POSITION_WAITING_TAB, productOrdersDetail.size(), -1);
             OrderAdapter orderAdapter = new OrderAdapter(requireActivity(), productOrdersDetail, new IAction() {
                 @Override
                 public void onClick(_BaseModel orderWaiting) {
@@ -89,7 +89,7 @@ public class WaitConfirmFragment extends Fragment {
 
                 @Override
                 public void onLongClick(_BaseModel orderWaiting) {
-
+                    MyDialog.gI().startDlgOK(requireActivity(), "status: " +orderWaiting.get_id());
                 }
 
                 @Override

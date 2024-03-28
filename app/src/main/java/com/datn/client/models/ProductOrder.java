@@ -1,7 +1,5 @@
 package com.datn.client.models;
 
-import androidx.annotation.NonNull;
-
 import java.util.List;
 
 public class ProductOrder extends _BaseModel {
@@ -10,6 +8,7 @@ public class ProductOrder extends _BaseModel {
     private List<Product> products;
     private List<String> productsQuantity;
     private List<String> orderDetailID;
+    private List<Integer> orderDetailStatus;
     private String amount;
 
     public String getOrder_id() {
@@ -42,6 +41,14 @@ public class ProductOrder extends _BaseModel {
 
     public void setOrderDetailID(List<String> orderDetailID) {
         this.orderDetailID = orderDetailID;
+    }
+
+    public List<Integer> getOrderDetailStatus() {
+        return orderDetailStatus;
+    }
+
+    public void setOrderDetailStatus(List<Integer> orderDetailStatus) {
+        this.orderDetailStatus = orderDetailStatus;
     }
 
     public String getAmount() {

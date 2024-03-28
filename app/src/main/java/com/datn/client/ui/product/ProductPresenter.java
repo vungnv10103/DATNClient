@@ -15,6 +15,7 @@ import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.ui.BasePresenter;
 import com.datn.client.ui.checkout.CheckoutActivity;
+import com.datn.client.utils.STATUS_CART;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -215,37 +216,5 @@ public class ProductPresenter extends BasePresenter {
                 iProductView.onThrowLog("buyNow", e.getMessage());
             }
         });
-    }
-
-    public enum STATUS_PRODUCT {
-        OUT_OF_STOCK(0),
-        STOCKING(1);
-        private final int value;
-
-        STATUS_PRODUCT(final int newValue) {
-            value = newValue;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
-
-
-    public enum STATUS_CART {
-        DELETED(-1),
-        DEFAULT(0),
-        SELECTED(1),
-        BOUGHT(2),
-        BUYING(3);
-        private final int value;
-
-        STATUS_CART(final int newValue) {
-            value = newValue;
-        }
-
-        public int getValue() {
-            return value;
-        }
     }
 }

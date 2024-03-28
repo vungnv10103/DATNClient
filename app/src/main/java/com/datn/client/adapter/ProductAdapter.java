@@ -13,8 +13,8 @@ import com.bumptech.glide.Glide;
 import com.datn.client.R;
 import com.datn.client.action.IAction;
 import com.datn.client.models.Product;
-import com.datn.client.ui.product.ProductPresenter.STATUS_PRODUCT;
 import com.datn.client.utils.MyFormat;
+import com.datn.client.utils.STATUS_PRODUCT;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;

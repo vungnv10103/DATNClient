@@ -1,7 +1,5 @@
 package com.datn.client.models;
 
-import androidx.annotation.NonNull;
-
 public class ProductOrderDetail extends _BaseModel {
     private String order_id;
     private String order_detail_id;
@@ -10,6 +8,8 @@ public class ProductOrderDetail extends _BaseModel {
     private String product_name;
     private String price;
     private int quantity;
+
+    private int status;
     // product option....
 
 
@@ -69,4 +69,11 @@ public class ProductOrderDetail extends _BaseModel {
         this.quantity = quantity;
     }
 
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
 }

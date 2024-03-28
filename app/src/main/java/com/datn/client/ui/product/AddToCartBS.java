@@ -24,6 +24,7 @@ import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.MyFormat;
+import com.datn.client.utils.TYPE_BUY;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -105,9 +106,9 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
         btnAddToCart.setOnClickListener(v -> {
             int quantity = Integer.parseInt(tvQuantity.getText().toString().trim());
             String notes = ""; // custom note
-            if (mType == DetailProductActivity.TYPE_BUY.ADD_TO_CART.getValue()) {
+            if (mType == TYPE_BUY.ADD_TO_CART.getValue()) {
                 productPresenter.addToCart(mProduct.get_id(), quantity, notes);
-            } else if (mType == DetailProductActivity.TYPE_BUY.BUY_NOW.getValue()) {
+            } else if (mType == TYPE_BUY.BUY_NOW.getValue()) {
                 productPresenter.buyNow(mProduct.get_id(), quantity, notes);
             }
 

@@ -22,8 +22,8 @@ import com.bumptech.glide.request.target.Target;
 import com.datn.client.R;
 import com.datn.client.action.IAction;
 import com.datn.client.models.Notification;
-import com.datn.client.ui.BasePresenter.STATUS_NOTIFICATION;
 import com.datn.client.utils.MyFormat;
+import com.datn.client.utils.STATUS_NOTIFICATION;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 

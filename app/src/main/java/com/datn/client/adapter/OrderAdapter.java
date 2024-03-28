@@ -1,6 +1,7 @@
 package com.datn.client.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.datn.client.action.IAction;
 import com.datn.client.models.ProductOrderDetail;
 import com.datn.client.models._BaseModel;
 import com.datn.client.utils.MyFormat;
+import com.datn.client.utils.STATUS_ORDER;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
@@ -53,7 +55,17 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
         holder.tvQuantity.setText(String.valueOf(productOrderDetail.getQuantity()));
 
         _BaseModel baseModel = new _BaseModel(productOrderDetail.getOrder_detail_id(), productOrderDetail.getCreated_at());
+        _BaseModel baseModel2 = new _BaseModel(String.valueOf(productOrderDetail.getStatus()), productOrderDetail.getCreated_at());
         holder.itemView.setOnClickListener(v -> iActionOrder.onClick(baseModel));
+        Log.d("OrderAdapter", "onBindViewHolder: " + productOrderDetail.getStatus());
+        if (productOrderDetail.getStatus() == STATUS_ORDER.PAID.getValue()) {
+
+            holder.itemView.setOnLongClickListener(v -> {
+                iActionOrder.onLongClick(baseModel2);
+                return true;
+            });
+        }
+
 
     }
 

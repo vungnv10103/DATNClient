@@ -105,6 +105,7 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
     protected void onStart() {
         super.onStart();
 
+        setLoading(true);
         orderPresenter.getAllOrders();
 
     }
@@ -118,6 +119,7 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
             List<Product> products = productOrder.getProducts();
             List<String> productsQuantity = productOrder.getProductsQuantity();
             List<String> orderDetailID = productOrder.getOrderDetailID();
+            List<Integer> mOrderDetailStatus = productOrder.getOrderDetailStatus();
             String amount = productOrder.getAmount();
             for (int j = 0; j < products.size(); j++) {
                 ProductOrderDetail productOrderDetail = new ProductOrderDetail();
@@ -128,6 +130,7 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
                 productOrderDetail.setProduct_name(products.get(j).getName());
                 productOrderDetail.setPrice(amount);
                 productOrderDetail.setQuantity(Integer.parseInt(productsQuantity.get(j)));
+                productOrderDetail.setStatus(mOrderDetailStatus.get(j));
                 dataProductOrderDetail.add(productOrderDetail);
             }
         }
@@ -161,8 +164,7 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
 //        if (mOrdersDetail.getCancelList() != null) {
 //            displayCustomBadge(tabLayout.getTabAt(POSITION_CANCEL_TAB), mOrdersDetail.getCancelList().size(), -1);
 //        }
-        vpgOrder.setVisibility(View.VISIBLE);
-        progressViewPager2.setVisibility(View.GONE);
+        setLoading(false);
     }
 
 
@@ -202,9 +204,15 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
         }
     }
 
+    private void setLoading(boolean isLoading) {
+        vpgOrder.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
+        progressViewPager2.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+    }
+
     @Override
     public void onThrowLog(String key, String message) {
         showLogW(key, message);
+        setLoading(false);
     }
 
     @Override

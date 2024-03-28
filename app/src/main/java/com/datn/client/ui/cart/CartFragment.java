@@ -36,11 +36,11 @@ import com.datn.client.ui.checkout.CheckoutActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyNavController;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
-import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.PreferenceManager;
+import com.datn.client.utils.STATUS_CART;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.List;

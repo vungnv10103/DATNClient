@@ -8,7 +8,6 @@ public class Order extends _BaseModel {
     private String delivery_address_id;
     private int status;
     private String amount;
-    private int payment_method;
     private String guest_name;
     private String guest_phoneNumber;
     private String guest_address;
@@ -53,13 +52,6 @@ public class Order extends _BaseModel {
         this.amount = amount;
     }
 
-    public int getPayment_method() {
-        return payment_method;
-    }
-
-    public void setPayment_method(int payment_method) {
-        this.payment_method = payment_method;
-    }
 
     public String getGuest_name() {
         return guest_name;
@@ -94,7 +86,6 @@ public class Order extends _BaseModel {
                 ", delivery_address_id='" + delivery_address_id + '\'' +
                 ", status=" + status +
                 ", amount='" + amount + '\'' +
-                ", payment_method=" + payment_method +
                 ", guest_name='" + guest_name + '\'' +
                 ", guest_phoneNumber='" + guest_phoneNumber + '\'' +
                 ", guest_address='" + guest_address + '\'' +

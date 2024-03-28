@@ -42,11 +42,11 @@ import com.datn.client.services.zalo.CreateOrder;
 import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
-import com.datn.client.ui.product.DetailProductActivity.TYPE_BUY;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.PreferenceManager;
+import com.datn.client.utils.TYPE_BUY;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 

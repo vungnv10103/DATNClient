@@ -77,52 +77,33 @@ public class PrepareOrderFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        displayOrder(getProductOrderDetail());
-    }
-
-    private List<ProductOrderDetail> getProductOrderDetail() {
-        List<ProductOrderDetail> dataProductOrderDetail = new ArrayList<>();
-        ProductOrderDetail productOrderDetail = new ProductOrderDetail();
-        for (int i = 0; i < mPrepareOrders.size(); i++) {
-            ProductOrder productOrder = mPrepareOrders.get(i);
-            List<Product> products = productOrder.getProducts();
-            List<String> productsQuantity = productOrder.getProductsQuantity();
-            List<String> orderDetailID = productOrder.getOrderDetailID();
-
-            for (int j = 0; j < products.size(); j++) {
-                Product product = products.get(j);
-                productOrderDetail.setQuantity(Integer.parseInt(productsQuantity.get(j)));
-                productOrderDetail.setOrder_id(orderDetailID.get(j));
-                productOrderDetail.setProduct_id(product.get_id());
-                productOrderDetail.setProduct_name(product.getName());
-                productOrderDetail.setProduct_image(product.getImg_cover());
-                dataProductOrderDetail.add(productOrderDetail);
-            }
-        }
-        return dataProductOrderDetail;
+        displayOrder(OrderActivity.getProductOrderDetail(mPrepareOrders));
     }
 
     private void displayOrder(List<ProductOrderDetail> productOrderDetails) {
-        OrderAdapter orderAdapter = new OrderAdapter(requireActivity(), productOrderDetails, new IAction() {
-            @Override
-            public void onClick(_BaseModel orderWaiting) {
-                MyDialog.gI().startDlgOK(requireActivity(), orderWaiting.get_id());
-            }
+        if (productOrderDetails != null) {
+            OrderActivity.displayCustomBadge(OrderActivity.POSITION_PREPARE_TAB, productOrderDetails.size(), -1);
+            OrderAdapter orderAdapter = new OrderAdapter(requireActivity(), productOrderDetails, new IAction() {
+                @Override
+                public void onClick(_BaseModel orderPrepare) {
+                    MyDialog.gI().startDlgOK(requireActivity(), orderPrepare.get_id());
+                }
 
-            @Override
-            public void onLongClick(_BaseModel orderWaiting) {
+                @Override
+                public void onLongClick(_BaseModel orderPrepare) {
+                    MyDialog.gI().startDlgOK(requireActivity(), "status: " +orderPrepare.get_id());
+                }
 
-            }
-
-            @Override
-            public void onItemClick(_BaseModel orderWaiting) {
-
-            }
-        });
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        linearLayoutManager.setSmoothScrollbarEnabled(true);
-        rcvOrderPrepare.setLayoutManager(linearLayoutManager);
-        rcvOrderPrepare.setAdapter(orderAdapter);
+                @Override
+                public void onItemClick(_BaseModel orderPrepare) {
+                    MyDialog.gI().startDlgOK(requireActivity(), "status: " +orderPrepare.get_id());
+                }
+            });
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+            linearLayoutManager.setSmoothScrollbarEnabled(true);
+            rcvOrderPrepare.setLayoutManager(linearLayoutManager);
+            rcvOrderPrepare.setAdapter(orderAdapter);
+        }
         rcvOrderPrepare.setVisibility(View.VISIBLE);
         progressLoading.setVisibility(View.GONE);
     }

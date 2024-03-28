@@ -26,9 +26,9 @@ import com.datn.client.action.IAction;
 import com.datn.client.models.ProductCart;
 import com.datn.client.ui.cart.ICartView;
 import com.datn.client.ui.product.DetailProductActivity;
-import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.MyFormat;
+import com.datn.client.utils.STATUS_CART;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.List;
