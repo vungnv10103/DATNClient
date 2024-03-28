@@ -55,7 +55,6 @@ public class OrderPresenter extends BasePresenter {
                                 iOrderView.onThrowLog("getAllOrders200", code);
                                 OrdersDetail ordersDetail = response.body().getOrdersDetail();
                                 if (ordersDetail != null) {
-                                    iOrderView.onThrowLog("getAllOrders200", ordersDetail.toString());
                                     iOrderView.onLoadOrders(ordersDetail);
                                 }
                             } else if (statusCode == 400) {

@@ -12,24 +12,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.datn.client.R;
 import com.datn.client.action.IAction;
-import com.datn.client.models.Order;
-import com.datn.client.models.Product;
-import com.datn.client.models.ProductOrder;
+import com.datn.client.models.ProductOrderDetail;
 import com.datn.client.models._BaseModel;
+import com.datn.client.utils.MyFormat;
 import com.google.android.material.imageview.ShapeableImageView;
 
 import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> {
 
-    private final List<ProductOrder> productOrders;
+    private final List<ProductOrderDetail> productOrdersDetail;
     private final Context context;
     private final IAction iActionOrder;
 
 
-    public OrderAdapter(Context context, List<ProductOrder> productOrders, IAction iActionOrder) {
+    public OrderAdapter(Context context, List<ProductOrderDetail> productOrdersDetail, IAction iActionOrder) {
         this.context = context;
-        this.productOrders = productOrders;
+        this.productOrdersDetail = productOrdersDetail;
         this.iActionOrder = iActionOrder;
     }
 
@@ -42,30 +41,26 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ProductOrder productOrder = productOrders.get(position);
-
-        List<Product> product = productOrder.getProducts();
-        List<String> productsQuantity = productOrder.getProductsQuantity();
-        List<String> orderDetailID = productOrder.getOrderDetailID();
+        ProductOrderDetail productOrderDetail = productOrdersDetail.get(position);
 
         Glide.with(context)
-                .load(product.get(position).getImg_cover())
+                .load(productOrderDetail.getProduct_image())
                 .error(R.drawable.logo_app_gradient)
                 .into(holder.imgProductOrder);
 
-        holder.tvName.setText(product.get(position).getName());
-        holder.tvPrice.setText(productOrder.getAmount());
-        holder.tvQuantity.setText(productsQuantity.get(position));
+        holder.tvName.setText(productOrderDetail.getProduct_name());
+        holder.tvPrice.setText(MyFormat.formatCurrency(productOrderDetail.getPrice()));
+        holder.tvQuantity.setText(String.valueOf(productOrderDetail.getQuantity()));
 
-
-        _BaseModel baseModel = new _BaseModel(orderDetailID.get(position), productOrder.getCreated_at());
+        _BaseModel baseModel = new _BaseModel(productOrderDetail.getOrder_detail_id(), productOrderDetail.getCreated_at());
         holder.itemView.setOnClickListener(v -> iActionOrder.onClick(baseModel));
+
     }
 
     @Override
     public int getItemCount() {
-        if (productOrders != null) {
-            return productOrders.size();
+        if (productOrdersDetail != null) {
+            return productOrdersDetail.size();
         }
         return 0;
     }

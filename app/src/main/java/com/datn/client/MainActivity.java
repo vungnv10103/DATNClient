@@ -39,12 +39,11 @@ import com.datn.client.ui.IBaseView;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.home.HomeFragment;
-import com.datn.client.utils.Constants;
-import com.datn.client.utils.PreferenceManager;
+import com.datn.client.ui.notifications.NotificationsFragment;
+import com.datn.client.utils.ManagerUser;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Objects;
@@ -53,11 +52,12 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private BasePresenter basePresenter;
-    private PreferenceManager preferenceManager;
     private Customer mCustomer;
     private String mToken;
 
-    private NavController navController;
+    public NavController navController;
+    private NavHostFragment navHostFragment;
+    public Fragment currentFragment;
     private TextView cartBadgeTextView;
     private boolean isExit = false;
     private static final long DELAY = 3000;
@@ -65,9 +65,8 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
     private final OnBackPressedCallback callback = new OnBackPressedCallback(true) {
         @Override
         public void handleOnBackPressed() {
-            NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
             if (navHostFragment != null) {
-                Fragment currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
+                currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
                 if (currentFragment instanceof HomeFragment) {
                     if (isExit) {
                         doExit();
@@ -76,13 +75,18 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
                     isExit = true;
                     showToast(getString(R.string.press_back_again_to_exit));
                     new Handler().postDelayed(() -> isExit = false, DELAY);
+                } else if (currentFragment instanceof NotificationsFragment) {
+                    if (NotificationsFragment.isLayoutActionShow) {
+                        NotificationsFragment.resetAction();
+                    } else {
+                        navController.popBackStack();
+                    }
                 } else {
                     navController.popBackStack();
                 }
             }
         }
     };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,9 +99,12 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        preferenceManager = new PreferenceManager(MainActivity.this, Constants.KEY_PREFERENCE_ACC);
-        checkLogin();
+        navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
+        mCustomer = ManagerUser.gI().checkCustomer(this);
+        mToken = ManagerUser.gI().checkToken(this);
+        if (mCustomer == null || mToken == null) {
+            reLogin();
+        }
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -105,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
                 R.id.navigation_dashboard)
                 .build();
         navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
         Objects.requireNonNull(getSupportActionBar()).hide();
@@ -217,24 +225,6 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
     private void reLogin() {
         showToast(getString(R.string.please_log_in_again));
         finishAffinity();
-    }
-
-    private Customer getLogin() {
-        Gson gson = new Gson();
-        String json = preferenceManager.getString("user");
-        return gson.fromJson(json, Customer.class);
-    }
-
-    private void checkLogin() {
-        mCustomer = getLogin();
-        if (mCustomer == null) {
-            reLogin();
-            return;
-        }
-        mToken = preferenceManager.getString("token");
-        if (mToken == null || mToken.isEmpty()) {
-            reLogin();
-        }
     }
 
     private void initService() {

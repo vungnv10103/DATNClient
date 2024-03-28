@@ -1,8 +1,8 @@
 package com.datn.client.ui.notifications;
 
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -15,18 +15,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.BackEventCompat;
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -47,13 +43,14 @@ import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,53 +67,24 @@ public class NotificationsFragment extends Fragment implements INotificationView
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private MaterialToolbar topAppBar;
     private CircularProgressIndicator progressBarLoading;
-    private RecyclerView rcvNotification;
+    private static RecyclerView rcvNotification;
     private TextView tvQuantitySelected;
     private CheckBox cbSelectedAllNotification;
 
-    private BottomNavigationView bottomNavigationView;
-    private NavController navController;
-    private Fragment currentFragment;
-
+    private static BottomNavigationView bottomNavigationView;
+    @SuppressLint("StaticFieldLeak")
+    private static RelativeLayout layoutActionTop;
+    private static MaterialCardView layoutActionBottom;
     private Customer mCustomer;
     private String mToken;
 
-    private NotificationAdapter notificationAdapter;
+    @SuppressLint("StaticFieldLeak")
+    private static NotificationAdapter notificationAdapter;
     private List<Notification> mNotificationList;
     private final List<String> mListNotificationID = new ArrayList<>();
-    private boolean isLayoutActionShow = false;
+    public static boolean isLayoutActionShow = false;
     private boolean isSelectedAll = false;
 
-    private final OnBackPressedCallback callback = new OnBackPressedCallback(true) {
-        @Override
-        public void handleOnBackPressed() {
-            if (isLayoutActionShow) {
-                resetAction();
-            } else {
-                if (currentFragment instanceof NotificationsFragment) {
-                    navController.popBackStack();
-                }
-            }
-        }
-
-        @Override
-        public void handleOnBackCancelled() {
-            super.handleOnBackCancelled();
-            MyDialog.gI().startDlgOK(requireActivity(), "handleOnBackCancelled");
-        }
-
-        @Override
-        public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
-            super.handleOnBackProgressed(backEvent);
-            MyDialog.gI().startDlgOK(requireActivity(), "handleOnBackProgressed");
-        }
-
-        @Override
-        public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
-            super.handleOnBackStarted(backEvent);
-            MyDialog.gI().startDlgOK(requireActivity(), "handleOnBackStarted");
-        }
-    };
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -124,9 +92,12 @@ public class NotificationsFragment extends Fragment implements INotificationView
         binding = FragmentNotificationsBinding.inflate(inflater, container, false);
         initUI();
 
-        requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), callback);
         preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
-        checkLogin();
+        mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
+        mToken = ManagerUser.gI().checkToken(requireActivity());
+        if (mCustomer == null || mToken == null) {
+            reLogin();
+        }
         return binding.getRoot();
     }
 
@@ -159,61 +130,62 @@ public class NotificationsFragment extends Fragment implements INotificationView
                     return;
                 }
             }
-            if (notificationAdapter == null) {
-                notificationAdapter = new NotificationAdapter(getActivity(), mNotificationList, new IAction() {
-                    @Override
-                    public void onClick(_BaseModel notification) {
-                        MyDialog.gI().startDlgOKWithAction(requireActivity(), "Do you want update this!", notification.get_id(),
-                                (dialog, which) -> notificationPresenter.updateStatusNotification(notification.get_id(), STATUS_NOTIFICATION.SEEN.getValue()), (dialog, which) -> dialog.dismiss());
-                    }
+//            if (notificationAdapter == null) {
+            notificationAdapter = new NotificationAdapter(getActivity(), mNotificationList, new IAction() {
+                @Override
+                public void onClick(_BaseModel notification) {
+                    MyDialog.gI().startDlgOKWithAction(requireActivity(), "Do you want update this!", notification.get_id(),
+                            (dialog, which) -> notificationPresenter.updateStatusNotification(notification.get_id(), STATUS_NOTIFICATION.SEEN.getValue()), (dialog, which) -> dialog.dismiss());
+                }
 
-                    @Override
-                    public void onLongClick(_BaseModel notification) {
-                        if (NotificationAdapter.isShowSelected) {
-                            isLayoutActionShow = true;
-                            bottomNavigationView.setVisibility(View.GONE);
-                            binding.layoutActionTop.setVisibility(View.VISIBLE);
-                            tvQuantitySelected.setText(String.format(getString(R.string.selected) + 0));
-                            binding.layoutActionBottom.setVisibility(View.VISIBLE);
-                            scalePaddingRcvNotification();
-                            setColorActionBottom(false);
+                @Override
+                public void onLongClick(_BaseModel notification) {
+                    if (NotificationAdapter.isShowSelected) {
+                        isLayoutActionShow = true;
+                        bottomNavigationView.setVisibility(View.GONE);
+                        binding.layoutActionTop.setVisibility(View.VISIBLE);
+                        tvQuantitySelected.setText(String.format(getString(R.string.selected) + 0));
+                        layoutActionBottom.setVisibility(View.VISIBLE);
+                        scalePaddingRcvNotification();
+                        setColorActionBottom(false);
+                    } else {
+                        isLayoutActionShow = false;
+                        binding.layoutActionTop.setVisibility(View.GONE);
+                        layoutActionBottom.setVisibility(View.GONE);
+                        bottomNavigationView.setVisibility(View.VISIBLE);
+                        scalePaddingRcvNotification();
+                    }
+                }
+
+                @Override
+                public void onItemClick(_BaseModel notification) {
+                    if (NotificationAdapter.isShowSelected) {
+                        if (NotificationAdapter.isChecked) {
+                            mListNotificationID.add(notification.get_id());
+                            NotificationAdapter.isChecked = false;
                         } else {
-                            isLayoutActionShow = false;
-                            binding.layoutActionTop.setVisibility(View.GONE);
-                            binding.layoutActionBottom.setVisibility(View.GONE);
-                            bottomNavigationView.setVisibility(View.VISIBLE);
-                            scalePaddingRcvNotification();
+                            mListNotificationID.remove(notification.get_id());
                         }
+                        cbSelectedAllNotification.setChecked(mListNotificationID.size() == mNotificationList.size());
+                        tvQuantitySelected.setText(String.format(getString(R.string.selected) + mListNotificationID.size()));
+                        setColorActionBottom(!mListNotificationID.isEmpty());
                     }
-
-                    @Override
-                    public void onItemClick(_BaseModel notification) {
-                        if (NotificationAdapter.isShowSelected) {
-                            if (NotificationAdapter.isChecked) {
-                                mListNotificationID.add(notification.get_id());
-                                NotificationAdapter.isChecked = false;
-                            } else {
-                                mListNotificationID.remove(notification.get_id());
-                            }
-                            cbSelectedAllNotification.setChecked(mListNotificationID.size() == mNotificationList.size());
-                            tvQuantitySelected.setText(String.format(getString(R.string.selected) + mListNotificationID.size()));
-                            setColorActionBottom(!mListNotificationID.isEmpty());
-                        }
-                    }
-                });
-                LinearLayoutManager llm = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
-                rcvNotification.setLayoutManager(llm);
-                rcvNotification.setAdapter(notificationAdapter);
-                MaterialDividerItemDecoration divider = new MaterialDividerItemDecoration(requireActivity(), MaterialDividerItemDecoration.VERTICAL);
-                rcvNotification.addItemDecoration(divider);
-                float dipStart = 72f + 8f; // width image + padding view
-                float dipEnd = 8f;
-                divider.setDividerInsetStart(MyFormat.convertDPtoPx(requireActivity(), dipStart));
-                divider.setDividerInsetEnd(MyFormat.convertDPtoPx(requireActivity(), dipEnd));
-                divider.setLastItemDecorated(false);
-            } else {
-                notificationAdapter.updateList(mNotificationList);
-            }
+                }
+            });
+            LinearLayoutManager llm = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+            rcvNotification.setLayoutManager(llm);
+            rcvNotification.setAdapter(notificationAdapter);
+            MaterialDividerItemDecoration divider = new MaterialDividerItemDecoration(requireActivity(), MaterialDividerItemDecoration.VERTICAL);
+            rcvNotification.addItemDecoration(divider);
+            float dipStart = 72f + 8f; // width image + padding view
+            float dipEnd = 8f;
+            divider.setDividerInsetStart(MyFormat.convertDPtoPx(requireActivity(), dipStart));
+            divider.setDividerInsetEnd(MyFormat.convertDPtoPx(requireActivity(), dipEnd));
+            divider.setLastItemDecorated(false);
+//            }
+//            else {
+//                notificationAdapter.updateList(mNotificationList);
+//            }
             mySwipeRefreshLayout.setRefreshing(false);
             setLoading(false);
         });
@@ -225,17 +197,18 @@ public class NotificationsFragment extends Fragment implements INotificationView
         rcvNotification.setVisibility(View.VISIBLE);
     }
 
-    private void resetAction() {
+    public static void resetAction() {
         isLayoutActionShow = false;
         NotificationAdapter.isShowSelected = false;
         NotificationAdapter.isChecked = false;
         if (notificationAdapter != null) {
             notificationAdapter.notifyItemRangeChanged(0, notificationAdapter.getItemCount());
         }
-        binding.layoutActionTop.setVisibility(View.GONE);
-        binding.layoutActionBottom.setVisibility(View.GONE);
+        layoutActionTop.setVisibility(View.GONE);
+        layoutActionBottom.setVisibility(View.GONE);
         bottomNavigationView.setVisibility(View.VISIBLE);
         scalePaddingRcvNotification();
+//        notificationAdapter = null;
     }
 
     @Override
@@ -270,7 +243,7 @@ public class NotificationsFragment extends Fragment implements INotificationView
 
     @Override
     public void onFinish() {
-        switchToLogin();
+        reLogin();
     }
 
     private void initService() {
@@ -330,7 +303,7 @@ public class NotificationsFragment extends Fragment implements INotificationView
         }
     }
 
-    private int getViewHeight(@NonNull View view) {
+    private static int getViewHeight(@NonNull View view) {
         view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
         return view.getMeasuredHeight();
     }
@@ -411,9 +384,9 @@ public class NotificationsFragment extends Fragment implements INotificationView
         return arr.getColor(0, -1);
     }
 
-    private void scalePaddingRcvNotification() {
+    private static void scalePaddingRcvNotification() {
         int padding = 16 * 2;
-        int heightBottomAction = getViewHeight(binding.layoutActionBottom) + padding;
+        int heightBottomAction = getViewHeight(layoutActionBottom) + padding;
         int bottom;
         if (isLayoutActionShow) {
             bottom = heightBottomAction + padding;
@@ -424,6 +397,8 @@ public class NotificationsFragment extends Fragment implements INotificationView
     }
 
     private void initUI() {
+        layoutActionTop = binding.layoutActionTop;
+        layoutActionBottom = binding.layoutActionBottom;
         mySwipeRefreshLayout = binding.swipeRefreshNotification;
         //        mySwipeRefreshLayout.setColorSchemeColors(Color.BLUE, Color.YELLOW, Color.GREEN);
         topAppBar = binding.topAppBar;
@@ -431,21 +406,9 @@ public class NotificationsFragment extends Fragment implements INotificationView
         rcvNotification = binding.rcvNotification;
         scalePaddingRcvNotification();
         bottomNavigationView = requireActivity().findViewById(R.id.nav_view);
-        navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_activity_main);
-        NavHostFragment navHostFragment = (NavHostFragment) requireActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
-        if (navHostFragment != null) {
-            currentFragment = navHostFragment.getChildFragmentManager().getFragments().get(0);
-        }
         tvQuantitySelected = binding.tvQuantity;
         cbSelectedAllNotification = binding.cbSelectedAll;
     }
-
-    public void switchToLogin() {
-        preferenceManager.clear();
-        startActivity(new Intent(requireActivity(), LoginActivity.class));
-        requireActivity().finishAffinity();
-    }
-
 
     private void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
@@ -457,32 +420,37 @@ public class NotificationsFragment extends Fragment implements INotificationView
 
     private void reLogin() {
         showToast(getString(R.string.please_log_in_again));
+        preferenceManager.clear();
+        startActivity(new Intent(requireActivity(), LoginActivity.class));
         requireActivity().finishAffinity();
     }
 
-    private Customer getLogin() {
-        Gson gson = new Gson();
-        String json = preferenceManager.getString("user");
-        return gson.fromJson(json, Customer.class);
-    }
 
-    private void checkLogin() {
-        mCustomer = getLogin();
-        if (mCustomer == null) {
-            reLogin();
-            return;
-        }
-        mToken = preferenceManager.getString("token");
-        if (mToken == null || mToken.isEmpty()) {
-            reLogin();
-        }
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
+        Log.d(TAG, "onPause: ");
         resetAction();
+    }
+
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
     }
 
 

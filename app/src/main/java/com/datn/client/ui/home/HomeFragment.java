@@ -44,11 +44,11 @@ import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.product.DetailProductActivity;
 import com.datn.client.ui.product.ListProductActivity;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
-import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Objects;
@@ -88,7 +88,11 @@ public class HomeFragment extends Fragment implements IHomeView {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         initUI();
         preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
-        checkLogin();
+        mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
+        mToken = ManagerUser.gI().checkToken(requireActivity());
+        if (mCustomer == null || mToken == null) {
+            reLogin();
+        }
         return binding.getRoot();
     }
 
@@ -318,39 +322,18 @@ public class HomeFragment extends Fragment implements IHomeView {
         showLogW(key, message);
     }
 
-    public void switchToLogin() {
-        preferenceManager.clear();
-        startActivity(new Intent(requireActivity(), LoginActivity.class));
-        requireActivity().finishAffinity();
-    }
 
     private void reLogin() {
         showToast(getString(R.string.please_log_in_again));
+        preferenceManager.clear();
+        startActivity(new Intent(requireActivity(), LoginActivity.class));
         requireActivity().finishAffinity();
     }
 
 
     @Override
     public void onFinish() {
-        switchToLogin();
-    }
-
-    private void checkLogin() {
-        mCustomer = getLogin();
-        if (mCustomer == null) {
-            reLogin();
-            return;
-        }
-        mToken = preferenceManager.getString("token");
-        if (mToken == null || mToken.isEmpty()) {
-            reLogin();
-        }
-    }
-
-    private Customer getLogin() {
-        Gson gson = new Gson();
-        String json = preferenceManager.getString("user");
-        return gson.fromJson(json, Customer.class);
+        reLogin();
     }
 
 
@@ -474,9 +457,4 @@ public class HomeFragment extends Fragment implements IHomeView {
         homePresenter.onCancelAPI();
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        switchToLogin();
-    }
 }

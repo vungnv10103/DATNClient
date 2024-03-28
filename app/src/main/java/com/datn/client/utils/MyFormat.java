@@ -66,6 +66,7 @@ public class MyFormat {
             DecimalFormat decimalFormat = new DecimalFormat("#,###,###.###", formatSymbols);
             return decimalFormat.format(number) + " VND";
         } catch (NumberFormatException e) {
+            System.out.println(e.getMessage());
             return amount;
         }
     }

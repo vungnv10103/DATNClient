@@ -29,11 +29,12 @@ import com.datn.client.models.Customer;
 import com.datn.client.response.EBankingResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
+import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.google.gson.Gson;
 
 import java.util.Objects;
 
@@ -77,7 +78,11 @@ public class EBankingActivity extends AppCompatActivity {
         initUI();
         initEventClick();
         preferenceManager = new PreferenceManager(this, Constants.KEY_PREFERENCE_ACC);
-        checkLogin();
+        mCustomer = ManagerUser.gI().checkCustomer(this);
+        mToken = ManagerUser.gI().checkToken(this);
+        if (mCustomer == null || mToken == null) {
+            reLogin();
+        }
         initService();
 
     }
@@ -232,25 +237,6 @@ public class EBankingActivity extends AppCompatActivity {
         }
     }
 
-
-    private Customer getLogin() {
-        Gson gson = new Gson();
-        String json = preferenceManager.getString("user");
-        return gson.fromJson(json, Customer.class);
-    }
-
-    private void checkLogin() {
-        mCustomer = getLogin();
-        if (mCustomer == null) {
-            switchToLogin();
-            return;
-        }
-        mToken = preferenceManager.getString("token");
-        if (mToken == null || mToken.isEmpty()) {
-            switchToLogin();
-        }
-    }
-
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
@@ -269,8 +255,10 @@ public class EBankingActivity extends AppCompatActivity {
         webSettings.setSupportZoom(true);
     }
 
-    private void switchToLogin() {
+    private void reLogin() {
         showToast(getString(R.string.please_log_in_again));
+        preferenceManager.clear();
+        startActivity(new Intent(this, LoginActivity.class));
         finishAffinity();
     }
 

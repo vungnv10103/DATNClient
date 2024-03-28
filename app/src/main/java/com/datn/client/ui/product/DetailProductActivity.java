@@ -1,6 +1,7 @@
 package com.datn.client.ui.product;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -34,13 +35,14 @@ import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
+import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Objects;
@@ -94,7 +96,16 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
         initUI();
         initEventClick();
         preferenceManager = new PreferenceManager(this, Constants.KEY_PREFERENCE_ACC);
-        checkLogin();
+        mProductID = getIntent().getStringExtra("productID");
+        if (mProductID == null) {
+            showToast(getString(R.string.product_selection_error));
+            finishAffinity();
+        }
+        mCustomer = ManagerUser.gI().checkCustomer(this);
+        mToken = ManagerUser.gI().checkToken(this);
+        if (mCustomer == null || mToken == null) {
+            reLogin();
+        }
         initService();
     }
 
@@ -158,7 +169,9 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
 
     @Override
     public void onThrowMessage(MessageResponse message) {
-        MyDialog.gI().startDlgOK(this, message.getContent());
+        if (message != null) {
+            MyDialog.gI().startDlgOK(this, message.getContent());
+        }
     }
 
     @Override
@@ -168,32 +181,9 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
 
     @Override
     public void onFinish() {
-        MyDialog.gI().startDlgOK(this, "onFinish");
+        reLogin();
     }
 
-    private Customer getLogin() {
-        Gson gson = new Gson();
-        String json = preferenceManager.getString("user");
-        return gson.fromJson(json, Customer.class);
-    }
-
-    private void checkLogin() {
-        mCustomer = getLogin();
-        if (mCustomer == null) {
-            switchToLogin();
-            return;
-        }
-        mToken = preferenceManager.getString("token");
-        if (mToken == null || mToken.isEmpty()) {
-            switchToLogin();
-            return;
-        }
-        mProductID = getIntent().getStringExtra("productID");
-        if (mProductID == null) {
-            showToast(getString(R.string.product_selection_error));
-            finishAffinity();
-        }
-    }
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
@@ -261,8 +251,10 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
         });
     }
 
-    private void switchToLogin() {
+    private void reLogin() {
         showToast(getString(R.string.please_log_in_again));
+        preferenceManager.clear();
+        startActivity(new Intent(this, LoginActivity.class));
         finishAffinity();
     }
 

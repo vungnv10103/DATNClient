@@ -1,6 +1,5 @@
 package com.datn.client.ui.dashboard;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.datn.client.R;
 import com.datn.client.activity.SettingActivity;
-import com.datn.client.activity.TestActivity;
 import com.datn.client.databinding.FragmentDashboardBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
@@ -30,10 +28,9 @@ import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.order.OrderActivity;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.PreferenceManager;
-import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DashboardFragment extends Fragment implements IDashboardView {
@@ -53,7 +50,12 @@ public class DashboardFragment extends Fragment implements IDashboardView {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         initUI();
         preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
-        checkLogin();
+        mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
+        mToken = ManagerUser.gI().checkToken(requireActivity());
+        if (mCustomer == null || mToken == null) {
+            reLogin();
+        }
+        setDataUser();
         return binding.getRoot();
     }
 
@@ -63,7 +65,6 @@ public class DashboardFragment extends Fragment implements IDashboardView {
 
         initEventClick();
         initService();
-//        MyDialog.gI().startDlgOK(requireActivity(), getString(R.string.app_name), getString(R.string.app_name), null, null);
     }
 
     private void doLogout() {
@@ -72,7 +73,9 @@ public class DashboardFragment extends Fragment implements IDashboardView {
 
     @Override
     public void onThrowMessage(MessageResponse message) {
-        MyDialog.gI().startDlgOK(requireActivity(), message.getContent());
+        if (message != null) {
+            MyDialog.gI().startDlgOK(requireActivity(), message.getContent());
+        }
     }
 
     @Override
@@ -98,7 +101,9 @@ public class DashboardFragment extends Fragment implements IDashboardView {
     @Override
     public void onLogout() {
         showToast("Đăng xuất thành công");
-        switchToLogin();
+        preferenceManager.clear();
+        startActivity(new Intent(requireActivity(), LoginActivity.class));
+        requireActivity().finishAffinity();
     }
 
     private void initService() {
@@ -115,44 +120,21 @@ public class DashboardFragment extends Fragment implements IDashboardView {
                 .into(binding.imgAvatarUser);
     }
 
-    private Customer getLogin() {
-        Gson gson = new Gson();
-        String json = preferenceManager.getString("user");
-        return gson.fromJson(json, Customer.class);
-    }
-
-    private void checkLogin() {
-        mCustomer = getLogin();
-        if (mCustomer == null) {
-            reLogin();
-            return;
-        }
-        mToken = preferenceManager.getString("token");
-        if (mToken == null || mToken.isEmpty()) {
-            reLogin();
-        }
-        setDataUser();
-    }
-
     private void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    public void switchToLogin() {
-        preferenceManager.putBoolean("isRemember", false);
-        preferenceManager.putString("token", "");
-
-        startActivity(new Intent(requireActivity(), LoginActivity.class));
-        requireActivity().finishAffinity();
-    }
 
     private void reLogin() {
         showToast(getString(R.string.please_log_in_again));
+        preferenceManager.clear();
+        startActivity(new Intent(requireActivity(), LoginActivity.class));
         requireActivity().finishAffinity();
     }
 
 
     private void initEventClick() {
+        btnLogout.setOnClickListener(v -> doLogout());
         binding.layoutSetting.setOnClickListener(v -> startActivity(new Intent(requireActivity(), SettingActivity.class)));
         binding.layoutOrder.setOnClickListener(v -> startActivity(new Intent(requireActivity(), OrderActivity.class)));
     }
@@ -166,5 +148,6 @@ public class DashboardFragment extends Fragment implements IDashboardView {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+        dashboardPresenter.onCancelAPI();
     }
 }

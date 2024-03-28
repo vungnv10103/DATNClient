@@ -39,15 +39,16 @@ import com.datn.client.models._BaseModel;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.services.zalo.CreateOrder;
+import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.product.DetailProductActivity.TYPE_BUY;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
-import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
@@ -127,7 +128,11 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         initUI();
         initEventClick();
         preferenceManager = new PreferenceManager(this, Constants.KEY_PREFERENCE_ACC);
-        checkLogin();
+        mCustomer = ManagerUser.gI().checkCustomer(this);
+        mToken = ManagerUser.gI().checkToken(this);
+        if (mCustomer == null || mToken == null) {
+            reLogin();
+        }
         initService();
         initZaloPay();
 
@@ -241,15 +246,17 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     }
 
     @Override
-    public void onThrowMessage(@NonNull MessageResponse message) {
-        switch (message.getStatusCode()) {
-            case 200:
-                MyDialog.gI().startDlgOKWithAction(this, message.getTitle(), message.getContent(), (dialog, which) -> finish());
-                break;
-            case 400:
-            default:
-                MyDialog.gI().startDlgOK(this, message.getContent());
-                break;
+    public void onThrowMessage(MessageResponse message) {
+        if (message != null) {
+            switch (message.getStatusCode()) {
+                case 200:
+                    MyDialog.gI().startDlgOKWithAction(this, message.getTitle(), message.getContent(), (dialog, which) -> finish());
+                    break;
+                case 400:
+                default:
+                    MyDialog.gI().startDlgOK(this, message.getContent());
+                    break;
+            }
         }
     }
 
@@ -260,26 +267,9 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
 
     @Override
     public void onFinish() {
-        MyDialog.gI().startDlgOK(this, "onFinish");
+        reLogin();
     }
 
-    private Customer getLogin() {
-        Gson gson = new Gson();
-        String json = preferenceManager.getString("user");
-        return gson.fromJson(json, Customer.class);
-    }
-
-    private void checkLogin() {
-        mCustomer = getLogin();
-        if (mCustomer == null) {
-            switchToLogin();
-            return;
-        }
-        mToken = preferenceManager.getString("token");
-        if (mToken == null || mToken.isEmpty()) {
-            switchToLogin();
-        }
-    }
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
@@ -467,8 +457,10 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         btnEBanking3 = binding.btnEBanking3;
     }
 
-    private void switchToLogin() {
+    private void reLogin() {
         showToast(getString(R.string.please_log_in_again));
+        preferenceManager.clear();
+        startActivity(new Intent(this, LoginActivity.class));
         finishAffinity();
     }
 

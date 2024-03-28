@@ -29,6 +29,7 @@ import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -66,7 +67,10 @@ public class VerifyOTPBottomSheet extends BottomSheetDialogFragment {
 
         initService();
         initEventClick();
-        mCustomer = getLogin();
+        mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
+        if (mCustomer == null) {
+            reLogin();
+        }
 
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             String token = task.getResult();
@@ -98,12 +102,6 @@ public class VerifyOTPBottomSheet extends BottomSheetDialogFragment {
         Gson gson = new Gson();
         String json = gson.toJson(customer);
         preferenceManager.putString("user", json);
-    }
-
-    private Customer getLogin() {
-        Gson gson = new Gson();
-        String json = preferenceManager.getString("user");
-        return gson.fromJson(json, Customer.class);
     }
 
     private void addTokenFMC(String token, @NonNull Customer cus) {
@@ -279,6 +277,12 @@ public class VerifyOTPBottomSheet extends BottomSheetDialogFragment {
         return true;
     }
 
+    private void reLogin() {
+        showToast(getString(R.string.please_log_in_again));
+        preferenceManager.clear();
+        startActivity(new Intent(requireActivity(), LoginActivity.class));
+        requireActivity().finishAffinity();
+    }
 
     private void initUI() {
         progressBarLoading = binding.progressbarVerify;

@@ -32,6 +32,7 @@ import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
@@ -98,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
 
         boolean isRemember = preferenceManager.getBoolean("isRemember");
         if (isRemember) {
-            mCustomer = getLogin();
+            mCustomer = ManagerUser.gI().checkCustomer(this);
             cbRemember.setChecked(true);
             edEmail.setText(mCustomer.getEmail());
             edPass.setText(mCustomer.getPassword());
@@ -183,12 +184,6 @@ public class LoginActivity extends AppCompatActivity {
             progressBarLoading.setVisibility(View.GONE);
             layoutLogin.setVisibility(View.VISIBLE);
         }
-    }
-
-    private Customer getLogin() {
-        Gson gson = new Gson();
-        String json = preferenceManager.getString("user");
-        return gson.fromJson(json, Customer.class);
     }
 
     private void showLogW(String key, String message) {

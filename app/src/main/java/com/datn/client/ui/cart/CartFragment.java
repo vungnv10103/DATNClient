@@ -31,16 +31,17 @@ import com.datn.client.models.ProductCart;
 import com.datn.client.models._BaseModel;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
+import com.datn.client.ui.auth.LoginActivity;
+import com.datn.client.ui.checkout.CheckoutActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyNavController;
-import com.datn.client.ui.checkout.CheckoutActivity;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.product.ProductPresenter.STATUS_CART;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -70,11 +71,14 @@ public class CartFragment extends Fragment implements ICartView {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentCartBinding.inflate(inflater, container, false);
-        requireActivity().runOnUiThread(() -> {
-            preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
-            initUI();
-            checkLogin();
-        });
+
+        preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
+        initUI();
+        mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
+        mToken = ManagerUser.gI().checkToken(requireActivity());
+        if (mCustomer == null || mToken == null) {
+            reLogin();
+        }
         return binding.getRoot();
     }
 
@@ -195,7 +199,7 @@ public class CartFragment extends Fragment implements ICartView {
 
     @Override
     public void onFinish() {
-        MyDialog.gI().startDlgOK(requireActivity(), "onFinish");
+        reLogin();
     }
 
 
@@ -218,24 +222,6 @@ public class CartFragment extends Fragment implements ICartView {
     @Override
     public void onBuyNow(String cartID) {
         cartPresenter.buyNowCart(cartID);
-    }
-
-    private Customer getLogin() {
-        Gson gson = new Gson();
-        String json = preferenceManager.getString("user");
-        return gson.fromJson(json, Customer.class);
-    }
-
-    private void checkLogin() {
-        mCustomer = getLogin();
-        if (mCustomer == null) {
-            switchToLogin();
-            return;
-        }
-        mToken = preferenceManager.getString("token");
-        if (mToken == null || mToken.isEmpty()) {
-            switchToLogin();
-        }
     }
 
     private void initService() {
@@ -296,8 +282,10 @@ public class CartFragment extends Fragment implements ICartView {
         btnGoShopping = binding.btnGoShopping;
     }
 
-    private void switchToLogin() {
+    private void reLogin() {
         showToast(getString(R.string.please_log_in_again));
+        preferenceManager.clear();
+        startActivity(new Intent(requireActivity(), LoginActivity.class));
         requireActivity().finishAffinity();
     }
 

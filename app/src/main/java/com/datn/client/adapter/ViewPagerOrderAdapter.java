@@ -1,4 +1,4 @@
-package com.datn.client.activity;
+package com.datn.client.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

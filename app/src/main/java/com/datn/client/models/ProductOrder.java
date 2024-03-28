@@ -1,11 +1,12 @@
 package com.datn.client.models;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 public class ProductOrder extends _BaseModel {
 
     private String order_id;
-
     private List<Product> products;
     private List<String> productsQuantity;
     private List<String> orderDetailID;

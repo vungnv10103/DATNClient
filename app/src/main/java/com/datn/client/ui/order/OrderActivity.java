@@ -17,13 +17,16 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.datn.client.R;
-import com.datn.client.activity.ViewPagerOrderAdapter;
+import com.datn.client.adapter.ViewPagerOrderAdapter;
 import com.datn.client.databinding.ActivityOrderBinding;
 import com.datn.client.models.Customer;
 import com.datn.client.models.MessageResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OrdersDetail;
 import com.datn.client.models.OverlayMessage;
+import com.datn.client.models.Product;
+import com.datn.client.models.ProductOrder;
+import com.datn.client.models.ProductOrderDetail;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.animation.DepthPageTransformer;
@@ -31,28 +34,29 @@ import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class OrderActivity extends AppCompatActivity implements IOrderView {
     private static final String TAG = OrderActivity.class.getSimpleName();
-    private static final int POSITION_WAITING_TAB = 0;
-    private static final int POSITION_PREPARE_TAB = 1;
-    private static final int POSITION_IN_TRANSIT_TAB = 2;
-    private static final int POSITION_PAID_TAB = 3;
-    private static final int POSITION_CANCEL_TAB = 4;
+    public static final int POSITION_WAITING_TAB = 0;
+    public static final int POSITION_PREPARE_TAB = 1;
+    public static final int POSITION_IN_TRANSIT_TAB = 2;
+    public static final int POSITION_PAID_TAB = 3;
+    public static final int POSITION_CANCEL_TAB = 4;
     private ActivityOrderBinding binding;
     private OrderPresenter orderPresenter;
     private PreferenceManager preferenceManager;
     private CircularProgressIndicator progressViewPager2;
-    private TabLayout tabLayout;
+    private static TabLayout tabLayout;
     private ViewPager2 vpgOrder;
 
     private Customer mCustomer;
@@ -89,7 +93,11 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
         initUI();
         preferenceManager = new PreferenceManager(OrderActivity.this, Constants.KEY_PREFERENCE_ACC);
 
-        checkLogin();
+        mCustomer = ManagerUser.gI().checkCustomer(this);
+        mToken = ManagerUser.gI().checkToken(this);
+        if (mCustomer == null || mToken == null) {
+            reLogin();
+        }
         initService();
     }
 
@@ -101,10 +109,38 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
 
     }
 
-    private void displayCustomBadge(TabLayout.Tab tab, int number, @DrawableRes int resId) {
+    @NonNull
+    public static List<ProductOrderDetail> getProductOrderDetail(@NonNull List<ProductOrder> dataProductOrder) {
+        List<ProductOrderDetail> dataProductOrderDetail = new ArrayList<>();
+        for (int i = 0; i < dataProductOrder.size(); i++) {
+            ProductOrder productOrder = dataProductOrder.get(i);
+            String orderID = productOrder.getOrder_id();
+            List<Product> products = productOrder.getProducts();
+            List<String> productsQuantity = productOrder.getProductsQuantity();
+            List<String> orderDetailID = productOrder.getOrderDetailID();
+            String amount = productOrder.getAmount();
+            for (int j = 0; j < products.size(); j++) {
+                ProductOrderDetail productOrderDetail = new ProductOrderDetail();
+                productOrderDetail.setOrder_id(orderID);
+                productOrderDetail.setOrder_detail_id(orderDetailID.get(j));
+                productOrderDetail.setProduct_id(products.get(j).get_id());
+                productOrderDetail.setProduct_image(products.get(j).getImg_cover());
+                productOrderDetail.setProduct_name(products.get(j).getName());
+                productOrderDetail.setPrice(amount);
+                productOrderDetail.setQuantity(Integer.parseInt(productsQuantity.get(j)));
+                dataProductOrderDetail.add(productOrderDetail);
+            }
+        }
+        return dataProductOrderDetail;
+    }
+
+    public static void displayCustomBadge(int positionTab, int number, @DrawableRes int resId) {
+        TabLayout.Tab tab = tabLayout.getTabAt(positionTab);
         if (tab != null) {
-            BadgeDrawable badge = tab.getOrCreateBadge();
-            badge.setNumber(number);
+            if (number > 0) {
+                BadgeDrawable badge = tab.getOrCreateBadge();
+                badge.setNumber(number);
+            }
             if (resId == -1) {
                 return;
             }
@@ -113,21 +149,18 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
     }
 
     private void displayOrders() {
-        if (mOrdersDetail.getWaitingList() != null) {
-            displayCustomBadge(tabLayout.getTabAt(POSITION_WAITING_TAB), mOrdersDetail.getWaitingList().size(), R.drawable.logo_app_gradient);
-        }
-        if (mOrdersDetail.getPrepareList() != null) {
-            displayCustomBadge(tabLayout.getTabAt(POSITION_PREPARE_TAB), mOrdersDetail.getPrepareList().size(), -1);
-        }
-        if (mOrdersDetail.getInTransitList() != null) {
-            displayCustomBadge(tabLayout.getTabAt(POSITION_IN_TRANSIT_TAB), mOrdersDetail.getInTransitList().size(), -1);
-        }
-        if (mOrdersDetail.getPaidList() != null) {
-            displayCustomBadge(tabLayout.getTabAt(POSITION_PAID_TAB), mOrdersDetail.getPaidList().size(), -1);
-        }
-        if (mOrdersDetail.getCancelList() != null) {
-            displayCustomBadge(tabLayout.getTabAt(POSITION_CANCEL_TAB), mOrdersDetail.getCancelList().size(), -1);
-        }
+//        if (mOrdersDetail.getPrepareList() != null) {
+//            displayCustomBadge(tabLayout.getTabAt(POSITION_PREPARE_TAB), mOrdersDetail.getPrepareList().size(), -1);
+//        }
+//        if (mOrdersDetail.getInTransitList() != null) {
+//            displayCustomBadge(tabLayout.getTabAt(POSITION_IN_TRANSIT_TAB), mOrdersDetail.getInTransitList().size(), -1);
+//        }
+//        if (mOrdersDetail.getPaidList() != null) {
+//            displayCustomBadge(tabLayout.getTabAt(POSITION_PAID_TAB), mOrdersDetail.getPaidList().size(), -1);
+//        }
+//        if (mOrdersDetail.getCancelList() != null) {
+//            displayCustomBadge(tabLayout.getTabAt(POSITION_CANCEL_TAB), mOrdersDetail.getCancelList().size(), -1);
+//        }
         vpgOrder.setVisibility(View.VISIBLE);
         progressViewPager2.setVisibility(View.GONE);
     }
@@ -155,15 +188,17 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
     }
 
     @Override
-    public void onThrowMessage(@NonNull MessageResponse message) {
-        switch (message.getCode()) {
-            case "overlay/update-status-success":
-            case "notification/update-status-success":
-                showLogW(message.getTitle(), message.getContent());
-                break;
-            default:
-                MyDialog.gI().startDlgOK(OrderActivity.this, message.getContent());
-                break;
+    public void onThrowMessage(MessageResponse message) {
+        if (message != null) {
+            switch (message.getCode()) {
+                case "overlay/update-status-success":
+                case "notification/update-status-success":
+                    showLogW(message.getTitle(), message.getContent());
+                    break;
+                default:
+                    MyDialog.gI().startDlgOK(OrderActivity.this, message.getContent());
+                    break;
+            }
         }
     }
 
@@ -174,7 +209,7 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
 
     @Override
     public void onFinish() {
-        switchToLogin();
+        reLogin();
     }
 
     private void initService() {
@@ -225,30 +260,8 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
 
     private void reLogin() {
         showToast(getString(R.string.please_log_in_again));
-        finishAffinity();
-    }
-
-    private Customer getLogin() {
-        Gson gson = new Gson();
-        String json = preferenceManager.getString("user");
-        return gson.fromJson(json, Customer.class);
-    }
-
-    private void checkLogin() {
-        mCustomer = getLogin();
-        if (mCustomer == null) {
-            reLogin();
-            return;
-        }
-        mToken = preferenceManager.getString("token");
-        if (mToken == null || mToken.isEmpty()) {
-            reLogin();
-        }
-    }
-
-    public void switchToLogin() {
         preferenceManager.clear();
-        startActivity(new Intent(OrderActivity.this, LoginActivity.class));
+        startActivity(new Intent(this, LoginActivity.class));
         finishAffinity();
     }
 
