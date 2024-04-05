@@ -23,7 +23,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.datn.client.MainActivity;
 import com.datn.client.R;
 import com.datn.client.ui.auth.LoginActivity;
-import com.datn.client.ui.checkout.CheckoutPresenter;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.PAYMENT_METHOD;
 import com.google.firebase.messaging.FirebaseMessagingService;

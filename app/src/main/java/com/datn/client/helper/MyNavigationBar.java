@@ -1,7 +1,6 @@
 package com.datn.client.helper;
 
 import android.app.Activity;
-import android.content.Context;
 import android.util.DisplayMetrics;
 
 import androidx.annotation.NonNull;

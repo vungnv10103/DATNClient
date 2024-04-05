@@ -169,9 +169,10 @@ public interface ApiService {
                                                @Field("language") String language);
 
     @FormUrlEncoded
-    @POST("/v1/api/order/get/all")
-    Call<OrderResponse> getAllOrders(@Header("Authorization") String token,
-                                     @Field("customerID") String customerID);
+    @POST("/v1/api/order/get")
+    Call<OrderResponse> getOrdersByStatus(@Header("Authorization") String token,
+                                          @Field("customerID") String customerID,
+                                          @Field("status") int status);
 
     @FormUrlEncoded
     @POST("/v1/api/overlay/message/get")

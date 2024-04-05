@@ -21,7 +21,7 @@ public class OrderPresenter extends BasePresenter {
     private final String token;
     private final String customerID;
 
-    private Call<OrderResponse> getAllOrders;
+    private static Call<OrderResponse> getOrdersByStatus;
 
     public OrderPresenter(FragmentActivity context, IOrderView iOrderView, ApiService apiService, String token, String customerID) {
         super(context, iOrderView, apiService, token, customerID);
@@ -35,16 +35,17 @@ public class OrderPresenter extends BasePresenter {
     @Override
     public void onCancelAPI() {
         super.onCancelAPI();
-        if (getAllOrders != null) {
-            getAllOrders.cancel();
+        if (getOrdersByStatus != null) {
+            getOrdersByStatus.cancel();
         }
     }
 
-    public void getAllOrders() {
+
+    public void getOrdersByStatus(int status) {
         context.runOnUiThread(() -> {
             try {
-                getAllOrders = apiService.getAllOrders(token, customerID);
-                getAllOrders.enqueue(new Callback<OrderResponse>() {
+                getOrdersByStatus = apiService.getOrdersByStatus(token, customerID, status);
+                getOrdersByStatus.enqueue(new Callback<OrderResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<OrderResponse> call, @NonNull Response<OrderResponse> response) {
                         if (response.body() != null) {
@@ -52,7 +53,6 @@ public class OrderPresenter extends BasePresenter {
                             String code = response.body().getCode();
                             MessageResponse message = response.body().getMessage();
                             if (statusCode == 200) {
-                                iOrderView.onThrowLog("getAllOrders200", code);
                                 OrdersDetail ordersDetail = response.body().getOrdersDetail();
                                 if (ordersDetail != null) {
                                     iOrderView.onLoadOrders(ordersDetail);
@@ -66,20 +66,19 @@ public class OrderPresenter extends BasePresenter {
                                 }
                             }
                         } else {
-                            iOrderView.onThrowLog("getAllOrders: onResponse", response.toString());
+                            iOrderView.onThrowLog("getOrdersByStatus: onResponse", response.toString());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<OrderResponse> call, @NonNull Throwable t) {
-                        iOrderView.onThrowLog("getAllOrders: onFailure", t.getMessage());
+                        iOrderView.onThrowLog("getOrdersByStatus: onFailure", t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iOrderView.onThrowLog("getAllOrders", e.getMessage());
+                iOrderView.onThrowLog("getOrdersByStatus", e.getMessage());
             }
         });
     }
-
 
 }

@@ -18,36 +18,42 @@ import com.datn.client.action.IAction;
 import com.datn.client.adapter.OrderAdapter;
 import com.datn.client.databinding.FragmentOrderPaidBinding;
 import com.datn.client.models.Customer;
+import com.datn.client.models.MessageResponse;
+import com.datn.client.models.OrdersDetail;
 import com.datn.client.models.ProductOrder;
 import com.datn.client.models.ProductOrderDetail;
 import com.datn.client.models._BaseModel;
+import com.datn.client.response.OrderResponse;
+import com.datn.client.services.ApiService;
+import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.PreferenceManager;
+import com.datn.client.utils.STATUS_ORDER;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class PaidOrderFragment extends Fragment {
     private static final String TAG = PaidOrderFragment.class.getSimpleName();
     private FragmentOrderPaidBinding binding;
-
-    private OrderPresenter orderPresenter;
-
     private PreferenceManager preferenceManager;
-
     private CircularProgressIndicator progressLoading;
     private RecyclerView rcvOrderPaid;
-
+    private ApiService apiService;
     private Customer mCustomer;
     private String mToken;
-    private static List<ProductOrder> mPaidOrders;
+    private Call<OrderResponse> getOrdersPaid;
+    private List<ProductOrder> mPaidOrders;
 
     @NonNull
-    public static PaidOrderFragment newInstance(List<ProductOrder> dataOrder) {
-        mPaidOrders = dataOrder;
+    public static PaidOrderFragment newInstance() {
         return new PaidOrderFragment();
     }
 
@@ -61,20 +67,66 @@ public class PaidOrderFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentOrderPaidBinding.inflate(inflater, container, false);
         initUI();
+        checkRequire();
+        apiService = RetrofitConnection.getApiService();
+        return binding.getRoot();
+    }
+
+    private void checkRequire() {
         preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
         mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
         mToken = ManagerUser.gI().checkToken(requireActivity());
         if (mCustomer == null || mToken == null) {
             reLogin();
         }
-        return binding.getRoot();
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        displayOrder(OrderActivity.getProductOrderDetail(mPaidOrders));
+        getOrdersPaid();
+    }
+
+    private void getOrdersPaid() {
+        requireActivity().runOnUiThread(() -> {
+            try {
+                getOrdersPaid = apiService.getOrdersByStatus(mToken, mCustomer.get_id(), STATUS_ORDER.PAID.getValue());
+                getOrdersPaid.enqueue(new Callback<OrderResponse>() {
+                    @Override
+                    public void onResponse(@NonNull Call<OrderResponse> call, @NonNull Response<OrderResponse> response) {
+                        if (response.body() != null) {
+                            int statusCode = response.body().getStatusCode();
+                            String code = response.body().getCode();
+                            MessageResponse message = response.body().getMessage();
+                            if (statusCode == 200) {
+                                showLogW("getOrdersPaid200", code);
+                                OrdersDetail ordersDetail = response.body().getOrdersDetail();
+                                if (ordersDetail != null) {
+                                    displayOrder(OrderActivity.getProductOrderDetail(ordersDetail.getPaidList()));
+                                }
+                            } else if (statusCode == 400) {
+                                if (code.equals("auth/wrong-token")) {
+                                    reLogin();
+                                } else {
+                                    showLogW("getOrdersPaid400", code);
+                                    MyDialog.gI().startDlgOK(requireActivity(), message.getTitle(), message.getContent());
+                                }
+                            }
+                        } else {
+                            showLogW("getOrdersPaid: onResponse", response.toString());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(@NonNull Call<OrderResponse> call, @NonNull Throwable t) {
+                        showLogW("getOrdersPaid: onFailure", t.getMessage());
+                    }
+                });
+            } catch (Exception e) {
+                showLogW("getOrdersPaid", e.getMessage());
+            }
+        });
     }
 
     private void displayOrder(List<ProductOrderDetail> productOrdersDetail) {
@@ -124,5 +176,18 @@ public class PaidOrderFragment extends Fragment {
 
     private void showLogW(String key, String message) {
         Log.w(TAG, key + ": " + message);
+    }
+
+    private void onCancelAPI() {
+        if (getOrdersPaid != null) {
+            getOrdersPaid.cancel();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        binding = null;
+        onCancelAPI();
     }
 }

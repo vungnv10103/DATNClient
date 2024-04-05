@@ -1,11 +1,9 @@
 package com.datn.client.activity;
 
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.widget.CompoundButton;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
@@ -15,7 +13,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.datn.client.R;
 import com.datn.client.databinding.ActivitySettingBinding;
-import com.datn.client.ui.components.MyDialog;
 
 import java.util.Objects;
 

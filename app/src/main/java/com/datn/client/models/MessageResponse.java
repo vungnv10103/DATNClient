@@ -1,7 +1,5 @@
 package com.datn.client.models;
 
-import androidx.annotation.NonNull;
-
 public class MessageResponse extends _BaseModel {
     private int statusCode;
     private String code;

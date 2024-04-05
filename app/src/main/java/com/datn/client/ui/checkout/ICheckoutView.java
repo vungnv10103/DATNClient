@@ -1,6 +1,5 @@
 package com.datn.client.ui.checkout;
 
-import com.datn.client.models.MessageResponse;
 import com.datn.client.models.ProductCart;
 import com.datn.client.ui.IBaseView;
 

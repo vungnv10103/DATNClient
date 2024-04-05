@@ -1,5 +1,7 @@
 package com.datn.client.models;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 public class ProductOrder extends _BaseModel {
@@ -57,5 +59,18 @@ public class ProductOrder extends _BaseModel {
 
     public void setAmount(String amount) {
         this.amount = amount;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "ProductOrder{" +
+                "order_id='" + order_id + '\'' +
+                ", products=" + products +
+                ", productsQuantity=" + productsQuantity +
+                ", orderDetailID=" + orderDetailID +
+                ", orderDetailStatus=" + orderDetailStatus +
+                ", amount='" + amount + '\'' +
+                '}';
     }
 }
