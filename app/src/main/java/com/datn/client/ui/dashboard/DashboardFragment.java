@@ -24,6 +24,7 @@ import com.datn.client.models.OverlayMessage;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.auth.LoginActivity;
+import com.datn.client.ui.chat.ConversationActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.order.OrderActivity;
@@ -137,6 +138,7 @@ public class DashboardFragment extends Fragment implements IDashboardView {
         btnLogout.setOnClickListener(v -> doLogout());
         binding.layoutSetting.setOnClickListener(v -> startActivity(new Intent(requireActivity(), SettingActivity.class)));
         binding.layoutOrder.setOnClickListener(v -> startActivity(new Intent(requireActivity(), OrderActivity.class)));
+        binding.layoutMessage.setOnClickListener(v -> startActivity(new Intent(requireActivity(), ConversationActivity.class)));
     }
 
 

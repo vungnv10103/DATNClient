@@ -5,6 +5,7 @@ import com.datn.client.models.CartBuyNow;
 import com.datn.client.models.Customer;
 import com.datn.client.response.BannerResponse;
 import com.datn.client.response.CategoryResponse;
+import com.datn.client.response.ConversationResponse;
 import com.datn.client.response.CreateOrderResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.response.EBankingResponse;
@@ -196,5 +197,10 @@ public interface ApiService {
                                                         @Field("customerID") String customerID,
                                                         @Field("notificationID") String notificationID,
                                                         @Field("status") int status);
+
+    @FormUrlEncoded
+    @POST("/v1/api/conversation/get")
+    Call<ConversationResponse> getDataConversation(@Header("Authorization") String token,
+                                                   @Field("memberID") String memberID);
 
 }

@@ -9,8 +9,8 @@
               <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\vungn\.android\avd\Pixel_7_API_33.avd" />
+                  <type value="SERIAL_NUMBER" />
+                  <value value="bd2b9081" />
                 </Key>
               </deviceKey>
             </Target>
@@ -18,8 +18,8 @@
               <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="bd2b9081" />
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\chagn\.android\avd\Pixel_7_API_33.avd" />
                 </Key>
               </deviceKey>
             </Target>
@@ -30,7 +30,7 @@
               <deviceKey>
                 <Key>
                   <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\vungn\.android\avd\Pixel_7_API_33.avd" />
+                  <value value="C:\Users\chagn\.android\avd\Pixel_7_API_33.avd" />
                 </Key>
               </deviceKey>
             </Target>

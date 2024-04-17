@@ -5,7 +5,7 @@ import android.view.View;
 import java.util.List;
 
 public class OverlayMessage extends _BaseModel {
-    private String customer_id;
+    private List<String> customer_id;
     private int status;
     private String notification;
     private List<String> colors_gradient;
@@ -19,7 +19,7 @@ public class OverlayMessage extends _BaseModel {
     private String color_action;
     private View.OnClickListener action;
 
-    public OverlayMessage(String customer_id, int status, String notification, List<String> colors_gradient,
+    public OverlayMessage(List<String> customer_id, int status, String notification, List<String> colors_gradient,
                           String image, String title_image, String content_image, String title,
                           String content, String text_action, String color_action, View.OnClickListener action) {
         this.customer_id = customer_id;
@@ -36,11 +36,11 @@ public class OverlayMessage extends _BaseModel {
         this.action = action;
     }
 
-    public String getCustomer_id() {
+    public List<String> getCustomer_id() {
         return customer_id;
     }
 
-    public void setCustomer_id(String customer_id) {
+    public void setCustomer_id(List<String> customer_id) {
         this.customer_id = customer_id;
     }
 

@@ -39,6 +39,7 @@ import com.datn.client.models._BaseModel;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.auth.LoginActivity;
+import com.datn.client.ui.chat.ConversationActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.product.DetailProductActivity;
@@ -351,7 +352,7 @@ public class HomeFragment extends Fragment implements IHomeView {
                     if (idItem == R.id.menu_account) {
                         MyDialog.gI().startDlgOK(requireActivity(), Objects.requireNonNull(menuItem.getTitle()).toString());
                     } else if (idItem == R.id.menu_cast) {
-                        MyDialog.gI().startDlgOK(requireActivity(), Objects.requireNonNull(menuItem.getTitle()).toString());
+                        startActivity(new Intent(requireActivity(), ConversationActivity.class));
                     }
                     return true;
                 });

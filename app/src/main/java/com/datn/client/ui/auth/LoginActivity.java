@@ -253,7 +253,11 @@ public class LoginActivity extends AppCompatActivity {
                                     runOnUiThread(() -> {
                                         setLoading(false);
                                         showLogW("onResponse400", code);
-                                        MyDialog.gI().startDlgOK(LoginActivity.this, message.getContent());
+                                        if (message.getTitle() != null) {
+                                            MyDialog.gI().startDlgOK(LoginActivity.this, message.getTitle(), message.getContent());
+                                        } else {
+                                            MyDialog.gI().startDlgOK(LoginActivity.this, message.getContent());
+                                        }
                                     });
                                 }
                             } else {

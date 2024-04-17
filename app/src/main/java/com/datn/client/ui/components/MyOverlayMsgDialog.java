@@ -207,7 +207,7 @@ public class MyOverlayMsgDialog {
         List<String> colorGradient = new ArrayList<>();
         colorGradient.add("c4c2e1");
         colorGradient.add("fdb5df");
-        list.add(new OverlayMessage("", -1, notification, colorGradient, urlImage, titleImage,
+        list.add(new OverlayMessage(new ArrayList<>(), -1, notification, colorGradient, urlImage, titleImage,
                 contentImage, title, content, textAction, "f67acb", v1 -> {
             String id = Math.random() + "";
             switch (id) {
