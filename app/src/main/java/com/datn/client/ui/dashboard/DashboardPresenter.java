@@ -3,10 +3,10 @@ package com.datn.client.ui.dashboard;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.ui.BasePresenter;
+import com.datn.client.BasePresenter;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,7 +48,7 @@ public class DashboardPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iDashboardView.onThrowLog("logout: onResponse200", code);
                                 iDashboardView.onLogout();
@@ -61,17 +61,17 @@ public class DashboardPresenter extends BasePresenter {
                                 }
                             }
                         } else {
-                            iDashboardView.onThrowLog("logout", response.toString());
+                            iDashboardView.onThrowNotification("logout: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
-                        iDashboardView.onThrowLog("logout", t.getMessage());
+                        iDashboardView.onThrowNotification("logout: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iDashboardView.onThrowLog("logout", e.getMessage());
+                iDashboardView.onThrowNotification("logout: " + e.getMessage());
             }
         });
     }

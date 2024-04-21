@@ -53,6 +53,7 @@
     <string name="test_phone">0312978546</string>
     <string name="test_pass">Username@123</string>
     <string name="please_log_in_again">An error occurred, please log in again!</string>
+    <string name="an_error_occurred">Error! An error occurred. Please try again later</string>
     <string name="product_selection_error">Product selection error!</string>
     <string name="category_selection_error">Category selection error!</string>
     <string name="session_expired">Login session expired</string>
@@ -101,4 +102,8 @@
     <string name="order_in_transit">In transit</string>
     <string name="order_waiting_confirm">Waiting confirm</string>
     <string name="selected_all">Select all</string>
+    <string name="other_info">Other information</string>
+    <string name="type_message">Type message</string>
+    <string name="go_to_setting">Go to Settings</string>
+    <string name="ask_access_denied">You have denied storage permission. Please allow the permission in the app settings to use this feature.</string>
 </resources>

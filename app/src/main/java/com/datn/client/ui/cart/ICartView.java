@@ -1,7 +1,7 @@
 package com.datn.client.ui.cart;
 
 import com.datn.client.models.ProductCart;
-import com.datn.client.ui.IBaseView;
+import com.datn.client.IBaseView;
 
 import java.util.List;
 

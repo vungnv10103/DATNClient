@@ -29,7 +29,7 @@ import androidx.media3.ui.PlayerView;
 import com.datn.client.R;
 import com.datn.client.databinding.ActivityDetailProductBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
@@ -102,7 +102,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
             showToast(getString(R.string.product_selection_error));
             finishAffinity();
         }
-        mCustomer = ManagerUser.gI().checkCustomer(this);
+        mCustomer = ManagerUser.gI().getCustomerLogin(this);
         mToken = ManagerUser.gI().checkToken(this);
         if (mCustomer == null || mToken == null) {
             reLogin();
@@ -167,9 +167,13 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(this, overlayMessages, productPresenter);
     }
+    @Override
+    public void onThrowNotification(String notification) {
+        MyDialog.gI().startDlgOK(this, notification);
+    }
 
     @Override
-    public void onThrowMessage(MessageResponse message) {
+    public void onThrowMessage(MessageDetailResponse message) {
         if (message != null) {
             MyDialog.gI().startDlgOK(this, message.getContent());
         }
@@ -186,8 +190,8 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     }
 
 
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(this, message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void initService() {

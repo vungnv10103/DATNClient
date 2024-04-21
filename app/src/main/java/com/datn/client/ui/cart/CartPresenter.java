@@ -5,11 +5,11 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.ProductCart;
 import com.datn.client.response.ProductCartResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.ui.BasePresenter;
+import com.datn.client.BasePresenter;
 import com.datn.client.ui.checkout.CheckoutActivity;
 
 import java.util.List;
@@ -70,7 +70,7 @@ public class CartPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCartView.onThrowLog("getDataCart: onResponse200", code);
                                 List<ProductCart> dataProductCart = response.body().getProductCarts();
@@ -83,17 +83,17 @@ public class CartPresenter extends BasePresenter {
                                 iCartView.onThrowMessage(message);
                             }
                         } else {
-                            iCartView.onThrowLog("getDataCart", response.toString());
+                            iCartView.onThrowNotification("getDataCart: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ProductCartResponse> call, @NonNull Throwable t) {
-                        iCartView.onThrowLog("getDataCart", t.getMessage());
+                        iCartView.onThrowNotification("getDataCart: onFailure" + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iCartView.onThrowLog("getDataCart", e.getMessage());
+                iCartView.onThrowNotification("getDataCart: " + e.getMessage());
             }
         });
     }
@@ -108,7 +108,7 @@ public class CartPresenter extends BasePresenter {
                         if (response.body() != null) {
                             String code = response.body().getCode();
                             int statusCode = response.body().getStatusCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCartView.onThrowLog("updateQuantity: onResponse200", code);
                                 List<ProductCart> dataProductCart = response.body().getProductCarts();
@@ -121,18 +121,18 @@ public class CartPresenter extends BasePresenter {
                                 iCartView.onThrowMessage(message);
                             }
                         } else {
-                            iCartView.onThrowLog("updateQuantity", response.toString());
+                            iCartView.onThrowNotification("updateQuantity: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ProductCartResponse> call, @NonNull Throwable t) {
-                        iCartView.onThrowLog("updateQuantity", t.getMessage());
+                        iCartView.onThrowNotification("updateQuantity: onFailure: " + t.getMessage());
                     }
                 });
 
             } catch (Exception e) {
-                iCartView.onThrowLog("updateQuantity", e.getMessage());
+                iCartView.onThrowNotification("updateQuantity: " + e.getMessage());
             }
         });
     }
@@ -147,7 +147,7 @@ public class CartPresenter extends BasePresenter {
                         if (response.body() != null) {
                             String code = response.body().getCode();
                             int statusCode = response.body().getStatusCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCartView.onThrowLog("updateQuantity: onResponse200", code);
                                 List<ProductCart> dataProductCart = response.body().getProductCarts();
@@ -160,17 +160,17 @@ public class CartPresenter extends BasePresenter {
                                 iCartView.onThrowMessage(message);
                             }
                         } else {
-                            iCartView.onThrowLog("updateQuantity", response.toString());
+                            iCartView.onThrowNotification("updateQuantity: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ProductCartResponse> call, @NonNull Throwable t) {
-                        iCartView.onThrowLog("updateQuantity", t.getMessage());
+                        iCartView.onThrowNotification("updateQuantity: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iCartView.onThrowLog("updateQuantity", e.getMessage());
+                iCartView.onThrowNotification("updateQuantity: " + e.getMessage());
             }
         });
     }
@@ -185,7 +185,7 @@ public class CartPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCartView.onThrowLog("updateStatusAll: onResponse200", code);
                                 List<ProductCart> dataProductCart = response.body().getProductCarts();
@@ -198,17 +198,17 @@ public class CartPresenter extends BasePresenter {
                                 iCartView.onThrowMessage(message);
                             }
                         } else {
-                            iCartView.onThrowLog("updateStatusAll: onResponse", response.toString());
+                            iCartView.onThrowNotification("updateStatusAll: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ProductCartResponse> call, @NonNull Throwable t) {
-                        iCartView.onThrowLog("updateStatusAll", t.getMessage());
+                        iCartView.onThrowNotification("updateStatusAll: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iCartView.onThrowLog("updateStatusAll", e.getMessage());
+                iCartView.onThrowNotification("updateStatusAll: " + e.getMessage());
             }
         });
     }
@@ -223,7 +223,7 @@ public class CartPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCartView.onThrowLog("buyNow: onResponse200", code);
                                 // ArrayList<ProductCart> dataProductCart = (ArrayList<ProductCart>) response.body().getProductCarts();
@@ -238,17 +238,17 @@ public class CartPresenter extends BasePresenter {
                                 iCartView.onThrowMessage(message);
                             }
                         } else {
-                            iCartView.onThrowLog("buyNow: onResponse", response.toString());
+                            iCartView.onThrowNotification("buyNow: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ProductCartResponse> call, @NonNull Throwable t) {
-                        iCartView.onThrowLog("buyNow", t.getMessage());
+                        iCartView.onThrowNotification("buyNow: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iCartView.onThrowLog("buyNow", e.getMessage());
+                iCartView.onThrowNotification("buyNow: " + e.getMessage());
             }
         });
     }

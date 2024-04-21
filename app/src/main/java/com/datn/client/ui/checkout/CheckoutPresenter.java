@@ -4,14 +4,14 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.datn.client.models.CartBuyNow;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.ProductCart;
 import com.datn.client.response.CreateOrderResponse;
 import com.datn.client.response.PaymentMethodResponse;
 import com.datn.client.response.ProductCartResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.ui.BasePresenter;
+import com.datn.client.BasePresenter;
 import com.datn.client.utils.PAYMENT_METHOD;
 
 import java.util.HashMap;
@@ -80,7 +80,7 @@ public class CheckoutPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCheckoutView.onThrowLog("createOrderDelivery: onResponse200", code);
                                 iCheckoutView.onThrowMessage(message);
@@ -92,17 +92,17 @@ public class CheckoutPresenter extends BasePresenter {
                                 iCheckoutView.onThrowMessage(message);
                             }
                         } else {
-                            iCheckoutView.onThrowLog("createOrderDelivery: onResponse", response.toString());
+                            iCheckoutView.onThrowNotification("createOrderDelivery: onResponse" + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
-                        iCheckoutView.onThrowLog("createOrderDelivery", t.getMessage());
+                        iCheckoutView.onThrowNotification("createOrderDelivery: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iCheckoutView.onThrowLog("createOrderDelivery", e.getMessage());
+                iCheckoutView.onThrowNotification("createOrderDelivery: " + e.getMessage());
             }
 
         });
@@ -118,7 +118,7 @@ public class CheckoutPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCheckoutView.onThrowLog("getProductCheckout: onResponse200", code);
                                 List<ProductCart> dataProductCart = response.body().getProductCarts();
@@ -131,17 +131,17 @@ public class CheckoutPresenter extends BasePresenter {
                                 iCheckoutView.onThrowMessage(message);
                             }
                         } else {
-                            iCheckoutView.onThrowLog("getProductCheckout: onResponse", response.toString());
+                            iCheckoutView.onThrowNotification("getProductCheckout: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ProductCartResponse> call, @NonNull Throwable t) {
-                        iCheckoutView.onThrowLog("getProductCheckout", t.getMessage());
+                        iCheckoutView.onThrowNotification("getProductCheckout: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iCheckoutView.onThrowLog("getProductCheckout", e.getMessage());
+                iCheckoutView.onThrowNotification("getProductCheckout: " + e.getMessage());
             }
         });
     }
@@ -156,7 +156,7 @@ public class CheckoutPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCheckoutView.onThrowLog("getPaymentMethod: onResponse200", code);
                                 HashMap<Integer, String> dataPayment = response.body().getPaymentMethod();
@@ -169,17 +169,17 @@ public class CheckoutPresenter extends BasePresenter {
                                 iCheckoutView.onThrowMessage(message);
                             }
                         } else {
-                            iCheckoutView.onThrowLog("getPaymentMethod", response.toString());
+                            iCheckoutView.onThrowNotification("getPaymentMethod: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<PaymentMethodResponse> call, @NonNull Throwable t) {
-                        iCheckoutView.onThrowLog("getPaymentMethod", t.getMessage());
+                        iCheckoutView.onThrowNotification("getPaymentMethod: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iCheckoutView.onThrowLog("getPaymentMethod", e.getMessage());
+                iCheckoutView.onThrowNotification("getPaymentMethod: " + e.getMessage());
             }
         });
     }
@@ -195,7 +195,7 @@ public class CheckoutPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCheckoutView.onThrowLog("getAmountZaloPay: onResponse200", code);
                                 String amount = response.body().getAmount();
@@ -208,17 +208,17 @@ public class CheckoutPresenter extends BasePresenter {
                                 iCheckoutView.onThrowMessage(message);
                             }
                         } else {
-                            iCheckoutView.onThrowLog("getAmountZaloPay: onResponse", response.toString());
+                            iCheckoutView.onThrowNotification("getAmountZaloPay: onResponse" + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<CreateOrderResponse> call, @NonNull Throwable t) {
-                        iCheckoutView.onThrowLog("getAmountZaloPay", t.getMessage());
+                        iCheckoutView.onThrowNotification("getAmountZaloPay: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iCheckoutView.onThrowLog("getAmountZaloPay", e.getMessage());
+                iCheckoutView.onThrowNotification("getAmountZaloPay: " + e.getMessage());
             }
         });
     }
@@ -237,7 +237,7 @@ public class CheckoutPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCheckoutView.onThrowLog("getAmountZaloPay: onResponse200", code);
                                 String amount = response.body().getAmount();
@@ -250,17 +250,17 @@ public class CheckoutPresenter extends BasePresenter {
                                 iCheckoutView.onThrowMessage(message);
                             }
                         } else {
-                            iCheckoutView.onThrowLog("getAmountZaloPay", response.toString());
+                            iCheckoutView.onThrowNotification("getAmountZaloPay: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<CreateOrderResponse> call, @NonNull Throwable t) {
-                        iCheckoutView.onThrowLog("getAmountZaloPay", t.getMessage());
+                        iCheckoutView.onThrowNotification("getAmountZaloPay: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iCheckoutView.onThrowLog("getAmountZaloPay", e.getMessage());
+                iCheckoutView.onThrowNotification("getAmountZaloPay: " + e.getMessage());
             }
         });
     }
@@ -275,7 +275,7 @@ public class CheckoutPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCheckoutView.onThrowLog("createOrderZaloPay: onResponse200", code);
                                 //MessageResponse messageResponse = new MessageResponse(code,);
@@ -288,17 +288,17 @@ public class CheckoutPresenter extends BasePresenter {
                                 iCheckoutView.onThrowMessage(message);
                             }
                         } else {
-                            iCheckoutView.onThrowLog("createOrderZaloPay", response.toString());
+                            iCheckoutView.onThrowNotification("createOrderZaloPay: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
-                        iCheckoutView.onThrowLog("createOrderZaloPay", t.getMessage());
+                        iCheckoutView.onThrowNotification("createOrderZaloPay: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iCheckoutView.onThrowLog("createOrderZaloPay", e.getMessage());
+                iCheckoutView.onThrowNotification("createOrderZaloPay: " + e.getMessage());
             }
         });
     }
@@ -316,7 +316,7 @@ public class CheckoutPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iCheckoutView.onThrowLog("createOrderZaloPayNow: onResponse200", code);
                                 iCheckoutView.onThrowMessage(message);
@@ -328,17 +328,17 @@ public class CheckoutPresenter extends BasePresenter {
                                 iCheckoutView.onThrowMessage(message);
                             }
                         } else {
-                            iCheckoutView.onThrowLog("createOrderZaloPayNow", response.toString());
+                            iCheckoutView.onThrowNotification("createOrderZaloPayNow: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<_BaseResponse> call, @NonNull Throwable t) {
-                        iCheckoutView.onThrowLog("createOrderZaloPayNow", t.getMessage());
+                        iCheckoutView.onThrowNotification("createOrderZaloPayNow: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iCheckoutView.onThrowLog("createOrderZaloPayNow", e.getMessage());
+                iCheckoutView.onThrowNotification("createOrderZaloPayNow: " + e.getMessage());
             }
         });
     }

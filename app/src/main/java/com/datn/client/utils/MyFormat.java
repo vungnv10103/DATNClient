@@ -19,6 +19,31 @@ import java.util.Date;
 
 public class MyFormat {
 
+    @NonNull
+    public static String formatTime(Context context, String timeReceive, Date currentTime) {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+        try {
+            Date dateReceive = format.parse(timeReceive);
+            if (dateReceive != null && currentTime != null) {
+                long timeBetween = Math.abs(dateReceive.getTime() - currentTime.getTime());
+                long day = timeBetween / (24 * 60 * 60 * 1000);
+                long hour = timeBetween / (60 * 60 * 1000);
+                long minutes = timeBetween / (60 * 1000);
+                long second = timeBetween / 1000;
+                if (day >= 1) {
+                    return day + context.getString(R.string.des_short_day_time);
+                } else {
+                    return timeReceive.substring(11, 16);
+                }
+            }
+            return timeReceive.substring(11, 16);
+
+        } catch (Exception e) {
+            Log.d("Conversation", "formatTime: " + e.getMessage());
+            return timeReceive.substring(11, 16);
+        }
+    }
+
     public static String compareTime(Context context, String timeReceive, Date currentTime, boolean isShowSelected) {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
         try {
@@ -69,6 +94,11 @@ public class MyFormat {
             System.out.println(e.getMessage());
             return amount;
         }
+    }
+
+    public static float dpToPx(@NonNull Context context, float valueInDp) {
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, valueInDp, metrics);
     }
 
     public static int convertDPtoPx(@NonNull Context context, float dip) {

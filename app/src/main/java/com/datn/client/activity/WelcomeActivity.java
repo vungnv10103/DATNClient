@@ -18,7 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.datn.client.R;
 import com.datn.client.databinding.ActivityWelcomeBinding;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
@@ -108,7 +108,7 @@ public class WelcomeActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             isServerStarted = true;
                             int statusCode = response.body().getStatusCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 startActivity(new Intent(WelcomeActivity.this, LoginActivity.class));
                                 finishAffinity();

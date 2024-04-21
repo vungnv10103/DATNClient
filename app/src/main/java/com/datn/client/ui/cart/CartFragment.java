@@ -24,7 +24,7 @@ import com.datn.client.action.IAction;
 import com.datn.client.adapter.CartAdapter;
 import com.datn.client.databinding.FragmentCartBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.ProductCart;
@@ -74,7 +74,7 @@ public class CartFragment extends Fragment implements ICartView {
 
         preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
         initUI();
-        mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
+        mCustomer = ManagerUser.gI().getCustomerLogin(requireActivity());
         mToken = ManagerUser.gI().checkToken(requireActivity());
         if (mCustomer == null || mToken == null) {
             reLogin();
@@ -176,9 +176,13 @@ public class CartFragment extends Fragment implements ICartView {
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, cartPresenter);
     }
+    @Override
+    public void onThrowNotification(String notification) {
+        MyDialog.gI().startDlgOK(requireActivity(), notification);
+    }
 
     @Override
-    public void onThrowMessage(@NonNull MessageResponse message) {
+    public void onThrowMessage(@NonNull MessageDetailResponse message) {
         setLoading(false);
         switch (message.getCode()) {
             case "cart/plus-not-change":
@@ -289,8 +293,8 @@ public class CartFragment extends Fragment implements ICartView {
         requireActivity().finishAffinity();
     }
 
-    private void showToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(getContext(), message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     @Override

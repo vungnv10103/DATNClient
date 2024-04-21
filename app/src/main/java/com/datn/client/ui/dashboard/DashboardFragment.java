@@ -18,7 +18,7 @@ import com.datn.client.R;
 import com.datn.client.activity.SettingActivity;
 import com.datn.client.databinding.FragmentDashboardBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.services.ApiService;
@@ -51,7 +51,7 @@ public class DashboardFragment extends Fragment implements IDashboardView {
         binding = FragmentDashboardBinding.inflate(inflater, container, false);
         initUI();
         preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
-        mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
+        mCustomer = ManagerUser.gI().getCustomerLogin(requireActivity());
         mToken = ManagerUser.gI().checkToken(requireActivity());
         if (mCustomer == null || mToken == null) {
             reLogin();
@@ -73,7 +73,7 @@ public class DashboardFragment extends Fragment implements IDashboardView {
     }
 
     @Override
-    public void onThrowMessage(MessageResponse message) {
+    public void onThrowMessage(MessageDetailResponse message) {
         if (message != null) {
             MyDialog.gI().startDlgOK(requireActivity(), message.getContent());
         }
@@ -87,6 +87,10 @@ public class DashboardFragment extends Fragment implements IDashboardView {
     @Override
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, dashboardPresenter);
+    }
+    @Override
+    public void onThrowNotification(String notification) {
+        MyDialog.gI().startDlgOK(requireActivity(), notification);
     }
 
     @Override
@@ -121,8 +125,8 @@ public class DashboardFragment extends Fragment implements IDashboardView {
                 .into(binding.imgAvatarUser);
     }
 
-    private void showToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(getContext(), message.toString(), Toast.LENGTH_SHORT).show();
     }
 
 

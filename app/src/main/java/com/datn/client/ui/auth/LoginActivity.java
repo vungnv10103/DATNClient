@@ -25,7 +25,7 @@ import com.datn.client.MainActivity;
 import com.datn.client.R;
 import com.datn.client.databinding.ActivityLoginBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
@@ -36,7 +36,6 @@ import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.gson.Gson;
 
 import java.util.Objects;
 
@@ -99,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
 
         boolean isRemember = preferenceManager.getBoolean("isRemember");
         if (isRemember) {
-            mCustomer = ManagerUser.gI().checkCustomer(this);
+            mCustomer = ManagerUser.gI().getCustomerLogin(this);
             cbRemember.setChecked(true);
             edEmail.setText(mCustomer.getEmail());
             edPass.setText(mCustomer.getPassword());
@@ -124,7 +123,7 @@ public class LoginActivity extends AppCompatActivity {
                             if (response.body() != null) {
                                 int statusCode = response.body().getStatusCode();
                                 String code = response.body().getCode();
-                                MessageResponse message = response.body().getMessage();
+                                MessageDetailResponse message = response.body().getMessage();
                                 if (statusCode == 200) {
                                     showLogW("onResponse200", code);
                                     switch (code) {
@@ -190,8 +189,8 @@ public class LoginActivity extends AppCompatActivity {
         runOnUiThread(() -> Log.w(TAG, key + ": " + message));
     }
 
-    private void showToast(String message) {
-        runOnUiThread(() -> Toast.makeText(this, message, Toast.LENGTH_SHORT).show());
+    private void showToast(Object message) {
+        runOnUiThread(() -> Toast.makeText(this, message.toString(), Toast.LENGTH_SHORT).show());
     }
 
     private boolean checkInputForm() {
@@ -208,11 +207,6 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    private void saveLogin(Customer customer) {
-        Gson gson = new Gson();
-        String json = gson.toJson(customer);
-        preferenceManager.putString("user", json);
-    }
 
     private void login() {
         runOnUiThread(() -> {
@@ -228,13 +222,13 @@ public class LoginActivity extends AppCompatActivity {
                             if (response.body() != null) {
                                 int statusCode = response.body().getStatusCode();
                                 String code = response.body().getCode();
-                                MessageResponse message = response.body().getMessage();
+                                MessageDetailResponse message = response.body().getMessage();
                                 if (statusCode == 200) {
                                     showLogW("onResponse200", code);
                                     switch (code) {
                                         case "auth/verify":
                                             preferenceManager.putBoolean("isRemember", cbRemember.isChecked());
-                                            saveLogin(response.body().getCustomer());
+                                            ManagerUser.gI().saveCustomerLogin(preferenceManager, response.body().getCustomer());
                                             layoutVerify = new VerifyOTPBottomSheet();
                                             layoutVerify.setCancelable(false);
                                             layoutVerify.show(getSupportFragmentManager(), VerifyOTPBottomSheet.TAG);
@@ -263,7 +257,7 @@ public class LoginActivity extends AppCompatActivity {
                             } else {
                                 runOnUiThread(() -> {
                                     setLoading(false);
-                                    MyDialog.gI().startDlgOK(LoginActivity.this, "body null");
+                                    MyDialog.gI().startDlgOK(LoginActivity.this, response.message());
                                 });
                             }
                         });
@@ -285,7 +279,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
-
     }
 
     private void doLogin() {

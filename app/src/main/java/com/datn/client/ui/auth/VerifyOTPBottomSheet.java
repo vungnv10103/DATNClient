@@ -22,7 +22,7 @@ import com.datn.client.MainActivity;
 import com.datn.client.R;
 import com.datn.client.databinding.BottomsheetVerifyOtpBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
@@ -67,7 +67,7 @@ public class VerifyOTPBottomSheet extends BottomSheetDialogFragment {
 
         initService();
         initEventClick();
-        mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
+        mCustomer = ManagerUser.gI().getCustomerLogin(requireActivity());
         if (mCustomer == null) {
             reLogin();
         }
@@ -117,7 +117,7 @@ public class VerifyOTPBottomSheet extends BottomSheetDialogFragment {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 switch (code) {
                                     case "auth/add-fcm-success":
@@ -188,7 +188,7 @@ public class VerifyOTPBottomSheet extends BottomSheetDialogFragment {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 Log.w(TAG, "onResponse200: " + code);
                                 switch (code) {
@@ -260,8 +260,8 @@ public class VerifyOTPBottomSheet extends BottomSheetDialogFragment {
         });
     }
 
-    private void showToast(String message) {
-        Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(requireActivity(), message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private boolean validateOTP() {

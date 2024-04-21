@@ -3,6 +3,8 @@ package com.datn.client.ui.components;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import androidx.annotation.NonNull;
+
 import com.datn.client.R;
 import com.datn.client.utils.Constants;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -45,6 +47,18 @@ public class MyDialog {
                 .show();
 
     }
+    public void startDlgOKWithAction(Context context, String title, String message,
+                                     String titlePositive,
+                                     DialogInterface.OnClickListener positiveAction) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(iconID)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(titlePositive, positiveAction)
+                .setCancelable(false)
+                .show();
+
+    }
 
     public void startDlgOKWithAction(Context context, String title, String message,
                                      DialogInterface.OnClickListener positiveAction,
@@ -71,11 +85,11 @@ public class MyDialog {
 
     }
 
-    public void startDlgOK(Context context, String message) {
+    public void startDlgOK(Context context, @NonNull Object message) {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(iconID)
                 .setTitle(context.getString(R.string.notifications))
-                .setMessage(message)
+                .setMessage(message.toString())
                 .setPositiveButton(android.R.string.ok, ((dialog, which) -> dialog.dismiss()))
                 .setCancelable(false)
                 .show();

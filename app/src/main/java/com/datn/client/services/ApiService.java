@@ -9,6 +9,8 @@ import com.datn.client.response.ConversationResponse;
 import com.datn.client.response.CreateOrderResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.response.EBankingResponse;
+import com.datn.client.response.MessageResponse;
+import com.datn.client.response.NewMessageResponse;
 import com.datn.client.response.NotificationResponse;
 import com.datn.client.response.OrderResponse;
 import com.datn.client.response.OverlayMessageResponse;
@@ -202,5 +204,20 @@ public interface ApiService {
     @POST("/v1/api/conversation/get")
     Call<ConversationResponse> getDataConversation(@Header("Authorization") String token,
                                                    @Field("memberID") String memberID);
+
+    @FormUrlEncoded
+    @POST("/v1/api/message/get")
+    Call<MessageResponse> getDataMessage(@Header("Authorization") String token,
+                                         @Field("conversationID") String conversationID,
+                                         @Field("userID") String userID);
+
+    @FormUrlEncoded
+    @POST("/v1/api/message/create")
+    Call<NewMessageResponse> createMessage(@Header("Authorization") String token,
+                                           @Field("conversationID") String conversationID,
+                                           @Field("senderID") String senderID,
+                                           @Field("message") String message,
+                                           @Field("messageType") int messageType
+    );
 
 }

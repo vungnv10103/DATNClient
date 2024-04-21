@@ -3,7 +3,7 @@ package com.datn.client.ui.home;
 import com.datn.client.models.Banner;
 import com.datn.client.models.Category;
 import com.datn.client.models.Product;
-import com.datn.client.ui.IBaseView;
+import com.datn.client.IBaseView;
 
 import java.util.List;
 

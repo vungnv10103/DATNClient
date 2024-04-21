@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
 import com.bumptech.glide.Glide;
 import com.datn.client.R;
 import com.datn.client.databinding.BottomsheetAddToCartBinding;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
@@ -164,8 +164,8 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
         tvPriceTemp = binding.tvPriceTemp;
     }
 
-    private void showToast(String message) {
-        Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(requireActivity(), message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -182,9 +182,13 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, productPresenter);
     }
+    @Override
+    public void onThrowNotification(String notification) {
+        MyDialog.gI().startDlgOK(requireActivity(), notification);
+    }
 
     @Override
-    public void onThrowMessage(@NonNull MessageResponse message) {
+    public void onThrowMessage(@NonNull MessageDetailResponse message) {
         switch (message.getCode()) {
             case "cart/add-success":
                 showToast(getString(R.string.added_to_cart));

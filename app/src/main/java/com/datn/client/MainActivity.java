@@ -29,13 +29,11 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.datn.client.databinding.ActivityMainBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
-import com.datn.client.ui.BasePresenter;
-import com.datn.client.ui.IBaseView;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.ui.home.HomeFragment;
@@ -100,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
             return insets;
         });
         navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_activity_main);
-        mCustomer = ManagerUser.gI().checkCustomer(this);
+        mCustomer = ManagerUser.gI().getCustomerLogin(this);
         mToken = ManagerUser.gI().checkToken(this);
         if (mCustomer == null || mToken == null) {
             reLogin();
@@ -188,9 +186,13 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(MainActivity.this, overlayMessages, basePresenter);
     }
+    @Override
+    public void onThrowNotification(String notification) {
+        MyDialog.gI().startDlgOK(this, notification);
+    }
 
     @Override
-    public void onThrowMessage(@NonNull MessageResponse message) {
+    public void onThrowMessage(@NonNull MessageDetailResponse message) {
         switch (message.getCode()) {
             case "overlay/update-status-success":
             case "notification/update-status-success":
@@ -218,8 +220,8 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
         Log.w(TAG, key + ": " + message);
     }
 
-    private void showToast(String message) {
-        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(MainActivity.this, message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void reLogin() {

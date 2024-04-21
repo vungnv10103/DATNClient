@@ -4,7 +4,7 @@ package com.datn.client.ui.notifications;
 import androidx.fragment.app.FragmentActivity;
 
 import com.datn.client.services.ApiService;
-import com.datn.client.ui.BasePresenter;
+import com.datn.client.BasePresenter;
 
 public class NotificationPresenter extends BasePresenter {
 

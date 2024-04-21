@@ -5,13 +5,13 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.datn.client.models.Banner;
 import com.datn.client.models.Category;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.Product;
 import com.datn.client.response.BannerResponse;
 import com.datn.client.response.CategoryResponse;
 import com.datn.client.response.ProductResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.ui.BasePresenter;
+import com.datn.client.BasePresenter;
 
 import java.util.List;
 
@@ -67,7 +67,7 @@ public class HomePresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iHomeView.onThrowLog("getListBanner200", code);
                                 List<Banner> data = response.body().getBanners();
@@ -81,17 +81,17 @@ public class HomePresenter extends BasePresenter {
                                 }
                             }
                         } else {
-                            iHomeView.onThrowLog("getListBanner: onResponse", response.toString());
+                            iHomeView.onThrowNotification("getListBanner: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<BannerResponse> call, @NonNull Throwable t) {
-                        iHomeView.onThrowLog("getListBanner: onFailure", t.getMessage());
+                        iHomeView.onThrowNotification("getListBanner: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iHomeView.onThrowLog("getListBanner", e.getMessage());
+                iHomeView.onThrowNotification("getListBanner: " + e.getMessage());
             }
         });
     }
@@ -106,7 +106,7 @@ public class HomePresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iHomeView.onThrowLog("getListCategory200", code);
                                 List<Category> data = response.body().getCategories();
@@ -120,17 +120,17 @@ public class HomePresenter extends BasePresenter {
                                 }
                             }
                         } else {
-                            iHomeView.onThrowLog("getListCategory: onResponse", response.message());
+                            iHomeView.onThrowNotification("getListCategory: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<CategoryResponse> call, @NonNull Throwable t) {
-                        iHomeView.onThrowLog("getListCategory: onFailure", t.getMessage());
+                        iHomeView.onThrowNotification("getListCategory: : " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iHomeView.onThrowLog("getListCategory", e.getMessage());
+                iHomeView.onThrowNotification("getListCategory: " + e.getMessage());
             }
         });
     }
@@ -145,7 +145,7 @@ public class HomePresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iHomeView.onThrowLog("getListSellingProduct200", code);
                                 List<Product> data = response.body().getProducts();
@@ -159,17 +159,17 @@ public class HomePresenter extends BasePresenter {
                                 }
                             }
                         } else {
-                            iHomeView.onThrowLog("getListSellingProduct: onResponse", response.message());
+                            iHomeView.onThrowNotification("getListSellingProduct: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
-                        iHomeView.onThrowLog("getListSellingProduct: onFailure", t.getMessage());
+                        iHomeView.onThrowNotification("getListSellingProduct: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iHomeView.onThrowLog("getListSellingProduct", e.getMessage());
+                iHomeView.onThrowNotification("getListSellingProduct: " + e.getMessage());
             }
         });
     }
@@ -184,7 +184,7 @@ public class HomePresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 iHomeView.onThrowLog("searchProduct200", code);
                                 List<Product> data = response.body().getProducts();
@@ -199,17 +199,17 @@ public class HomePresenter extends BasePresenter {
                                 }
                             }
                         } else {
-                            iHomeView.onThrowLog("searchProduct: onResponse", response.message());
+                            iHomeView.onThrowNotification("searchProduct: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<ProductResponse> call, @NonNull Throwable t) {
-                        iHomeView.onThrowLog("searchProduct: onFailure", t.getMessage());
+                        iHomeView.onThrowNotification("searchProduct: onFailure: " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iHomeView.onThrowLog("searchProduct", e.getMessage());
+                iHomeView.onThrowNotification("searchProduct: " + e.getMessage());
             }
         });
     }

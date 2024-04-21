@@ -7,19 +7,20 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.datn.client.R;
 import com.datn.client.action.IAction;
 import com.datn.client.adapter.ConversationAdapter;
 import com.datn.client.databinding.ActivityConversationBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageModel;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models._BaseModel;
@@ -32,19 +33,23 @@ import com.datn.client.ui.components.MyOverlayMsgDialog;
 import com.datn.client.utils.Constants;
 import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.PreferenceManager;
-import com.google.android.material.progressindicator.CircularProgressIndicator;
 
-import java.util.Collections;
+import org.json.JSONObject;
+
+import java.net.URISyntaxException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 public class ConversationActivity extends AppCompatActivity implements IChatView {
     private static final String TAG = ConversationActivity.class.getSimpleName();
     private ActivityConversationBinding binding;
 
-    private ConversationPresenter conversationPresenter;
-
+    private ChatPresenter chatPresenter;
     private PreferenceManager preferenceManager;
 
 
@@ -53,8 +58,7 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
 
     private List<Demo> mConversation;
     private ConversationAdapter conversationAdapter;
-    private RecyclerView rcvConversation;
-    private CircularProgressIndicator progressLoading;
+    private Socket mSocket;
 
 
     @Override
@@ -74,7 +78,7 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
         initUI();
         checkRequire();
         initService();
-
+        initSocket();
 
     }
 
@@ -83,12 +87,12 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
         super.onStart();
 
         setLoading(true);
-        conversationPresenter.getDataConversation();
+        chatPresenter.getDataConversation();
     }
 
     private void setLoading(boolean isLoading) {
-        progressLoading.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-        rcvConversation.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
+        binding.progressbarConversation.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+        binding.rcvConversation.setVisibility(isLoading ? View.INVISIBLE : View.VISIBLE);
     }
 
     private void displayConversation() {
@@ -96,7 +100,9 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
         conversationAdapter = new ConversationAdapter(ConversationActivity.this, mConversation, new IAction() {
             @Override
             public void onClick(_BaseModel conversation) {
-                MyDialog.gI().startDlgOK(ConversationActivity.this, conversation.get_id());
+                Intent intent = new Intent(ConversationActivity.this, ChatActivity.class);
+                intent.putExtra("conversationID", conversation.get_id());
+                startActivity(intent);
             }
 
             @Override
@@ -111,8 +117,8 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
         });
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ConversationActivity.this, LinearLayoutManager.VERTICAL, false);
         linearLayoutManager.setSmoothScrollbarEnabled(true);
-        rcvConversation.setLayoutManager(linearLayoutManager);
-        rcvConversation.setAdapter(conversationAdapter);
+        binding.rcvConversation.setLayoutManager(linearLayoutManager);
+        binding.rcvConversation.setAdapter(conversationAdapter);
         setLoading(false);
     }
 
@@ -127,17 +133,28 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
     }
 
     @Override
+    public void onDataMessage(List<MessageModel> dataMessage) {
+        System.out.println(dataMessage);
+    }
+
+    @Override
+    public void onNewMessage(MessageModel newMessage) {
+        // TODO notify new message
+        System.out.println(newMessage);
+    }
+
+    @Override
     public void onListNotification(List<Notification> notificationList) {
         Log.d(TAG, "onListNotification: " + notificationList);
     }
 
     @Override
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
-        MyOverlayMsgDialog.gI().showOverlayMsgDialog(ConversationActivity.this, overlayMessages, conversationPresenter);
+        MyOverlayMsgDialog.gI().showOverlayMsgDialog(ConversationActivity.this, overlayMessages, chatPresenter);
     }
 
     @Override
-    public void onThrowMessage(MessageResponse message) {
+    public void onThrowMessage(MessageDetailResponse message) {
         if (message != null) {
             switch (message.getCode()) {
                 case "overlay/update-status-success":
@@ -149,6 +166,11 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
                     break;
             }
         }
+    }
+
+    @Override
+    public void onThrowNotification(String notification) {
+        MyDialog.gI().startDlgOK(this, notification);
     }
 
     @Override
@@ -164,18 +186,41 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
 
 
     private void initUI() {
-        progressLoading = binding.progressbarConversation;
-        rcvConversation = binding.rcvConversation;
+
+    }
+
+    private final Emitter.Listener onConnect = args -> runOnUiThread(() -> Log.d(TAG, "run: " + R.string.app_name));
+
+
+    private final Emitter.Listener onUserChat = args -> runOnUiThread(() -> {
+        JSONObject data = (JSONObject) args[0];
+        // new message
+        Log.d(TAG, "onUserChat: " + data);
+//        getDataConversation();
+        chatPresenter.getDataConversation();
+    });
+
+    private void initSocket() {
+        try {
+            mSocket = IO.socket(Constants.URL_API);
+        } catch (URISyntaxException e) {
+            Log.w(TAG, "initSocket: " + e.getMessage());
+            return;
+        }
+        mSocket.on(Socket.EVENT_CONNECT, onConnect);
+        mSocket.on("user-chat", onUserChat);
+
+        mSocket.connect();
     }
 
     private void initService() {
         ApiService apiService = RetrofitConnection.getApiService();
-        conversationPresenter = new ConversationPresenter(ConversationActivity.this, this, apiService, mToken, mCustomer.get_id());
+        chatPresenter = new ChatPresenter(ConversationActivity.this, this, apiService, mToken, mCustomer.get_id());
     }
 
     private void checkRequire() {
         preferenceManager = new PreferenceManager(ConversationActivity.this, Constants.KEY_PREFERENCE_ACC);
-        mCustomer = ManagerUser.gI().checkCustomer(this);
+        mCustomer = ManagerUser.gI().getCustomerLogin(this);
         mToken = ManagerUser.gI().checkToken(this);
         if (mCustomer == null || mToken == null) {
             reLogin();
@@ -183,8 +228,8 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
     }
 
 
-    private void showToast(String message) {
-        Toast.makeText(ConversationActivity.this, message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(ConversationActivity.this, message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void showLogW(String key, String message) {
@@ -202,7 +247,12 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         binding = null;
-        conversationPresenter.onCancelAPI();
+        chatPresenter.onCancelAPI();
+        mSocket.off(Socket.EVENT_CONNECT, onConnect);
+        mSocket.off("user-chat", onUserChat);
+        mSocket.disconnect();
+        mSocket.close();
     }
 }

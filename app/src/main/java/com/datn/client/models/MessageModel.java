@@ -1,6 +1,8 @@
 package com.datn.client.models;
 
 public class MessageModel extends _BaseModel {
+    public static final int VIEW_TYPE_SENT = 1;
+    public static final int VIEW_TYPE_RECEIVED = 2;
     private String conversation_id;
     private String sender_id;
     private int message_type;

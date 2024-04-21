@@ -32,7 +32,7 @@ import com.datn.client.action.IAction;
 import com.datn.client.adapter.NotificationAdapter;
 import com.datn.client.databinding.FragmentNotificationsBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models._BaseModel;
@@ -93,7 +93,7 @@ public class NotificationsFragment extends Fragment implements INotificationView
         initUI();
 
         preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
-        mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
+        mCustomer = ManagerUser.gI().getCustomerLogin(requireActivity());
         mToken = ManagerUser.gI().checkToken(requireActivity());
         if (mCustomer == null || mToken == null) {
             reLogin();
@@ -222,9 +222,13 @@ public class NotificationsFragment extends Fragment implements INotificationView
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, notificationPresenter);
     }
+    @Override
+    public void onThrowNotification(String notification) {
+        MyDialog.gI().startDlgOK(requireActivity(), notification);
+    }
 
     @Override
-    public void onThrowMessage(@NonNull MessageResponse message) {
+    public void onThrowMessage(@NonNull MessageDetailResponse message) {
         switch (message.getCode()) {
             case "overlay/update-status-success":
             case "notification/update-status-success":
@@ -410,8 +414,8 @@ public class NotificationsFragment extends Fragment implements INotificationView
         cbSelectedAllNotification = binding.cbSelectedAll;
     }
 
-    private void showToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(getContext(), message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void showLogW(String key, String message) {

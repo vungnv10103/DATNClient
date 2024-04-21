@@ -21,16 +21,16 @@ import androidx.core.view.WindowInsetsCompat;
 import com.datn.client.R;
 import com.datn.client.databinding.ActivityRegisterBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.response.CustomerResponse;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.utils.Constants;
+import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.PreferenceManager;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.gson.Gson;
 
 import java.util.Objects;
 
@@ -90,12 +90,6 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister.setVisibility(isLoading ? View.GONE : View.VISIBLE);
     }
 
-    private void saveLogin(Customer customer) {
-        Gson gson = new Gson();
-        String json = gson.toJson(customer);
-        preferenceManager.putString("user", json);
-    }
-
     private void register() {
         try {
             String email = Objects.requireNonNull(edEmail.getText()).toString().trim();
@@ -116,13 +110,13 @@ public class RegisterActivity extends AppCompatActivity {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 Log.w(TAG, "onResponse200: " + code);
                                 switch (code) {
                                     case "auth/verify":
                                         showToast(message.getContent());
-                                        saveLogin(response.body().getCustomer());
+                                        ManagerUser.gI().saveCustomerLogin(preferenceManager, response.body().getCustomer());
                                         layoutVerify = new VerifyOTPBottomSheet();
                                         layoutVerify.setCancelable(false);
                                         layoutVerify.show(getSupportFragmentManager(), VerifyOTPBottomSheet.TAG);
@@ -145,7 +139,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 MyDialog.gI().startDlgOK(RegisterActivity.this, message.getContent());
                             }
                         } else {
-                            MyDialog.gI().startDlgOK(RegisterActivity.this, "body null");
+                            MyDialog.gI().startDlgOK(RegisterActivity.this, response.message());
                         }
                     });
                 }
@@ -185,8 +179,8 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(this, message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void doRegister() {

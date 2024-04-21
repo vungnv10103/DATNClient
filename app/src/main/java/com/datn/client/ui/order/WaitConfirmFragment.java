@@ -18,7 +18,7 @@ import com.datn.client.action.IAction;
 import com.datn.client.adapter.OrderAdapter;
 import com.datn.client.databinding.FragmentOrderWaitingBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.OrdersDetail;
 import com.datn.client.models.ProductOrder;
 import com.datn.client.models.ProductOrderDetail;
@@ -72,7 +72,7 @@ public class WaitConfirmFragment extends Fragment {
     }
 
     private void checkRequire() {
-        mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
+        mCustomer = ManagerUser.gI().getCustomerLogin(requireActivity());
         mToken = ManagerUser.gI().checkToken(requireActivity());
         if (mCustomer == null || mToken == null) {
             reLogin();
@@ -96,7 +96,7 @@ public class WaitConfirmFragment extends Fragment {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 showLogW("getOrdersWaiting200", code);
                                 OrdersDetail ordersDetail = response.body().getOrdersDetail();
@@ -167,8 +167,8 @@ public class WaitConfirmFragment extends Fragment {
         requireActivity().finishAffinity();
     }
 
-    private void showToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(getContext(), message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void showLogW(String key, String message) {

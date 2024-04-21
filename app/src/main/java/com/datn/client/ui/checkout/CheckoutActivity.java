@@ -30,7 +30,7 @@ import com.datn.client.adapter.PaymentMethodAdapter;
 import com.datn.client.adapter.ProductCheckoutAdapter;
 import com.datn.client.databinding.ActivityCheckoutBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.PaymentMethod;
@@ -128,7 +128,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
         initUI();
         initEventClick();
         preferenceManager = new PreferenceManager(this, Constants.KEY_PREFERENCE_ACC);
-        mCustomer = ManagerUser.gI().checkCustomer(this);
+        mCustomer = ManagerUser.gI().getCustomerLogin(this);
         mToken = ManagerUser.gI().checkToken(this);
         if (mCustomer == null || mToken == null) {
             reLogin();
@@ -244,9 +244,13 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(this, overlayMessages, checkoutPresenter);
     }
+    @Override
+    public void onThrowNotification(String notification) {
+        MyDialog.gI().startDlgOK(this, notification);
+    }
 
     @Override
-    public void onThrowMessage(MessageResponse message) {
+    public void onThrowMessage(MessageDetailResponse message) {
         if (message != null) {
             switch (message.getStatusCode()) {
                 case 200:
@@ -271,8 +275,8 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     }
 
 
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(this, message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void initService() {

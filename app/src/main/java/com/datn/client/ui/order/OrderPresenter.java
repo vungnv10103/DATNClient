@@ -3,11 +3,11 @@ package com.datn.client.ui.order;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.OrdersDetail;
 import com.datn.client.response.OrderResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.ui.BasePresenter;
+import com.datn.client.BasePresenter;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -15,7 +15,6 @@ import retrofit2.Response;
 
 public class OrderPresenter extends BasePresenter {
     private final FragmentActivity context;
-
     private final IOrderView iOrderView;
     private final ApiService apiService;
     private final String token;
@@ -51,7 +50,7 @@ public class OrderPresenter extends BasePresenter {
                         if (response.body() != null) {
                             int statusCode = response.body().getStatusCode();
                             String code = response.body().getCode();
-                            MessageResponse message = response.body().getMessage();
+                            MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
                                 OrdersDetail ordersDetail = response.body().getOrdersDetail();
                                 if (ordersDetail != null) {
@@ -66,17 +65,17 @@ public class OrderPresenter extends BasePresenter {
                                 }
                             }
                         } else {
-                            iOrderView.onThrowLog("getOrdersByStatus: onResponse", response.toString());
+                            iOrderView.onThrowNotification("getOrdersByStatus: onResponse: " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(@NonNull Call<OrderResponse> call, @NonNull Throwable t) {
-                        iOrderView.onThrowLog("getOrdersByStatus: onFailure", t.getMessage());
+                        iOrderView.onThrowNotification("getOrdersByStatus: : " + t.getMessage());
                     }
                 });
             } catch (Exception e) {
-                iOrderView.onThrowLog("getOrdersByStatus", e.getMessage());
+                iOrderView.onThrowNotification("getOrdersByStatus: " + e.getMessage());
             }
         });
     }

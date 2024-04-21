@@ -1,15 +1,9 @@
 package com.datn.client.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,9 +19,12 @@ import com.datn.client.models.UserModel;
 import com.datn.client.models._BaseModel;
 import com.datn.client.response.Demo;
 import com.datn.client.utils.ManagerUser;
+import com.datn.client.utils.MyFormat;
 import com.google.android.material.imageview.ShapeableImageView;
-import com.squareup.picasso.Picasso;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ViewHolder> {
@@ -36,11 +33,13 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     private final Customer customerLogged;
     private final Context context;
     private final IAction iActionConversation;
-
+    private final Date currentTime = Calendar.getInstance().getTime();
+    public static HashMap<String, UserModel> dataUsersFocus;
 
     public ConversationAdapter(Context context, List<Demo> dataConversation, IAction iActionConversation) {
         this.context = context;
-        customerLogged = ManagerUser.gI().checkCustomer((FragmentActivity) context);
+        dataUsersFocus = new HashMap<>();
+        customerLogged = ManagerUser.gI().getCustomerLogin((FragmentActivity) context);
         this.dataConversation = dataConversation;
         this.iActionConversation = iActionConversation;
     }
@@ -64,6 +63,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             if (dataUserFocus == null) {
                 return;
             }
+            dataUsersFocus.put(conversation.getConversation_id(), dataUserFocus);
             imgAvatar = dataUserFocus.getAvatar();
             holder.tvNameUser.setText(dataUserFocus.getFull_name());
         } else {
@@ -72,14 +72,15 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         }
         Glide.with(context)
                 .load(imgAvatar)
-                .error(R.drawable.logo_app_gradient)
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
                 .into(holder.imgAvt);
         if (!conversation.getMessage().isEmpty()) {
             holder.tvLastMessage.setText(String.format(prefixMsg + conversation.getMessage()));
         }
 
         if (conversation.getCreated_at().length() >= 16) {
-            holder.tvTime.setText(conversation.getCreated_at().substring(11, 16));
+            holder.tvTime.setText(MyFormat.formatTime(context, conversation.getCreated_at(), currentTime));
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -100,13 +101,11 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final ShapeableImageView imgAvt;
-        private final RelativeLayout layoutMsg;
         private final TextView tvNameUser, tvLastMessage, tvTime;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             imgAvt = itemView.findViewById(R.id.img_avt);
-            layoutMsg = itemView.findViewById(R.id.layout_msg);
             tvNameUser = itemView.findViewById(R.id.tv_nameUser);
             tvLastMessage = itemView.findViewById(R.id.tv_lastMessage);
             tvTime = itemView.findViewById(R.id.tv_time);

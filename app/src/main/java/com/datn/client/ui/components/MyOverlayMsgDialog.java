@@ -29,7 +29,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.datn.client.R;
 import com.datn.client.models.OverlayMessage;
-import com.datn.client.ui.BasePresenter;
+import com.datn.client.BasePresenter;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 

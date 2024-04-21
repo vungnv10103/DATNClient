@@ -1,18 +1,18 @@
 package com.datn.client.response;
 
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 
 public class _BaseResponse {
-    private MessageResponse message;
+    private MessageDetailResponse message;
     private int statusCode;
     private String code;
     private String timestamp;
 
-    public MessageResponse getMessage() {
+    public MessageDetailResponse getMessage() {
         return message;
     }
 
-    public void setMessage(MessageResponse message) {
+    public void setMessage(MessageDetailResponse message) {
         this.message = message;
     }
 

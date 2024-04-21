@@ -32,5 +32,8 @@
     <color name="blue_400">#60a5fa</color>
     <color name="blue_500">#3b82f6</color>
 
+    <color name="left_msg">#090D16</color>
+    <color name="right_msg">#192e47</color>
+
 
 </resources>

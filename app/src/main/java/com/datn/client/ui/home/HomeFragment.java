@@ -31,7 +31,7 @@ import com.datn.client.databinding.FragmentHomeBinding;
 import com.datn.client.models.Banner;
 import com.datn.client.models.Category;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageResponse;
+import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.Product;
@@ -89,7 +89,7 @@ public class HomeFragment extends Fragment implements IHomeView {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         initUI();
         preferenceManager = new PreferenceManager(requireActivity(), Constants.KEY_PREFERENCE_ACC);
-        mCustomer = ManagerUser.gI().checkCustomer(requireActivity());
+        mCustomer = ManagerUser.gI().getCustomerLogin(requireActivity());
         mToken = ManagerUser.gI().checkToken(requireActivity());
         if (mCustomer == null || mToken == null) {
             reLogin();
@@ -304,9 +304,13 @@ public class HomeFragment extends Fragment implements IHomeView {
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, homePresenter);
     }
+    @Override
+    public void onThrowNotification(String notification) {
+        MyDialog.gI().startDlgOK(requireActivity(), notification);
+    }
 
     @Override
-    public void onThrowMessage(@NonNull MessageResponse message) {
+    public void onThrowMessage(@NonNull MessageDetailResponse message) {
         switch (message.getCode()) {
             case "overlay/update-status-success":
             case "notification/update-status-success":
@@ -442,8 +446,8 @@ public class HomeFragment extends Fragment implements IHomeView {
         });
     }
 
-    private void showToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(getContext(), message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void showLogW(String key, String message) {

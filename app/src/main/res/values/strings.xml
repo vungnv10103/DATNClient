@@ -56,6 +56,7 @@
     <string name="test_phone">0312978546</string>
     <string name="test_pass">Username@123</string>
     <string name="please_log_in_again">Có lỗi xảy ra vui lòng đăng nhập lại!</string>
+    <string name="an_error_occurred">Đã xảy ra lỗi!</string>
     <string name="product_selection_error">Lỗi chọn sản phẩm!</string>
     <string name="category_selection_error">Lỗi chọn thể loại!</string>
     <string name="session_expired">Phiên đăng nhập hết hạn\nVui lòng đăng nhập lại!</string>
@@ -114,5 +115,12 @@
     <string name="order_cancel">Đã hủy</string>
     <string name="order_waiting_confirm">Chờ xác nhận</string>
     <string name="selected_all">Chọn tất cả</string>
+    <string name="call" translatable="false">Call</string>
+    <string name="video_call" translatable="false">Video call</string>
+    <string name="other_info">Thông tin khác</string>
+    <string name="type_message">Nhắn tin</string>
+    <string name="go_to_setting">Đi tới cài đặt</string>
+    <string name="ask_access_denied">Bạn đã từ chối quyền lưu trữ. Vui lòng cho phép quyền trong cài đặt ứng dụng để sử dụng tính năng này.</string>
+
 
 </resources>

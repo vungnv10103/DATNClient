@@ -1,6 +1,8 @@
 package com.datn.client.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -8,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +25,9 @@ import androidx.core.view.WindowInsetsCompat;
 import com.datn.client.R;
 import com.datn.client.databinding.ActivityTestBinding;
 import com.datn.client.helper.MyNavigationBar;
+import com.datn.client.ui.chat.ChatActivity;
 import com.datn.client.ui.components.MyDialog;
+import com.google.android.material.textfield.TextInputEditText;
 
 public class TestActivity extends AppCompatActivity {
     private final static String TAG = TestActivity.class.getSimpleName();
@@ -111,6 +116,35 @@ public class TestActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean dispatchTouchEvent(@NonNull MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            View v = getCurrentFocus();
+            if (v instanceof TextInputEditText) {
+                Rect outRect = new Rect();
+                v.getGlobalVisibleRect(outRect);
+                if (!outRect.contains((int) event.getRawX(), (int) event.getRawY())) {
+                    v.clearFocus();
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
+    }
+
+//    private void demo() {
+//        binding.chat.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+//            Rect r = new Rect();
+//            binding.chat.getWindowVisibleDisplayFrame(r);
+//            int screenHeight = binding.chat.getRootView().getHeight();
+//            showLogW("demo", screenHeight);
+//            int keyboardHeight = screenHeight - (r.bottom);
+//            MyDialog.gI().startDlgOK(ChatActivity.this, keyboardHeight);
+//
+//        });
+//    }
+
     View.OnTouchListener touchListener = new View.OnTouchListener() {
         private int lastX = 0;
         private int lastY = 0;
@@ -186,9 +220,9 @@ public class TestActivity extends AppCompatActivity {
         showToast("onDestroy");
     }
 
-    private void showToast(String message) {
-        Log.d(TAG, message);
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Log.d(TAG, message.toString());
+        Toast.makeText(this, message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     @SuppressLint("ClickableViewAccessibility")

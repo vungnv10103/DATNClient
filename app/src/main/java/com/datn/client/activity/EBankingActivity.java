@@ -78,7 +78,7 @@ public class EBankingActivity extends AppCompatActivity {
         initUI();
         initEventClick();
         preferenceManager = new PreferenceManager(this, Constants.KEY_PREFERENCE_ACC);
-        mCustomer = ManagerUser.gI().checkCustomer(this);
+        mCustomer = ManagerUser.gI().getCustomerLogin( this);
         mToken = ManagerUser.gI().checkToken(this);
         if (mCustomer == null || mToken == null) {
             reLogin();
@@ -237,8 +237,8 @@ public class EBankingActivity extends AppCompatActivity {
         }
     }
 
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    private void showToast(@NonNull Object message) {
+        Toast.makeText(this, message.toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void setLoading(boolean isLoading) {

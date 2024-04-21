@@ -1,5 +1,6 @@
 package com.datn.client.utils;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import com.datn.client.models.Customer;
@@ -17,7 +18,13 @@ public class ManagerUser {
         return instance;
     }
 
-    public Customer checkCustomer(FragmentActivity context) {
+    public void saveCustomerLogin(@NonNull PreferenceManager preferenceManager, Customer customer) {
+        Gson gson = new Gson();
+        String json = gson.toJson(customer);
+        preferenceManager.putString("user", json);
+    }
+
+    public Customer getCustomerLogin(FragmentActivity context) {
         preferenceManager = new PreferenceManager(context, Constants.KEY_PREFERENCE_ACC);
         Gson gson = new Gson();
         String json = preferenceManager.getString(Constants.KEY_USER);
