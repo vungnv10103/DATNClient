@@ -12,8 +12,12 @@ import com.datn.client.response.MessageResponse;
 import com.datn.client.response.NewMessageResponse;
 import com.datn.client.services.ApiService;
 
+import java.io.File;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -134,10 +138,24 @@ public class ChatPresenter extends BasePresenter {
         });
     }
 
-    public void createMessage(String conversationID, String message, int messageType) {
+    public void createMessage(String conversationID, String message, int messageType, File fileImg, File fileVideo) {
         context.runOnUiThread(() -> {
             try {
-                createMessage = apiService.createMessage(token, conversationID, customerID, message, messageType);
+                RequestBody rbConversationID = RequestBody.create(conversationID, MediaType.parse("text/plain"));
+                RequestBody rbSenderID = RequestBody.create(customerID, MediaType.parse("text/plain"));
+                RequestBody rbMessage = RequestBody.create(message, MediaType.parse("text/plain"));
+                RequestBody rbMessageType = RequestBody.create(String.valueOf(messageType), MediaType.parse("text/plain"));
+                if (fileImg != null) {
+                    RequestBody imageRequestBody = RequestBody.create(fileImg, MediaType.parse("image/*"));
+                    MultipartBody.Part imagePart = MultipartBody.Part.createFormData("images", fileImg.getName(), imageRequestBody);
+                    createMessage = apiService.createMessage(token, rbConversationID, rbSenderID, rbMessage, rbMessageType, imagePart, null);
+                } else if (fileVideo != null) {
+                    RequestBody videoRequestBody = RequestBody.create(fileVideo, MediaType.parse("video/*"));
+                    MultipartBody.Part videoPart = MultipartBody.Part.createFormData("video", fileVideo.getName(), videoRequestBody);
+                    createMessage = apiService.createMessage(token, rbConversationID, rbSenderID, rbMessage, rbMessageType, null, videoPart);
+                } else {
+                    createMessage = apiService.createMessage(token, rbConversationID, rbSenderID, rbMessage, rbMessageType, null, null);
+                }
                 createMessage.enqueue(new Callback<NewMessageResponse>() {
                     @Override
                     public void onResponse(@NonNull Call<NewMessageResponse> call, @NonNull Response<NewMessageResponse> response) {

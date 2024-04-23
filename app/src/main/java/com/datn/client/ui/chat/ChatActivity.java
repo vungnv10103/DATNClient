@@ -58,6 +58,7 @@ import com.datn.client.utils.MyPermission;
 import com.datn.client.utils.PreferenceManager;
 import com.datn.client.utils.TYPE_MESSAGE;
 
+import java.io.File;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
@@ -81,6 +82,10 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
     private Socket mSocket;
     private boolean isShowKeyBoard = false;
     private boolean isShowEmoji = false;
+    private boolean isSendImage = false;
+    private boolean isSendVideo = false;
+    private Uri imgUri = null;
+    private Uri videoUri = null;
 
     private int messageType = TYPE_MESSAGE.TEXT.getValue();
 
@@ -320,7 +325,8 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
             binding.textInputEditMsg.setSelection(binding.textInputEditMsg.length());
         });
 
-        binding.btnOption.setOnClickListener(v -> featureUpdating("Option"));
+//        binding.btnOption.setOnClickListener(v -> featureUpdating("Option"));
+        binding.btnOption.setOnClickListener(v -> doOpenVideo());
         binding.btnCamera.setOnClickListener(v -> requestPermission());
         binding.btnGallery.setOnClickListener(v -> doOpenGallery());
     }
@@ -334,7 +340,15 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
         resultLauncher.launch(intent);
     }
 
+    private void doOpenVideo() {
+        isSendVideo = true;
+        isSendImage = false;
+        resultLauncherContent.launch("video/*");
+    }
+
     private void doOpenGallery() {
+        isSendVideo = false;
+        isSendImage = true;
         resultLauncherContent.launch("image/*");
     }
 
@@ -348,7 +362,15 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
     }
 
     private void sendMessage(String message) {
-        chatPresenter.createMessage(mConversationID, message, messageType);
+        if (imgUri != null) {
+            File file = new File(Objects.requireNonNull(imgUri.getPath()));
+            chatPresenter.createMessage(mConversationID, message, messageType, file, null);
+        } else if (videoUri != null) {
+            File file = new File(Objects.requireNonNull(videoUri.getPath()));
+            chatPresenter.createMessage(mConversationID, message, messageType, null, file);
+        } else {
+            chatPresenter.createMessage(mConversationID, message, messageType, null, null);
+        }
     }
 
     private void hiddenKeyboard() {
@@ -430,7 +452,11 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
     ActivityResultLauncher<String> resultLauncherContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
             uri -> {
                 // Handle the returned Uri
-                MyDialog.gI().startDlgOK(ChatActivity.this, uri.toString());
+                if (isSendImage) {
+                    this.imgUri = uri;
+                } else if (isSendVideo) {
+                    this.videoUri = uri;
+                }
             });
     ActivityResultLauncher<Intent> resultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),

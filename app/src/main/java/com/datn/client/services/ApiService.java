@@ -19,13 +19,17 @@ import com.datn.client.response.ProductCartResponse;
 import com.datn.client.response.ProductResponse;
 import com.datn.client.response._BaseResponse;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 
 public interface ApiService {
 
@@ -211,13 +215,15 @@ public interface ApiService {
                                          @Field("conversationID") String conversationID,
                                          @Field("userID") String userID);
 
-    @FormUrlEncoded
+    @Multipart
     @POST("/v1/api/message/create")
     Call<NewMessageResponse> createMessage(@Header("Authorization") String token,
-                                           @Field("conversationID") String conversationID,
-                                           @Field("senderID") String senderID,
-                                           @Field("message") String message,
-                                           @Field("messageType") int messageType
+                                           @Part("conversationID") RequestBody conversationID,
+                                           @Part("senderID") RequestBody senderID,
+                                           @Part("message") RequestBody message,
+                                           @Part("messageType") RequestBody messageType,
+                                           @Part MultipartBody.Part images,
+                                           @Part MultipartBody.Part video
     );
 
 }
