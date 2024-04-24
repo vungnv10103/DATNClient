@@ -88,6 +88,7 @@ public class DashboardFragment extends Fragment implements IDashboardView {
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, dashboardPresenter);
     }
+
     @Override
     public void onThrowNotification(String notification) {
         MyDialog.gI().startDlgOK(requireActivity(), notification);

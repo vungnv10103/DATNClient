@@ -1,17 +1,15 @@
 package com.datn.client.response;
 
-import com.datn.client.models.ConversationModel;
-
 import java.util.List;
 
 public class ConversationResponse extends _BaseResponse {
-    private List<Demo> conversations;
+    private List<ConversationDisplay> conversations;
 
-    public List<Demo> getConversations() {
+    public List<ConversationDisplay> getConversations() {
         return conversations;
     }
 
-    public void setConversations(List<Demo> conversations) {
+    public void setConversations(List<ConversationDisplay> conversations) {
         this.conversations = conversations;
     }
 }

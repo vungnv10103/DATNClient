@@ -182,6 +182,7 @@ public class AddToCartBS extends BottomSheetDialogFragment implements IProductVi
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, productPresenter);
     }
+
     @Override
     public void onThrowNotification(String notification) {
         MyDialog.gI().startDlgOK(requireActivity(), notification);

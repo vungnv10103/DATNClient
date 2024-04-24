@@ -3,10 +3,10 @@ package com.datn.client.ui.dashboard;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.datn.client.BasePresenter;
 import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.BasePresenter;
 
 import retrofit2.Call;
 import retrofit2.Callback;

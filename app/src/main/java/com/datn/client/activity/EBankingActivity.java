@@ -78,7 +78,7 @@ public class EBankingActivity extends AppCompatActivity {
         initUI();
         initEventClick();
         preferenceManager = new PreferenceManager(this, Constants.KEY_PREFERENCE_ACC);
-        mCustomer = ManagerUser.gI().getCustomerLogin( this);
+        mCustomer = ManagerUser.gI().getCustomerLogin(this);
         mToken = ManagerUser.gI().checkToken(this);
         if (mCustomer == null || mToken == null) {
             reLogin();

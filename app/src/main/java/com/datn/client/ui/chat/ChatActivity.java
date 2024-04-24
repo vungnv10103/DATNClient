@@ -45,9 +45,10 @@ import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models.UserModel;
 import com.datn.client.models._BaseModel;
-import com.datn.client.response.Demo;
+import com.datn.client.response.ConversationDisplay;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
+import com.datn.client.services.SocketManager;
 import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
@@ -57,14 +58,17 @@ import com.datn.client.utils.MyFormat;
 import com.datn.client.utils.MyPermission;
 import com.datn.client.utils.PreferenceManager;
 import com.datn.client.utils.TYPE_MESSAGE;
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 
-import io.socket.client.IO;
 import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 public class ChatActivity extends AppCompatActivity implements IChatView {
     private static final String TAG = ChatActivity.class.getSimpleName();
@@ -183,7 +187,7 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
         linearLayoutManager.setSmoothScrollbarEnabled(true);
         binding.rcvMessage.setLayoutManager(linearLayoutManager);
         binding.rcvMessage.setAdapter(messageAdapter);
-        binding.rcvMessage.smoothScrollToPosition(mDataMessages.size() - 1);
+        scrollToBottom();
         setLoading(false);
     }
 
@@ -197,17 +201,25 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
         }
     }
 
-    @Override
-    public void onNewMessage(MessageModel newMessage) {
-        System.out.println(newMessage);
-        mDataMessages.add(newMessage);
+    private void scrollToBottom() {
         binding.rcvMessage.smoothScrollToPosition(mDataMessages.size() - 1);
-        binding.textInputEditMsg.setText("");
-        messageAdapter.notifyItemInserted(mDataMessages.size() - 1);
     }
 
     @Override
-    public void onListConversation(List<Demo> dataConversation) {
+    public void onNewMessage(MessageModel newMessage) {
+        String jsonInString = new Gson().toJson(newMessage);
+        JSONObject mJSONObject;
+        try {
+            binding.textInputEditMsg.setText("");
+            mJSONObject = new JSONObject(jsonInString);
+            mSocket.emit("on-chat", mJSONObject);
+        } catch (JSONException e) {
+            MyDialog.gI().startDlgOK(this, e);
+        }
+    }
+
+    @Override
+    public void onListConversation(List<ConversationDisplay> dataConversation) {
         System.out.println(dataConversation);
     }
 
@@ -260,7 +272,7 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
                 addOnGlobalLayoutListener(() -> {
                     int heightDiff = binding.chat.getRootView().getHeight() - binding.chat.getHeight();
                     if (heightDiff > MyFormat.dpToPx(ChatActivity.this, 200)) {
-                        binding.rcvMessage.smoothScrollToPosition(mDataMessages.size() - 1);
+                        scrollToBottom();
                         isShowKeyBoard = true;
                         isShowEmoji = false;
                         binding.emojiPicker.setVisibility(View.GONE);
@@ -389,17 +401,35 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
         binding.btnGallery.setVisibility(isTypeMessage ? View.GONE : View.VISIBLE);
     }
 
-    private void initSocket() {
+    private final Emitter.Listener onConnect = args -> runOnUiThread(() -> Log.d(TAG, "run: " + R.string.app_name));
+    private final Emitter.Listener onUserChat = args -> runOnUiThread(() -> {
+        // new message
+        JSONObject data = (JSONObject) args[0];
         try {
-            mSocket = IO.socket(Constants.URL_API);
-        } catch (URISyntaxException e) {
-            Log.w(TAG, "initSocket: " + e.getMessage());
-            return;
+            String conversationID = data.getString("conversation_id");
+            String senderID = data.getString("sender_id");
+            int messageType = data.getInt("message_type");
+            String message = data.getString("message");
+            String created_at = data.getString("created_at");
+            MessageModel newMessage = new MessageModel();
+            newMessage.setConversation_id(conversationID);
+            newMessage.setSender_id(senderID);
+            newMessage.setMessage_type(messageType);
+            newMessage.setMessage(message);
+            newMessage.setCreated_at(created_at);
+            mDataMessages.add(newMessage);
+            messageAdapter.notifyItemInserted(mDataMessages.size() - 1);
+            scrollToBottom();
+        } catch (JSONException e) {
+            MyDialog.gI().startDlgOK(this, e);
         }
-//        mSocket.on(Socket.EVENT_CONNECT, onConnect);
-//        mSocket.on("user-chat", onUserChat);
+    });
 
-        mSocket.connect();
+    private void initSocket() {
+        mSocket = SocketManager.getInstance(this).getSocket();
+        mSocket.on(Socket.EVENT_CONNECT, onConnect);
+        mSocket.on("user-chat", onUserChat);
+        SocketManager.getInstance(this).connect();
     }
 
     private void initService() {
@@ -527,9 +557,9 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
 
         binding = null;
         chatPresenter.onCancelAPI();
-//        mSocket.off(Socket.EVENT_CONNECT, onConnect);
-//        mSocket.off("user-chat", onUserChat);
-        mSocket.disconnect();
-        mSocket.close();
+        mSocket.off(Socket.EVENT_CONNECT, onConnect);
+        mSocket.off("user-chat", onUserChat);
+        SocketManager.getInstance(this).disconnect();
+        SocketManager.getInstance(this).close();
     }
 }

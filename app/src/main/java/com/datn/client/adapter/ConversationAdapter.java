@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -17,7 +18,7 @@ import com.datn.client.action.IAction;
 import com.datn.client.models.Customer;
 import com.datn.client.models.UserModel;
 import com.datn.client.models._BaseModel;
-import com.datn.client.response.Demo;
+import com.datn.client.response.ConversationDisplay;
 import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.MyFormat;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -26,17 +27,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ViewHolder> {
 
-    private final List<Demo> dataConversation;
+    private final List<ConversationDisplay> dataConversation;
     private final Customer customerLogged;
     private final Context context;
     private final IAction iActionConversation;
     private final Date currentTime = Calendar.getInstance().getTime();
     public static HashMap<String, UserModel> dataUsersFocus;
 
-    public ConversationAdapter(Context context, List<Demo> dataConversation, IAction iActionConversation) {
+    public ConversationAdapter(Context context, List<ConversationDisplay> dataConversation, IAction iActionConversation) {
         this.context = context;
         dataUsersFocus = new HashMap<>();
         customerLogged = ManagerUser.gI().getCustomerLogin((FragmentActivity) context);
@@ -53,7 +55,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Demo conversation = dataConversation.get(position);
+        ConversationDisplay conversation = dataConversation.get(position);
         List<UserModel> members = conversation.getMetadata();
         String userIDLogged = customerLogged.get_id();
         String prefixMsg = userIDLogged.equals(conversation.getSender_id()) ? "Bạn: " : "";
@@ -120,5 +122,49 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             }
         }
         return null;
+    }
+
+    public void updateList(List<ConversationDisplay> newList) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ConversationAdapter.ConversationDiffCallback(newList, dataConversation));
+        int oldSize = dataConversation.size();
+        dataConversation.clear();
+        dataConversation.addAll(newList);
+        diffResult.dispatchUpdatesTo(this);
+        int newSize = newList.size();
+        System.out.println("oldSize: " + oldSize + " - newSize:" + newSize);
+    }
+
+    private static class ConversationDiffCallback extends DiffUtil.Callback {
+        private final List<ConversationDisplay> oldList;
+        private final List<ConversationDisplay> newList;
+
+        public ConversationDiffCallback(List<ConversationDisplay> newList, List<ConversationDisplay> oldList) {
+            this.newList = newList;
+            this.oldList = oldList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            return Objects.equals(oldList.get(oldItemPosition).get_id(), newList.get(newItemPosition).get_id());
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            ConversationDisplay oldConversation = oldList.get(oldItemPosition);
+            ConversationDisplay newConversation = newList.get(newItemPosition);
+            return oldConversation.getConversation_id().equals(newConversation.getConversation_id())
+                    && Objects.equals(oldConversation.getConversation_name(), newConversation.getConversation_name())
+                    && Objects.equals(oldConversation.getMessage(), newConversation.getMessage());
+        }
     }
 }

@@ -189,6 +189,7 @@ public class OrderActivity extends AppCompatActivity implements IOrderView {
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(OrderActivity.this, overlayMessages, orderPresenter);
     }
+
     @Override
     public void onThrowNotification(String notification) {
         MyDialog.gI().startDlgOK(this, notification);

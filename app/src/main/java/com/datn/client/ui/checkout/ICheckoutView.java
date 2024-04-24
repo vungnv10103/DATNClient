@@ -1,7 +1,7 @@
 package com.datn.client.ui.checkout;
 
-import com.datn.client.models.ProductCart;
 import com.datn.client.IBaseView;
+import com.datn.client.models.ProductCart;
 
 import java.util.HashMap;
 import java.util.List;

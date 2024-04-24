@@ -3,6 +3,7 @@ package com.datn.client.ui.home;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.datn.client.BasePresenter;
 import com.datn.client.models.Banner;
 import com.datn.client.models.Category;
 import com.datn.client.models.MessageDetailResponse;
@@ -11,7 +12,6 @@ import com.datn.client.response.BannerResponse;
 import com.datn.client.response.CategoryResponse;
 import com.datn.client.response.ProductResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.BasePresenter;
 
 import java.util.List;
 

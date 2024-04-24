@@ -3,11 +3,11 @@ package com.datn.client.ui.order;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.datn.client.BasePresenter;
 import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.OrdersDetail;
 import com.datn.client.response.OrderResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.BasePresenter;
 
 import retrofit2.Call;
 import retrofit2.Callback;

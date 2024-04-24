@@ -19,14 +19,15 @@ import com.datn.client.action.IAction;
 import com.datn.client.adapter.ConversationAdapter;
 import com.datn.client.databinding.ActivityConversationBinding;
 import com.datn.client.models.Customer;
-import com.datn.client.models.MessageModel;
 import com.datn.client.models.MessageDetailResponse;
+import com.datn.client.models.MessageModel;
 import com.datn.client.models.Notification;
 import com.datn.client.models.OverlayMessage;
 import com.datn.client.models._BaseModel;
-import com.datn.client.response.Demo;
+import com.datn.client.response.ConversationDisplay;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
+import com.datn.client.services.SocketManager;
 import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
@@ -34,14 +35,13 @@ import com.datn.client.utils.Constants;
 import com.datn.client.utils.ManagerUser;
 import com.datn.client.utils.PreferenceManager;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URISyntaxException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
@@ -56,8 +56,8 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
     private Customer mCustomer;
     private String mToken;
 
-    private List<Demo> mConversation;
-    private ConversationAdapter conversationAdapter;
+    private List<ConversationDisplay> mConversation;
+    private ConversationAdapter mConversationAdapter;
     private Socket mSocket;
 
 
@@ -96,34 +96,39 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
     }
 
     private void displayConversation() {
-        mConversation.sort(Comparator.comparing(Demo::getCreated_at).reversed());
-        conversationAdapter = new ConversationAdapter(ConversationActivity.this, mConversation, new IAction() {
-            @Override
-            public void onClick(_BaseModel conversation) {
-                Intent intent = new Intent(ConversationActivity.this, ChatActivity.class);
-                intent.putExtra("conversationID", conversation.get_id());
-                startActivity(intent);
-            }
+        mConversation.sort(Comparator.comparing(ConversationDisplay::getCreated_at).reversed());
+        if (mConversationAdapter == null) {
+            mConversationAdapter = new ConversationAdapter(ConversationActivity.this, mConversation, new IAction() {
+                @Override
+                public void onClick(_BaseModel conversation) {
+                    Intent intent = new Intent(ConversationActivity.this, ChatActivity.class);
+                    intent.putExtra("conversationID", conversation.get_id());
+                    startActivity(intent);
+                }
 
-            @Override
-            public void onLongClick(_BaseModel conversation) {
-                MyDialog.gI().startDlgOK(ConversationActivity.this, conversation.get_id());
-            }
+                @Override
+                public void onLongClick(_BaseModel conversation) {
+                    MyDialog.gI().startDlgOK(ConversationActivity.this, conversation.get_id());
+                }
 
-            @Override
-            public void onItemClick(_BaseModel conversation) {
-                MyDialog.gI().startDlgOK(ConversationActivity.this, conversation.get_id());
-            }
-        });
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ConversationActivity.this, LinearLayoutManager.VERTICAL, false);
-        linearLayoutManager.setSmoothScrollbarEnabled(true);
-        binding.rcvConversation.setLayoutManager(linearLayoutManager);
-        binding.rcvConversation.setAdapter(conversationAdapter);
+                @Override
+                public void onItemClick(_BaseModel conversation) {
+                    MyDialog.gI().startDlgOK(ConversationActivity.this, conversation.get_id());
+                }
+            });
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ConversationActivity.this, LinearLayoutManager.VERTICAL, false);
+            linearLayoutManager.setSmoothScrollbarEnabled(true);
+            binding.rcvConversation.setLayoutManager(linearLayoutManager);
+            binding.rcvConversation.setAdapter(mConversationAdapter);
+        } else {
+            mConversationAdapter.updateList(mConversation);
+        }
         setLoading(false);
+
     }
 
     @Override
-    public void onListConversation(List<Demo> dataConversation) {
+    public void onListConversation(List<ConversationDisplay> dataConversation) {
         if (dataConversation != null) {
             this.mConversation = dataConversation;
             displayConversation();
@@ -189,28 +194,40 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
 
     }
 
+    private int getPositionConversation(String conversationID) {
+        for (int i = 0; i < mConversation.size(); i++) {
+            if (mConversation.get(i).getConversation_id().equals(conversationID)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     private final Emitter.Listener onConnect = args -> runOnUiThread(() -> Log.d(TAG, "run: " + R.string.app_name));
 
 
     private final Emitter.Listener onUserChat = args -> runOnUiThread(() -> {
-        JSONObject data = (JSONObject) args[0];
         // new message
-        Log.d(TAG, "onUserChat: " + data);
-//        getDataConversation();
-        chatPresenter.getDataConversation();
+        JSONObject data = (JSONObject) args[0];
+        try {
+            String conversationID = data.getString("conversation_id");
+//            String senderID = data.getString("sender_id");
+//            int messageType = data.getInt("message_type");
+//            String message = data.getString("message");
+//            String created_at = data.getString("created_at");
+            int position = getPositionConversation(conversationID);
+            System.out.println("position change: " + position);
+            chatPresenter.getDataConversation();
+        } catch (JSONException e) {
+            MyDialog.gI().startDlgOK(this, e);
+        }
     });
 
     private void initSocket() {
-        try {
-            mSocket = IO.socket(Constants.URL_API);
-        } catch (URISyntaxException e) {
-            Log.w(TAG, "initSocket: " + e.getMessage());
-            return;
-        }
+        mSocket = SocketManager.getInstance(this).getSocket();
         mSocket.on(Socket.EVENT_CONNECT, onConnect);
         mSocket.on("user-chat", onUserChat);
-
-        mSocket.connect();
+        SocketManager.getInstance(this).connect();
     }
 
     private void initService() {
@@ -252,7 +269,7 @@ public class ConversationActivity extends AppCompatActivity implements IChatView
         chatPresenter.onCancelAPI();
         mSocket.off(Socket.EVENT_CONNECT, onConnect);
         mSocket.off("user-chat", onUserChat);
-        mSocket.disconnect();
-        mSocket.close();
+        SocketManager.getInstance(this).disconnect();
+        SocketManager.getInstance(this).close();
     }
 }

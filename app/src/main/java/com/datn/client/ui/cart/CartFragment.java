@@ -176,6 +176,7 @@ public class CartFragment extends Fragment implements ICartView {
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, cartPresenter);
     }
+
     @Override
     public void onThrowNotification(String notification) {
         MyDialog.gI().startDlgOK(requireActivity(), notification);

@@ -25,7 +25,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.datn.client.R;
 import com.datn.client.databinding.ActivityTestBinding;
 import com.datn.client.helper.MyNavigationBar;
-import com.datn.client.ui.chat.ChatActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.google.android.material.textfield.TextInputEditText;
 

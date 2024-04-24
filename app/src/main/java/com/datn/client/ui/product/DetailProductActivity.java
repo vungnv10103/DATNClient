@@ -167,6 +167,7 @@ public class DetailProductActivity extends AppCompatActivity implements IProduct
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(this, overlayMessages, productPresenter);
     }
+
     @Override
     public void onThrowNotification(String notification) {
         MyDialog.gI().startDlgOK(this, notification);

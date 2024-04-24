@@ -7,7 +7,7 @@ import com.datn.client.BasePresenter;
 import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.MessageModel;
 import com.datn.client.response.ConversationResponse;
-import com.datn.client.response.Demo;
+import com.datn.client.response.ConversationDisplay;
 import com.datn.client.response.MessageResponse;
 import com.datn.client.response.NewMessageResponse;
 import com.datn.client.services.ApiService;
@@ -70,7 +70,7 @@ public class ChatPresenter extends BasePresenter {
                             String code = response.body().getCode();
                             MessageDetailResponse message = response.body().getMessage();
                             if (statusCode == 200) {
-                                List<Demo> dataConversation = response.body().getConversations();
+                                List<ConversationDisplay> dataConversation = response.body().getConversations();
                                 if (dataConversation != null) {
                                     iChatView.onListConversation(dataConversation);
                                 }

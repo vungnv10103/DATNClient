@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity implements IBaseView {
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(MainActivity.this, overlayMessages, basePresenter);
     }
+
     @Override
     public void onThrowNotification(String notification) {
         MyDialog.gI().startDlgOK(this, notification);

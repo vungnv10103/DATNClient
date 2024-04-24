@@ -304,6 +304,7 @@ public class HomeFragment extends Fragment implements IHomeView {
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, homePresenter);
     }
+
     @Override
     public void onThrowNotification(String notification) {
         MyDialog.gI().startDlgOK(requireActivity(), notification);

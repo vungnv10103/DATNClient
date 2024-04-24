@@ -244,6 +244,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(this, overlayMessages, checkoutPresenter);
     }
+
     @Override
     public void onThrowNotification(String notification) {
         MyDialog.gI().startDlgOK(this, notification);

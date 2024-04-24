@@ -47,6 +47,7 @@ public class MyDialog {
                 .show();
 
     }
+
     public void startDlgOKWithAction(Context context, String title, String message,
                                      String titlePositive,
                                      DialogInterface.OnClickListener positiveAction) {

@@ -5,6 +5,7 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
+import com.datn.client.BasePresenter;
 import com.datn.client.models.Cart;
 import com.datn.client.models.MessageDetailResponse;
 import com.datn.client.models.Product;
@@ -13,7 +14,6 @@ import com.datn.client.response.ProductCartResponse;
 import com.datn.client.response.ProductResponse;
 import com.datn.client.response._BaseResponse;
 import com.datn.client.services.ApiService;
-import com.datn.client.BasePresenter;
 import com.datn.client.ui.checkout.CheckoutActivity;
 import com.datn.client.utils.STATUS_CART;
 

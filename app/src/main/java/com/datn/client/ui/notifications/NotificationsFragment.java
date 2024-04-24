@@ -222,6 +222,7 @@ public class NotificationsFragment extends Fragment implements INotificationView
     public void onListOverlayMessage(List<OverlayMessage> overlayMessages) {
         MyOverlayMsgDialog.gI().showOverlayMsgDialog(requireActivity(), overlayMessages, notificationPresenter);
     }
+
     @Override
     public void onThrowNotification(String notification) {
         MyDialog.gI().startDlgOK(requireActivity(), notification);

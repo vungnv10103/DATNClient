@@ -5,7 +5,7 @@ import com.datn.client.models._BaseModel;
 
 import java.util.List;
 
-public class Demo extends _BaseModel {
+public class ConversationDisplay extends _BaseModel {
     private String conversation_id;
     private String conversation_name;
     private String sender_id;
