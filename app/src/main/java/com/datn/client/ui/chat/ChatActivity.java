@@ -24,8 +24,10 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.RemoteInput;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -49,6 +51,7 @@ import com.datn.client.response.ConversationDisplay;
 import com.datn.client.services.ApiService;
 import com.datn.client.services.RetrofitConnection;
 import com.datn.client.services.SocketManager;
+import com.datn.client.services.fcm.MyFirebaseMessagingService;
 import com.datn.client.ui.auth.LoginActivity;
 import com.datn.client.ui.components.MyDialog;
 import com.datn.client.ui.components.MyOverlayMsgDialog;
@@ -133,6 +136,18 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
         checkRequire();
         initService();
         initSocket();
+        MyDialog.gI().startDlgOK(this, getMessageText(getIntent()));
+
+
+    }
+
+    @Nullable
+    public CharSequence getMessageText(Intent intent) {
+        Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+        if (remoteInput != null) {
+            return remoteInput.getCharSequence(MyFirebaseMessagingService.KEY_TEXT_REPLY);
+        }
+        return null;
     }
 
 
@@ -141,7 +156,9 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
         super.onStart();
 
         setLoading(true);
+        binding.toolbarChat.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         if (mUserFocus == null) {
+            featureUpdating("Message Group");
             return;
         }
         setInfoUser();
@@ -202,7 +219,9 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
     }
 
     private void scrollToBottom() {
-        binding.rcvMessage.smoothScrollToPosition(mDataMessages.size() - 1);
+        if (mDataMessages != null) {
+            binding.rcvMessage.smoothScrollToPosition(mDataMessages.size() - 1);
+        }
     }
 
     @Override
@@ -308,7 +327,6 @@ public class ChatActivity extends AppCompatActivity implements IChatView {
 
     @SuppressLint("ClickableViewAccessibility")
     private void initEventClick() {
-        binding.toolbarChat.setNavigationOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.toolbarChat.setOnMenuItemClickListener(item -> {
             int itemID = item.getItemId();
             if (itemID == R.id.item_call_default) {

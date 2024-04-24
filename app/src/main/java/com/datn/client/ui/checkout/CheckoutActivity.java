@@ -312,7 +312,7 @@ public class CheckoutActivity extends AppCompatActivity implements ICheckoutView
             }
         } catch (Exception e) {
             Log.w(TAG, "createOrderZaloPay: " + e.getMessage());
-            MyDialog.gI().startDlgOK(CheckoutActivity.this, e.getMessage());
+            MyDialog.gI().startDlgOK(CheckoutActivity.this, e);
         }
     }
 

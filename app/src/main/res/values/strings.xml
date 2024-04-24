@@ -121,6 +121,8 @@
     <string name="type_message">Nhắn tin</string>
     <string name="go_to_setting">Đi tới cài đặt</string>
     <string name="ask_access_denied">Bạn đã từ chối quyền lưu trữ. Vui lòng cho phép quyền trong cài đặt ứng dụng để sử dụng tính năng này.</string>
+    <string name="reply">Trả lời</string>
+    <string name="like">Like</string>
 
 
 </resources>

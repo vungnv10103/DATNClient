@@ -197,7 +197,7 @@ public class EBankingActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Call<EBankingResponse> call, @NonNull Throwable t) {
                     runOnUiThread(() -> {
-                        MyDialog.gI().startDlgOK(EBankingActivity.this, t.getMessage());
+                        MyDialog.gI().startDlgOK(EBankingActivity.this, t);
                         setLoading(false);
                     });
                 }
@@ -205,7 +205,7 @@ public class EBankingActivity extends AppCompatActivity {
         } catch (Exception e) {
             runOnUiThread(() -> {
                 Log.w(TAG, "createPaymentURLNow: " + e.getMessage());
-                MyDialog.gI().startDlgOK(EBankingActivity.this, e.getMessage());
+                MyDialog.gI().startDlgOK(EBankingActivity.this, e);
                 setLoading(false);
             });
         }
@@ -223,7 +223,7 @@ public class EBankingActivity extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Call<EBankingResponse> call, @NonNull Throwable t) {
                     runOnUiThread(() -> {
-                        MyDialog.gI().startDlgOK(EBankingActivity.this, t.getMessage());
+                        MyDialog.gI().startDlgOK(EBankingActivity.this, t);
                         setLoading(false);
                     });
                 }
@@ -231,7 +231,7 @@ public class EBankingActivity extends AppCompatActivity {
         } catch (Exception e) {
             runOnUiThread(() -> {
                 Log.w(TAG, "createPaymentURL: " + e.getMessage());
-                MyDialog.gI().startDlgOK(EBankingActivity.this, e.getMessage());
+                MyDialog.gI().startDlgOK(EBankingActivity.this, e);
                 setLoading(false);
             });
         }

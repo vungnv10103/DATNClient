@@ -122,7 +122,8 @@ public class DashboardFragment extends Fragment implements IDashboardView {
         binding.tvName.setText(mCustomer.getFull_name());
         Glide.with(requireActivity())
                 .load(mCustomer.getAvatar())
-                .error(R.drawable.logo_app_gradient)
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.placeholder)
                 .into(binding.imgAvatarUser);
     }
 

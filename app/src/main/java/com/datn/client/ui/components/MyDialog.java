@@ -86,15 +86,16 @@ public class MyDialog {
 
     }
 
-    public void startDlgOK(Context context, @NonNull Object message) {
-        new MaterialAlertDialogBuilder(context)
-                .setIcon(iconID)
-                .setTitle(context.getString(R.string.notifications))
-                .setMessage(message.toString())
-                .setPositiveButton(android.R.string.ok, ((dialog, which) -> dialog.dismiss()))
-                .setCancelable(false)
-                .show();
-
+    public void startDlgOK(Context context, Object message) {
+        if (message != null) {
+            new MaterialAlertDialogBuilder(context)
+                    .setIcon(iconID)
+                    .setTitle(context.getString(R.string.notifications))
+                    .setMessage(message.toString())
+                    .setPositiveButton(android.R.string.ok, ((dialog, which) -> dialog.dismiss()))
+                    .setCancelable(false)
+                    .show();
+        }
     }
 
     public void startDlgOK(Context context, String title, String message) {
